@@ -54,7 +54,7 @@ button{cursor:pointer;}
 .tbtn-reset{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15);}
 
 /* SEA CONDITIONS */
-.sea-bar{background:rgba(0,91,234,.07);border-bottom:1px solid rgba(0,198,251,.1);padding:5px 16px;display:flex;gap:16px;flex-wrap:wrap;font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;}
+.sea-bar{background:rgba(0,91,234,.07);border-bottom:1px solid rgba(0,198,251,.1);padding:8px 16px;display:flex;gap:20px;flex-wrap:wrap;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;}
 .sea-val{color:var(--ocean);}
 
 /* TABS */
@@ -226,10 +226,10 @@ select.sinput option{background:#0a1f3a;}
 .ann-total{font-family:'Bebas Neue',cursive;font-size:24px;color:var(--ocean);}
 .ann-total.gold{color:var(--gold);}
 .sponsor-bar{display:flex;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.05);padding:8px 16px;position:relative;z-index:2;}
-.lw-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);opacity:0;background:rgba(2,12,27,.95);border:2px solid var(--ocean);border-radius:24px;padding:24px 40px;text-align:center;z-index:100;backdrop-filter:blur(20px);transition:all .3s;pointer-events:none;}
-.lw-popup.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
+.lw-popup{position:fixed;bottom:100px;right:20px;transform:translateX(200px);opacity:0;background:rgba(2,12,27,.95);border:2px solid var(--ocean);border-radius:16px;padding:12px 20px;text-align:center;z-index:100;backdrop-filter:blur(20px);transition:all .3s;pointer-events:none;}
+.lw-popup.show{transform:translateX(0);opacity:1;}
 .lw-surfer{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:4px;color:var(--muted);}
-.lw-score{font-family:'Bebas Neue',cursive;font-size:80px;color:var(--ocean);line-height:1;animation:newWaveIn .4s ease;}
+.lw-score{font-family:'Bebas Neue',cursive;font-size:44px;color:var(--ocean);line-height:1;animation:newWaveIn .4s ease;}
 .lw-label{font-size:11px;color:var(--muted);letter-spacing:2px;}
 
 /* ADMIN */
@@ -594,13 +594,12 @@ select.sinput option{background:#0a1f3a;}
         <button class="bc-toggle-btn" id="toggle-overlay" onclick="toggleOverlay()">🎥 OVERLAY</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:8px">
-        <!-- IZQUIERDA: Sponsor principal grande -->
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <div class="bc-brand" id="bc-brand-name">🌊 WAVESCORE PRO</div>
-          <div id="bc-main-sponsor" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px">
-            <div style="font-family:'Bebas Neue',cursive;font-size:8px;letter-spacing:3px;color:var(--muted)">PATROCINA</div>
-            <div id="bc-main-sponsor-content" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 14px;display:flex;align-items:center;justify-content:center;min-width:140px;min-height:70px"></div>
+        <!-- IZQUIERDA: Sponsor principal limpio -->
+        <div style="display:flex;flex-direction:column;justify-content:center">
+          <div id="bc-main-sponsor" style="display:flex;align-items:center">
+            <div id="bc-main-sponsor-content" style="display:flex;align-items:center;justify-content:flex-start;min-height:80px"></div>
           </div>
+          <div id="bc-brand-name" style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.2);margin-top:4px">🌊 WAVESCORE PRO</div>
         </div>
         <!-- CENTRO: Timer + nombre del campeonato -->
         <div class="bc-timer-wrap" style="margin-bottom:0;text-align:center">
@@ -613,11 +612,8 @@ select.sinput option{background:#0a1f3a;}
           <div id="bc-secondary-sponsors" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end"></div>
         </div>
       </div>
-      <div id="bc-sea-info" style="display:none;margin-bottom:8px;font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;display:flex;gap:14px;flex-wrap:wrap">
-        <span>🌊 <span style="color:var(--ocean)" id="bc-wave-h">—</span>m</span>
-        <span>💨 <span style="color:var(--ocean)" id="bc-wind-v">—</span> km/h</span>
-        <span id="bc-cond-lbl" style="color:var(--muted)"></span>
-      </div>
+      <!-- sea info shown in top bar only, not duplicated here -->
+      <div id="bc-sea-info" style="display:none"></div>
       <div id="bc-priority-display"></div>
       <div class="bc-surfers" id="bc-surfers"></div>
       <div class="ann-panel" id="ann-panel" style="display:none">
@@ -1679,7 +1675,7 @@ function _renderSponsorsOnScreen(sponsors){
   const timerWrap=document.getElementById('main-sponsor-timer');
   const timerContent=document.getElementById('main-sponsor-timer-content');
   if(main&&main.logo){
-    if(bcMainContent)bcMainContent.innerHTML=`<img src="${main.logo}" class="sponsor-logo-main" alt="${main.name||''}" onerror="this.style.display='none'"/>`;
+    if(bcMainContent)bcMainContent.innerHTML=`<img src="${main.logo}" style="max-height:90px;max-width:180px;object-fit:contain;" alt="${main.name||''}" onerror="this.style.display='none'"/>`;
     if(bcMainWrap)bcMainWrap.style.display='flex';
     if(timerContent)timerContent.innerHTML=`<img src="${main.logo}" style="max-height:32px;max-width:100px;object-fit:contain;" onerror="this.style.display='none'"/>`;
     if(timerWrap)timerWrap.style.display='flex';
@@ -1694,11 +1690,11 @@ function _renderSponsorsOnScreen(sponsors){
     nonMain.forEach(s=>{
       if(!s.logo)return;
       const wrap=document.createElement('div');
-      wrap.style.cssText='display:flex;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:4px 8px;';
+      wrap.style.cssText='display:flex;align-items:center;';
       const img=document.createElement('img');
       img.src=s.logo;
       img.alt=s.name||'';
-      img.style.cssText=s.tier==='secondary'?'height:34px;max-width:100px;object-fit:contain;':'height:20px;max-width:65px;object-fit:contain;';
+      img.style.cssText=s.tier==='secondary'?'height:50px;max-width:140px;object-fit:contain;':'height:32px;max-width:90px;object-fit:contain;';
       img.title=s.name||'';
       img.onerror=function(){this.parentElement.style.display='none';};
       wrap.appendChild(img);

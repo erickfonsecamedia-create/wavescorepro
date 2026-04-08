@@ -248,7 +248,7 @@ select.sinput option{background:#0a1f3a;}
 .hem-close{padding:12px 32px;background:linear-gradient(90deg,var(--deep),var(--ocean));border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:4px;margin-top:8px;}
 #best-wave-banner{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-200px);background:linear-gradient(90deg,rgba(255,209,102,.15),rgba(0,198,251,.15));border:2px solid var(--gold);border-radius:20px;padding:14px 28px;text-align:center;z-index:800;transition:transform .4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px);white-space:nowrap;}
 #best-wave-banner.show{transform:translateX(-50%) translateY(0);}
-.bwb-label{font-family:'Bebas Neue',cursify;font-size:10px;letter-spacing:4px;color:var(--gold);}
+.bwb-label{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:4px;color:var(--gold);}
 .bwb-score{font-family:'Bebas Neue',cursive;font-size:44px;color:var(--gold);line-height:1;animation:goldPulse 1s infinite;}
 .bwb-surfer{font-size:12px;color:var(--muted);letter-spacing:2px;}
 #leader-banner{position:fixed;top:80px;right:-400px;background:rgba(2,12,27,.95);border:2px solid var(--ocean);border-left:4px solid var(--gold);border-radius:14px;padding:12px 20px;z-index:800;transition:right .4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(10px);}
@@ -315,15 +315,10 @@ select.sinput option{background:#0a1f3a;}
 
 @media(max-width:480px){.gate-roles{grid-template-columns:1fr 1fr;}.j-row{grid-template-columns:repeat(3,1fr);}.surfers-grid{grid-template-columns:1fr;}.bc-surfers{grid-template-columns:repeat(2,1fr);}}
 
-/* ── DEMO TOUR ── */
+/* DEMO TOUR */
 #tour-overlay{position:fixed;inset:0;z-index:1100;display:none;pointer-events:none;}
 #tour-overlay.show{display:block;}
-.tour-card{
-  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  background:rgba(2,12,27,.92);border:2px solid var(--ocean);border-radius:20px;
-  padding:16px 20px;width:calc(100% - 32px);max-width:600px;
-  box-shadow:0 0 40px rgba(0,198,251,.25);animation:fadeInUp .3s ease;
-  pointer-events:all;z-index:1101;backdrop-filter:blur(16px);}
+.tour-card{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(2,12,27,.92);border:2px solid var(--ocean);border-radius:20px;padding:16px 20px;width:calc(100% - 32px);max-width:600px;box-shadow:0 0 40px rgba(0,198,251,.25);animation:fadeInUp .3s ease;pointer-events:all;z-index:1101;backdrop-filter:blur(16px);}
 .tour-step-badge{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:4px;color:var(--ocean);margin-bottom:4px;}
 .tour-title{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;margin-bottom:6px;color:#fff;}
 .tour-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
@@ -336,11 +331,9 @@ select.sinput option{background:#0a1f3a;}
 .tour-btn-skip{padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:var(--muted);font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:2px;cursor:pointer;pointer-events:all;}
 .tour-btn-next{flex:1;padding:8px 14px;background:linear-gradient(90deg,var(--deep),var(--ocean));border:none;border-radius:8px;color:#fff;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;cursor:pointer;pointer-events:all;}
 .tour-btn-finish{flex:1;padding:8px 14px;background:linear-gradient(90deg,#16a34a,#22c55e);border:none;border-radius:8px;color:#fff;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;cursor:pointer;pointer-events:all;}
-.tour-spotlight{position:fixed;border:3px solid var(--ocean);border-radius:14px;
-  box-shadow:0 0 0 9999px rgba(0,0,0,.25);z-index:1090;
-  transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;}
+.tour-spotlight{position:fixed;border:3px solid var(--ocean);border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.25);z-index:1090;transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;}
 
-/* ── EVENT QR ── */
+/* EVENT QR */
 #event-qr-modal{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);}
 #event-qr-modal.open{display:flex;}
 .eqr-card{background:linear-gradient(160deg,#0a1f3a,#020c1b);border:2px solid var(--ocean);border-radius:24px;padding:28px;max-width:380px;width:100%;text-align:center;}
@@ -401,7 +394,6 @@ select.sinput option{background:#0a1f3a;}
 .sponsor-tier-main{background:rgba(255,209,102,.15);color:var(--gold);border:1px solid rgba(255,209,102,.3);}
 .sponsor-tier-secondary{background:rgba(0,198,251,.1);color:var(--ocean);border:1px solid rgba(0,198,251,.2);}
 .sponsor-tier-small{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid rgba(255,255,255,.1);}
-/* Ceremony sponsors */
 .ceremony-sponsors{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
 </style>
 </head>
@@ -468,7 +460,6 @@ select.sinput option{background:#0a1f3a;}
         <button class="tbtn tbtn-reset" onclick="timerReset()">↺ RESET</button>
       </div>
       <button onclick="showEventQR()" style="padding:6px 12px;background:rgba(0,198,251,.12);border:1px solid var(--border);border-radius:8px;color:var(--ocean);font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;cursor:pointer;white-space:nowrap;">📱 QR EVENTO</button>
-      <!-- Main sponsor next to timer -->
       <div id="main-sponsor-timer" style="display:none;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:4px 12px">
         <span style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:var(--muted)">PATROCINA</span>
         <div id="main-sponsor-timer-content"></div>
@@ -484,7 +475,6 @@ select.sinput option{background:#0a1f3a;}
     <span id="sb-label" style="color:var(--muted);font-size:10px;margin-left:auto"></span>
   </div>
 
-  <!-- OPERATOR TABS -->
   <div id="op-tabs" style="display:none">
     <div class="tabs">
       <div class="tab active" onclick="opTab('heat')" id="tab-heat">🏄 HEAT</div>
@@ -539,7 +529,6 @@ select.sinput option{background:#0a1f3a;}
       <div class="section-title">NOTAS PENDIENTES</div>
       <div class="card" id="pending-scores-panel"><div style="color:var(--muted);font-size:13px">Sin notas pendientes</div></div>
     </div>
-    <!-- TAB: MAR + LLAMADOS (Operador) -->
     <div id="op-campo" style="display:none;padding:16px;max-width:700px;margin:0 auto">
       <div class="section-title">🌊 CONDICIONES DEL MAR</div>
       <div class="card">
@@ -559,7 +548,6 @@ select.sinput option{background:#0a1f3a;}
         </div>
         <button class="btn-sm btn-go" onclick="opSaveSeaConditions()" style="width:100%;padding:12px">🌊 ACTUALIZAR CONDICIONES</button>
       </div>
-
       <div class="section-title">📢 LLAMAR ATLETA AL HEAT</div>
       <div class="card">
         <div class="note-box" style="margin-bottom:10px">La notificación aparece en <strong>todos los dispositivos</strong> conectados con bocina.</div>
@@ -569,7 +557,6 @@ select.sinput option{background:#0a1f3a;}
         <input class="sinput" id="op-call-msg" placeholder="Preséntate con el Beach Marshal" style="margin-bottom:8px"/>
         <button class="btn-sm btn-go" onclick="opCallAthlete()" style="width:100%;padding:12px">📢 ENVIAR LLAMADO A TODOS</button>
       </div>
-
       <div class="section-title">📋 LLAMADOS RÁPIDOS</div>
       <div class="card">
         <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -581,7 +568,6 @@ select.sinput option{background:#0a1f3a;}
         </div>
       </div>
     </div>
-
     <div id="op-rounds" style="display:none;padding:16px;max-width:900px;margin:0 auto">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div class="section-title" style="margin:0">HISTORIAL</div>
@@ -607,27 +593,23 @@ select.sinput option{background:#0a1f3a;}
         <button class="bc-toggle-btn" id="toggle-announce" onclick="setBroadcastMode('announce')">🎙️ ANUNCIADOR</button>
         <button class="bc-toggle-btn" id="toggle-overlay" onclick="toggleOverlay()">🎥 OVERLAY</button>
       </div>
-      <!-- TOP BAR: Brand + Timer + Sponsors all in one row -->
       <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:8px">
-        <!-- LEFT: Brand + Event name + Secondary sponsors -->
         <div style="display:flex;flex-direction:column;gap:6px">
           <div class="bc-brand" id="bc-brand-name">🌊 WAVESCORE PRO</div>
           <div class="bc-event-name" id="bc-event-badge" style="align-self:flex-start">SIN HEAT</div>
-          <!-- Secondary + small sponsors -->
+          <!-- ✅ SPONSORS SECUNDARIOS Y PEQUEÑOS aquí -->
           <div id="bc-secondary-sponsors" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px"></div>
         </div>
-        <!-- CENTER: Timer -->
         <div class="bc-timer-wrap" style="margin-bottom:0">
           <div class="bc-timer" id="bc-timer">—:——</div>
           <div class="bc-timer-lbl">TIEMPO RESTANTE</div>
         </div>
-        <!-- RIGHT: Main sponsor (large) -->
+        <!-- ✅ SPONSOR PRINCIPAL aquí (derecha, grande) -->
         <div id="bc-main-sponsor" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <div style="font-family:'Bebas Neue',cursive;font-size:8px;letter-spacing:3px;color:var(--muted)">PATROCINA</div>
           <div id="bc-main-sponsor-content" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 14px;display:flex;align-items:center;justify-content:center;min-width:120px;min-height:60px"></div>
         </div>
       </div>
-      <!-- Sea conditions -->
       <div id="bc-sea-info" style="display:none;margin-bottom:8px;font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;display:flex;gap:14px;flex-wrap:wrap">
         <span>🌊 <span style="color:var(--ocean)" id="bc-wave-h">—</span>m</span>
         <span>💨 <span style="color:var(--ocean)" id="bc-wind-v">—</span> km/h</span>
@@ -639,10 +621,7 @@ select.sinput option{background:#0a1f3a;}
         <div class="ann-panel-title">🎙️ INFORMACIÓN PARA ANUNCIADOR</div>
         <div id="ann-rows"></div>
       </div>
-      <!-- Sponsor bar kept for ceremony fallback -->
-      <div id="sponsor-bar" style="display:none">
-        <div id="sponsor-content"></div>
-      </div>
+      <div id="sponsor-bar" style="display:none"><div id="sponsor-content"></div></div>
     </div>
     <div class="lw-popup" id="lw-popup"><div class="lw-surfer" id="lw-surfer">—</div><div class="lw-score" id="lw-score">—</div><div class="lw-label">ÚLTIMA OLA</div></div>
   </div>
@@ -657,8 +636,6 @@ select.sinput option{background:#0a1f3a;}
       <div class="tab gold" onclick="adminTab('security')" id="atab-security">🔐 SEGURIDAD</div>
       <div class="tab gold" onclick="adminTab('rounds')" id="atab-rounds">📊 HISTORIAL</div>
     </div>
-
-    <!-- EVENTS -->
     <div id="adm-events" class="admin-tab-content">
       <div class="section-title">CONFIGURACIÓN DEL EVENTO</div>
       <div class="card">
@@ -674,16 +651,25 @@ select.sinput option{background:#0a1f3a;}
         <div id="sponsors-list-admin" style="margin-bottom:10px"></div>
         <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;margin-bottom:10px">
           <label class="slabel">NUEVO PATROCINADOR</label>
-          <div class="note-box" style="font-size:11px;margin-bottom:10px">📌 Sube tu logo a <strong><a href="https://imgur.com" target="_blank" style="color:var(--ocean)">imgur.com</a></strong> gratis → clic derecho en la imagen → "Copiar dirección de imagen" → pega la URL aquí</div>
           <input class="sinput" id="new-sponsor-name" placeholder="ej: Rip Curl, Corona, FCS"/>
-          <label class="slabel">URL DEL LOGO</label>
+          <label class="slabel">LOGO</label>
+          <!-- SUBIR ARCHIVO (recomendado) -->
+          <div class="img-upload-area" onclick="document.getElementById('sponsor-file-input').click()" style="margin-bottom:8px">
+            <input type="file" id="sponsor-file-input" accept="image/*" onchange="handleSponsorFileUpload(event)" style="display:none"/>
+            <span class="img-upload-label">📁 SUBIR DESDE TU COMPUTADOR</span>
+            <span class="img-upload-sub">PNG, JPG, SVG — funciona siempre sin URLs externas</span>
+          </div>
+          <!-- PREVIEW -->
+          <div id="new-sponsor-preview-row" style="display:none;margin-bottom:8px;background:rgba(255,255,255,.04);border-radius:10px;padding:10px;align-items:center;gap:10px">
+            <img id="new-sponsor-preview-img" src="" style="height:40px;max-width:130px;object-fit:contain;background:rgba(255,255,255,.1);border-radius:6px;padding:3px"/>
+            <span style="font-size:12px;color:var(--green);flex:1">✅ Logo listo</span>
+            <button onclick="clearNewSponsor()" style="background:rgba(255,71,87,.12);border:1px solid rgba(255,71,87,.3);border-radius:6px;padding:4px 8px;color:var(--red);cursor:pointer;font-size:11px">✕</button>
+          </div>
+          <!-- URL como alternativa -->
+          <div class="img-or-divider">O pega una URL (debe ser enlace directo a imagen)</div>
           <div style="display:flex;gap:8px;margin-bottom:8px">
             <input class="sinput" id="new-sponsor-url" placeholder="https://i.imgur.com/abc123.png" style="margin-bottom:0;flex:1"/>
-            <button class="btn-sm btn-gray" onclick="previewNewSponsor()" style="padding:10px 12px;white-space:nowrap">👁️ VER</button>
-          </div>
-          <div id="new-sponsor-preview-row" style="display:none;margin-bottom:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:10px;align-items:center;gap:10px">
-            <img id="new-sponsor-preview-img" src="" style="height:40px;max-width:130px;object-fit:contain;background:#fff;border-radius:6px;padding:3px"/>
-            <span style="font-size:12px;color:var(--green)">✅ Logo visible</span>
+            <button class="btn-sm btn-gray" onclick="previewNewSponsorUrl()" style="padding:10px 12px;white-space:nowrap">👁️ VER</button>
           </div>
           <div style="display:flex;gap:8px">
             <select class="sinput" id="new-sponsor-tier" style="margin-bottom:0;flex:1">
@@ -723,8 +709,6 @@ select.sinput option{background:#0a1f3a;}
         <button class="btn-sm btn-go" onclick="callAthlete()" style="width:100%;padding:11px">📢 ENVIAR LLAMADO</button>
       </div>
     </div>
-
-    <!-- ATHLETES -->
     <div id="adm-athletes" class="admin-tab-content" style="display:none">
       <div class="section-title">AGREGAR ATLETA</div>
       <div class="card">
@@ -734,13 +718,11 @@ select.sinput option{background:#0a1f3a;}
           <div><label class="slabel">DORSAL</label><input class="sinput" id="ath-number" type="number" placeholder="1" style="margin-bottom:0"/></div>
         </div>
         <label class="slabel">FOTO DEL ATLETA</label>
-        <!-- Upload option -->
         <div class="img-upload-area" onclick="document.getElementById('ath-file-input').click()">
           <input type="file" id="ath-file-input" accept="image/*" onchange="handleAthFileUpload(event)"/>
           <span class="img-upload-label">📷 TOCA PARA SUBIR IMAGEN</span>
           <span class="img-upload-sub">JPG, PNG, WEBP — máx 2MB</span>
         </div>
-        <!-- Preview -->
         <div id="ath-preview-row" class="img-preview-row" style="display:none">
           <img id="ath-preview" src="" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--ocean)"/>
           <div style="flex:1">
@@ -749,7 +731,6 @@ select.sinput option{background:#0a1f3a;}
           </div>
           <button class="btn-sm btn-danger" onclick="clearAthPhoto()" style="padding:6px 10px;font-size:11px">✕</button>
         </div>
-        <!-- URL fallback -->
         <div class="img-or-divider">O usa una URL</div>
         <input class="sinput" id="ath-photo" placeholder="https://i.imgur.com/ejemplo.jpg" style="margin-bottom:8px" oninput="previewAthPhoto()"/>
         <button class="btn-sm btn-go" onclick="saveAthlete()" style="width:100%;padding:11px">+ AGREGAR ATLETA</button>
@@ -757,8 +738,6 @@ select.sinput option{background:#0a1f3a;}
       <div class="section-title">ATLETAS REGISTRADOS</div>
       <div id="athletes-list"><div style="color:var(--muted);font-size:13px">Sin atletas.</div></div>
     </div>
-
-    <!-- BRACKET -->
     <div id="adm-bracket" class="admin-tab-content" style="display:none">
       <div class="section-title">GENERAR BRACKET</div>
       <div class="card">
@@ -791,8 +770,6 @@ select.sinput option{background:#0a1f3a;}
       <div class="section-title">BRACKET</div>
       <div id="bracket-view" style="overflow-x:auto"><div style="color:var(--muted);font-size:13px">Sin bracket generado.</div></div>
     </div>
-
-    <!-- WHITE LABEL -->
     <div id="adm-whitelabel" class="admin-tab-content" style="display:none">
       <div class="note-box">🎨 Personaliza la app con la identidad de tu cliente. Se aplica en toda la app.</div>
       <div class="card">
@@ -832,8 +809,6 @@ select.sinput option{background:#0a1f3a;}
         <div id="wl-preview-name" style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:6px;background:linear-gradient(90deg,var(--ocean),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">WaveScore Pro</div>
       </div>
     </div>
-
-    <!-- SECURITY -->
     <div id="adm-security" class="admin-tab-content" style="display:none">
       <div class="note-box">⚠️ El código Admin es solo tuyo. Nunca lo compartas.</div>
       <div class="card">
@@ -842,8 +817,6 @@ select.sinput option{background:#0a1f3a;}
         <button class="btn-sm btn-gold" onclick="changeAdminCode()" style="width:100%;padding:12px">🔑 CAMBIAR CÓDIGO ADMIN</button>
       </div>
     </div>
-
-    <!-- HISTORY (admin) -->
     <div id="adm-rounds" class="admin-tab-content" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div class="section-title" style="margin:0">HISTORIAL COMPLETO</div>
@@ -867,7 +840,6 @@ select.sinput option{background:#0a1f3a;}
     <div class="hem-podium" id="hem-podium"></div>
     <div id="hem-full-results" style="text-align:left;margin-bottom:10px;overflow-y:auto;flex:1"></div>
     <div id="ceremony-sponsors-section" style="display:none"></div>
-    <!-- Close button always at bottom -->
     <button class="hem-close" onclick="document.getElementById('heat-end-modal').classList.remove('show')" style="margin-top:14px;flex-shrink:0;width:100%">✕ CERRAR</button>
   </div>
 </div>
@@ -905,6 +877,24 @@ select.sinput option{background:#0a1f3a;}
   </div>
 </div>
 
+<!-- EVENT QR MODAL -->
+<div id="event-qr-modal">
+  <div class="eqr-card">
+    <div class="eqr-title">📱 QR DEL EVENTO</div>
+    <div class="eqr-sub">WAVESCORE PRO</div>
+    <div class="eqr-qr" id="eqr-qr-img"></div>
+    <div class="eqr-url" id="eqr-url-text">Generando link...</div>
+    <div class="eqr-instructions">
+      <div class="eqr-inst-row"><div class="eqr-inst-num">1</div><div>El atleta escanea este QR con su celular</div></div>
+      <div class="eqr-inst-row"><div class="eqr-inst-num">2</div><div>Ve la pantalla pública en tiempo real</div></div>
+      <div class="eqr-inst-row"><div class="eqr-inst-num">3</div><div>Recibe notificaciones de llamados al heat</div></div>
+      <div class="eqr-inst-row"><div class="eqr-inst-num">4</div><div>Ve posiciones, tiempo y condiciones del mar</div></div>
+    </div>
+    <button class="btn-sm btn-go" onclick="window.print()" style="width:100%;padding:10px;margin-bottom:8px">🖨️ IMPRIMIR</button>
+    <button class="btn-sm btn-gray" onclick="document.getElementById('event-qr-modal').classList.remove('open')" style="width:100%;padding:10px">CERRAR</button>
+  </div>
+</div>
+
 <!-- MODAL EDIT WAVE -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
@@ -918,6 +908,9 @@ select.sinput option{background:#0a1f3a;}
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- TOUR OVERLAY -->
+<div id="tour-overlay"></div>
 
 <script>
 // ════════ CONSTANTS ════════
@@ -938,6 +931,8 @@ let prevTotals={},lastWaveTimeout=null;
 let currentLeader=null,heatBestWave={score:0,surfer:''};
 let bestWaveTimeout=null,leaderTimeout=null,callTimeout=null;
 let demoRunning=false,demoInterval=null,demoStep=0,demoHeatState=null;
+let _athPhotoData=null,_wlLogoData=null,_sponsorLogoData=null;
+let _currentSponsors=[];
 
 // ════════ INIT ════════
 window.addEventListener('load',()=>{
@@ -971,7 +966,6 @@ function pickRole(r){
 }
 function checkEnterReady(){
   const val=document.getElementById('gate-input').value.trim();
-  // Enable if role selected OR if typed 4+ chars
   if(role) document.getElementById('enter-btn').disabled=false;
   else document.getElementById('enter-btn').disabled=val.length<4;
 }
@@ -979,76 +973,28 @@ function checkAccess(){
   const val=document.getElementById('gate-input').value.trim().toUpperCase();
   if(!val){showGateError('Ingresa el código');return;}
   if(role==='judge') judgeNum=parseInt(document.getElementById('judge-num').value);
-
-  // ── Verificación local primero (sin Firebase) ──
-  // Admin siempre puede entrar con el código hardcoded
   if(val===ADMIN_CODE_DEFAULT){
     if(role!=='admin'){role='admin';pickRole('admin');}
-    // Initialize Firebase if not done
-    if(!db){
-      try{
-        let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}
-        db=firebase.database(fbApp);
-      }catch(e){console.warn('Firebase init failed, continuing offline');}
-    }
-    enterApp();
-    return;
+    if(!db){try{let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}db=firebase.database(fbApp);}catch(e){console.warn('Firebase init failed');}}
+    enterApp();return;
   }
-
-  // ── Si Firebase no está listo, intentar inicializar ──
-  if(!db){
-    try{
-      let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}
-      db=firebase.database(fbApp);
-    }catch(e){
-      showGateError('Error de conexión. Verifica tu internet.');
-      return;
-    }
-  }
-
-  // ── Verificar con Firebase ──
+  if(!db){try{let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}db=firebase.database(fbApp);}catch(e){showGateError('Error de conexión.');return;}}
   db.ref('config').once('value',snap=>{
     const cfg=snap.val()||{};
     const adminCode=(cfg.adminCode||ADMIN_CODE_DEFAULT).toUpperCase();
     const eventCode=(cfg.event?.code||'SURF2025').toUpperCase();
-
-    // Admin check (Firebase code OR default)
-    const isAdmin = val===adminCode || val===ADMIN_CODE_DEFAULT;
-    if(isAdmin){
-      if(role!=='admin'){role='admin';pickRole('admin');}
-      enterApp();
-      return;
-    }
-
-    // Role must be selected for non-admin
-    if(!role){
-      showGateError('Selecciona tu rol primero');
-      return;
-    }
-
-    // Date checks for event roles
+    const isAdmin=val===adminCode||val===ADMIN_CODE_DEFAULT;
+    if(isAdmin){if(role!=='admin'){role='admin';pickRole('admin');}enterApp();return;}
+    if(!role){showGateError('Selecciona tu rol primero');return;}
     const ev=cfg.event||{};
-    if(ev.endsAt&&Date.now()>ev.endsAt){
-      showGateError('Evento expirado. Contacta al administrador.');return;
-    }
-    if(ev.startsAt&&Date.now()<ev.startsAt){
-      showGateError('El evento inicia el '+new Date(ev.startsAt).toLocaleString('es-CO'));return;
-    }
-
+    if(ev.endsAt&&Date.now()>ev.endsAt){showGateError('Evento expirado.');return;}
+    if(ev.startsAt&&Date.now()<ev.startsAt){showGateError('El evento inicia el '+new Date(ev.startsAt).toLocaleString('es-CO'));return;}
     if(val===eventCode) enterApp();
-    else{
-      showGateError('Código incorrecto.');
-      document.getElementById('gate-input').value='';
-    }
-  }).catch(()=>{
-    // Firebase read failed — only allow admin with hardcoded code
-    showGateError('Error de conexión con Firebase.');
-  });
+    else{showGateError('Código incorrecto.');document.getElementById('gate-input').value='';}
+  }).catch(()=>showGateError('Error de conexión con Firebase.'));
 }
 function emergencyResetAdmin(){
-  // Shows after 3 failed admin attempts - resets adminCode in Firebase to default
   if(!db){showGateError('Sin conexión a Firebase');return;}
-  // Only works if you know the secret emergency code
   const sec=prompt('Ingresa el código de emergencia:');
   if(sec&&sec.toUpperCase()==='WAVESCOREEMERGENCY'){
     db.ref('config/adminCode').set(ADMIN_CODE_DEFAULT);
@@ -1056,20 +1002,12 @@ function emergencyResetAdmin(){
     db.ref('config/event/endsAt').remove();
     showGateError('✅ Código Admin reseteado a: '+ADMIN_CODE_DEFAULT);
     document.getElementById('emergency-reset').style.display='none';
-  } else {
-    showGateError('Código de emergencia incorrecto');
-  }
+  } else showGateError('Código de emergencia incorrecto');
 }
 let failedAdminAttempts=0;
 function showGateError(msg){
   const el=document.getElementById('gate-error');el.textContent=msg;
-  if(msg.toLowerCase().includes('admin')){
-    failedAdminAttempts++;
-    if(failedAdminAttempts>=2){
-      const emBtn=document.getElementById('emergency-reset');
-      if(emBtn)emBtn.style.display='block';
-    }
-  }
+  if(msg.toLowerCase().includes('admin')){failedAdminAttempts++;if(failedAdminAttempts>=2){const emBtn=document.getElementById('emergency-reset');if(emBtn)emBtn.style.display='block';}}
   setTimeout(()=>el.textContent='',3000);
 }
 function enterApp(){
@@ -1077,10 +1015,17 @@ function enterApp(){
   document.getElementById('app').style.display='block';
   initRole();
 }
+function logoutToGate(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('gate').style.display='flex';
+  role=null;judgeNum=null;heatState=null;
+  document.querySelectorAll('.grole').forEach(b=>b.classList.remove('active'));
+  document.getElementById('gate-input').value='';
+  document.getElementById('enter-btn').disabled=true;
+}
 
 // ════════ ROLE INIT ════════
 function initRole(){
-  // Show correct UI per role
   if(role==='operator'){
     document.getElementById('top-badge').textContent='OPERADOR';
     document.getElementById('top-badge').style.display='inline-block';
@@ -1104,20 +1049,16 @@ function initRole(){
     document.getElementById('broadcast-view').style.display='block';
     document.getElementById('sea-bar').style.display='flex';
     document.getElementById('demo-btn').style.display='block';
-   listenHeat();listenTimer();listenSeaConditions();listenNotifications();
-db.ref('sponsors').on('value',snap=>{const list=[];snap.forEach(c=>list.push({id:c.key,...c.val()}));const main=list.find(s=>s.tier==='main');const others=list.filter(s=>s.tier!=='main');const mc=document.getElementById('bc-main-sponsor-content');const mw=document.getElementById('bc-main-sponsor');if(main&&main.logo&&mw&&mc){mw.style.display='flex';mc.innerHTML=`<img src="${main.logo}" style="max-height:60px;max-width:140px;object-fit:contain"/>`;}const se=document.getElementById('bc-secondary-sponsors');if(se&&others.length){se.style.display='flex';se.innerHTML=others.map(s=>`<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:4px 8px"><img src="${s.logo}" style="height:34px;max-width:100px;object-fit:contain" title="${s.name}"/></div>`).join('');}});
+    listenHeat();listenTimer();listenSeaConditions();loadSponsorBar();listenNotifications();
   } else if(role==='admin'){
     document.getElementById('top-admin-badge').style.display='inline-block';
     document.getElementById('admin-view').style.display='block';
     document.getElementById('demo-btn').style.display='block';
     loadAdminData();listenRounds('adm-rounds-list');listenAthletes();
-    // Load sponsors immediately on admin init
-    setTimeout(loadSponsorsAdmin, 500);
+    setTimeout(loadSponsorsAdmin,500);
   }
-  // Show logout button
   const logoutBtn=document.getElementById('logout-btn');
   if(logoutBtn)logoutBtn.style.display='block';
-  // Load white label for all roles
   db.ref('config/whiteLabel').once('value',snap=>{const wl=snap.val();if(wl)applyWhiteLabel(wl);});
   listenSeaConditions();
 }
@@ -1128,7 +1069,6 @@ function opTab(t){
     document.getElementById('op-'+x).style.display=x===t?'block':'none';
     document.getElementById('tab-'+x).classList.toggle('active',x===t);
   });
-  // Load current sea conditions into operator form
   if(t==='campo') loadSeaConditionsIntoOpForm();
 }
 function loadSeaConditionsIntoOpForm(){
@@ -1142,30 +1082,20 @@ function loadSeaConditionsIntoOpForm(){
   });
 }
 function opSaveSeaConditions(){
-  const sc={
-    waveHeight:parseFloat(document.getElementById('op-sc-height')?.value)||0,
-    wind:parseInt(document.getElementById('op-sc-wind')?.value)||0,
-    windDir:document.getElementById('op-sc-dir')?.value||'N',
-    waterTemp:parseFloat(document.getElementById('op-sc-temp')?.value)||0,
-    label:document.getElementById('op-sc-label')?.value||'',
-    updatedAt:Date.now()
-  };
-  db.ref('config/seaConditions').set(sc);
-  showToast('🌊 Condiciones actualizadas en todos los dispositivos');
+  const sc={waveHeight:parseFloat(document.getElementById('op-sc-height')?.value)||0,wind:parseInt(document.getElementById('op-sc-wind')?.value)||0,windDir:document.getElementById('op-sc-dir')?.value||'N',waterTemp:parseFloat(document.getElementById('op-sc-temp')?.value)||0,label:document.getElementById('op-sc-label')?.value||'',updatedAt:Date.now()};
+  db.ref('config/seaConditions').set(sc);showToast('🌊 Condiciones actualizadas');
 }
 function opCallAthlete(){
   const name=document.getElementById('op-call-name')?.value.trim();
   const msg=document.getElementById('op-call-msg')?.value.trim()||'Preséntate con el Beach Marshal';
   if(!name){showToast('⚠️ Ingresa el nombre del atleta');return;}
   db.ref('notification').set({type:'heatCall',name,msg,timestamp:Date.now()});
-  showToast('📢 Llamado enviado a todos: '+name);
+  showToast('📢 Llamado enviado: '+name);
   document.getElementById('op-call-name').value='';
 }
 function quickCall(heat){
-  const nameEl=document.getElementById('op-call-name');
-  if(nameEl)nameEl.value=heat;
-  const msgEl=document.getElementById('op-call-msg');
-  if(msgEl)msgEl.value='Preséntate con el Beach Marshal';
+  const nameEl=document.getElementById('op-call-name');if(nameEl)nameEl.value=heat;
+  const msgEl=document.getElementById('op-call-msg');if(msgEl)msgEl.value='Preséntate con el Beach Marshal';
 }
 
 // ════════ ADMIN TABS ════════
@@ -1387,9 +1317,7 @@ function autoRecordFromPending(si){
 
 // ════════ PENDING SCORES ════════
 function listenPendingScores(){
-  db.ref('pendingScores').on('value',snap=>{
-    pendingJudgeScores=snap.val()||{};renderPendingScores();
-  });
+  db.ref('pendingScores').on('value',snap=>{pendingJudgeScores=snap.val()||{};renderPendingScores();});
 }
 function renderPendingScores(){
   const el=document.getElementById('pending-scores-panel');
@@ -1449,7 +1377,6 @@ function renderRoundsList(rounds,elId){
       </div>`).join('')}
     </div>
     <div style="display:flex;gap:6px">
-      <button class="btn-sm btn-gray" onclick="exportRoundPDF('${r.id}')" style="font-size:11px;padding:6px 10px">📄 PDF</button>
       <button class="btn-sm btn-danger" onclick="deleteRound('${r.id}')" style="font-size:11px;padding:6px 8px">✕</button>
     </div>
   </div>`).join('');
@@ -1504,14 +1431,13 @@ function renderOperatorBoard(){
       <div style="margin-top:8px"><label class="slabel">OLAS — ${waves.length}</label><div class="waves-list">${wavesHtml}</div></div>
     </div>`;
   }).join('');
-  // Save & Ceremony buttons — always fresh
   const existBtn=document.getElementById('save-round-btn');if(existBtn)existBtn.remove();
   const existCer=document.getElementById('ceremony-btn');if(existCer)existCer.remove();
   const saveBtn=document.createElement('button');
   saveBtn.id='save-round-btn';saveBtn.className='btn-sm btn-go';
   saveBtn.style.cssText='width:100%;padding:12px;margin-top:14px;font-size:14px;letter-spacing:3px;border-radius:12px';
-  saveBtn.innerHTML=`💾 GUARDAR RONDA "${heatState.name||'Heat'}" · 📄 PDF`;
-  saveBtn.onclick=()=>{saveRound();exportCurrentHeatPDF();};
+  saveBtn.innerHTML=`💾 GUARDAR RONDA "${heatState.name||'Heat'}"`;
+  saveBtn.onclick=()=>{saveRound();};
   document.getElementById('surfers-grid').after(saveBtn);
   const cerBtn=document.createElement('button');
   cerBtn.id='ceremony-btn';cerBtn.style.cssText='width:100%;padding:12px;margin-top:8px;font-size:14px;letter-spacing:3px;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#a78bfa);color:#fff;border:none;cursor:pointer;font-family:"Bebas Neue",cursive;';
@@ -1532,7 +1458,6 @@ function renderBroadcast(){
   if(!heatState||!heatState.surfers)return;
   const status=calculate_heat_status(heatState.surfers);
   document.getElementById('bc-event-badge').textContent=(heatState.name||'HEAT').toUpperCase();
-  // Priority display
   const pSorted=[...heatState.surfers].map((s,i)=>({...s,idx:i})).sort((a,b)=>(a.priority||99)-(b.priority||99));
   document.getElementById('bc-priority-display').innerHTML=`<div class="priority-display">${pSorted.map((s,i)=>`
     <div class="priority-chip ${i===0?'p1':''}">
@@ -1541,7 +1466,6 @@ function renderBroadcast(){
       <div class="priority-name">${s.name.split(' ')[0]}</div>
     </div>`).join('')}
   </div>`;
-  // Surfer cards
   document.getElementById('bc-surfers').innerHTML=heatState.surfers.map((s,i)=>{
     const st=status.find(x=>x.idx===i)||{};
     const waves=(s.waves||[]).slice().sort((a,b)=>b.score-a.score);
@@ -1560,10 +1484,8 @@ function renderBroadcast(){
       <div class="bc-divider"></div>
       ${st.isLeading?'<div class="bc-needs leader">🥇 LÍDER</div>':`<div class="bc-needs ${st.isCombo?'combo':''}">${st.statusLabel||''}</div>`}
       <div class="bc-priority">P${s.priority} · ${(s.waves||[]).length} OLAS</div>
-      <button onclick="showAthleteQR('${s.name}',${JSON.stringify(status).replace(/'/g,"\\'")})" style="position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,.08);border:none;border-radius:8px;padding:3px 8px;color:var(--muted);font-size:10px;cursor:pointer;font-family:'Bebas Neue',cursive;letter-spacing:1px;">📱 QR</button>
     </div>`;
   }).join('');
-  // Announcer panel
   if(broadcastMode==='announce'){
     const rows=status.map((st,pos)=>{
       const aboveList=status.slice(0,pos);
@@ -1587,13 +1509,8 @@ function renderBroadcast(){
     }).join('');
     document.getElementById('ann-rows').innerHTML=rows;
   }
-  // Overlay
-  if(overlayVisible)renderOverlay();
-  // Animations
+  if(_overlayVisible)renderOverlay();
   checkAnimationTriggers(heatState,status);
-setTimeout(loadSponsorBar,500);
-  loadSponsorsDisplay();
-  // Update prevTotals
   heatState.surfers.forEach((s,i)=>{
     const st=status.find(x=>x.idx===i)||{};
     if(prevTotals[i]!==undefined&&prevTotals[i]!==st.total&&s.waves&&s.waves.length){
@@ -1617,7 +1534,7 @@ function toggleOverlay(){
   document.getElementById('overlay-view').classList.toggle('show',_overlayVisible);
   document.getElementById('toggle-overlay').classList.toggle('active',_overlayVisible);
   if(_overlayVisible&&heatState)renderOverlay();
-  showToast(_overlayVisible?'🎥 Overlay ON — captura con OBS':'Overlay OFF');
+  showToast(_overlayVisible?'🎥 Overlay ON':'Overlay OFF');
 }
 function renderOverlay(){
   if(!heatState||!heatState.surfers)return;
@@ -1672,19 +1589,14 @@ function spawnConfetti(count,color){
   }
   setTimeout(()=>{overlay.style.display='none';overlay.innerHTML='';},3000);
 }
-function spawnFireworks(){
-  const overlay=document.getElementById('celebration-overlay');overlay.style.display='block';
-  spawnConfetti(100,'#ffd166');
-  setTimeout(()=>{overlay.style.display='none';overlay.innerHTML='';},4500);
-}
+function spawnFireworks(){spawnConfetti(100,'#ffd166');}
 function triggerHeatEnd(hs,status){
   document.getElementById('hem-heat-name').textContent=(hs.name||'Heat').toUpperCase();
   const top3=status.slice(0,3);
-  // Podium visual order: 2nd LEFT, 1st CENTER, 3rd RIGHT
   const podiumOrder=[
-    {s:top3[1], place:2, color:'#C0C0C0', barH:80,  size:58,  medal:'🥈'},
-    {s:top3[0], place:1, color:'#FFD700', barH:110, size:74,  medal:'🥇'},
-    {s:top3[2], place:3, color:'#CD7F32', barH:60,  size:48,  medal:'🥉'},
+    {s:top3[1],place:2,color:'#C0C0C0',barH:80,size:58,medal:'🥈'},
+    {s:top3[0],place:1,color:'#FFD700',barH:110,size:74,medal:'🥇'},
+    {s:top3[2],place:3,color:'#CD7F32',barH:60,size:48,medal:'🥉'},
   ];
   document.getElementById('hem-podium').innerHTML=podiumOrder.map((p,pi)=>{
     if(!p.s)return'';
@@ -1708,8 +1620,173 @@ function triggerHeatEnd(hs,status){
     </div>`).join('');
   document.getElementById('heat-end-modal').classList.add('show');
   spawnFireworks();
-  // Add sponsors to ceremony
   addSponsorsToСeremony();
+}
+
+// ════════ SPONSORS ════════
+let _newSponsorBase64=null;
+
+async function handleSponsorFileUpload(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  if(file.size>3*1024*1024){showToast('⚠️ Máximo 3MB');return;}
+  try{
+    const b64=await fileToBase64(file,0.5);
+    _newSponsorBase64=b64;
+    document.getElementById('new-sponsor-preview-img').src=b64;
+    document.getElementById('new-sponsor-preview-row').style.display='flex';
+    document.getElementById('new-sponsor-url').value='';
+    showToast('✅ Logo listo — dale + AGREGAR');
+  }catch(e){showToast('❌ Error al cargar imagen');}
+}
+function previewNewSponsorUrl(){
+  const url=document.getElementById('new-sponsor-url')?.value.trim();
+  if(!url){showToast('⚠️ Ingresa una URL primero');return;}
+  _newSponsorBase64=null;
+  const img=document.getElementById('new-sponsor-preview-img');
+  const row=document.getElementById('new-sponsor-preview-row');
+  img.src=url;
+  img.onerror=()=>{row.style.display='none';showToast('❌ URL no carga — usa el botón de subir archivo');};
+  img.onload=()=>{row.style.display='flex';showToast('✅ Logo visible');};
+}
+function previewNewSponsor(){previewNewSponsorUrl();}
+function clearNewSponsor(){
+  _newSponsorBase64=null;
+  document.getElementById('new-sponsor-preview-row').style.display='none';
+  const fi=document.getElementById('sponsor-file-input');if(fi)fi.value='';
+  document.getElementById('new-sponsor-url').value='';
+  document.getElementById('new-sponsor-preview-img').src='';
+}
+
+// ── HELPER: normalizar sponsors de Firebase a array ──
+function _parseSponsors(raw){
+  if(!raw)return[];
+  if(Array.isArray(raw))return raw.filter(Boolean);
+  if(typeof raw==='object')return Object.values(raw).filter(Boolean);
+  return[];
+}
+
+// ── RENDER en pantalla broadcast ──
+function _renderSponsorsOnScreen(sponsors){
+  const main=sponsors.find(s=>s.tier==='main');
+  const nonMain=sponsors.filter(s=>s.tier!=='main');
+  // Principal — derecha grande
+  const bcMainContent=document.getElementById('bc-main-sponsor-content');
+  const bcMainWrap=document.getElementById('bc-main-sponsor');
+  const timerWrap=document.getElementById('main-sponsor-timer');
+  const timerContent=document.getElementById('main-sponsor-timer-content');
+  if(main&&main.logo){
+    if(bcMainContent)bcMainContent.innerHTML=`<img src="${main.logo}" class="sponsor-logo-main" alt="${main.name||''}" onerror="this.style.display='none'"/>`;
+    if(bcMainWrap)bcMainWrap.style.display='flex';
+    if(timerContent)timerContent.innerHTML=`<img src="${main.logo}" style="max-height:32px;max-width:100px;object-fit:contain;" onerror="this.style.display='none'"/>`;
+    if(timerWrap)timerWrap.style.display='flex';
+  } else {
+    if(bcMainWrap)bcMainWrap.style.display='none';
+    if(timerWrap)timerWrap.style.display='none';
+  }
+  // Secundarios — izquierda
+  const ss=document.getElementById('bc-secondary-sponsors');
+  if(ss){
+    ss.innerHTML='';
+    nonMain.forEach(s=>{
+      if(!s.logo)return;
+      const wrap=document.createElement('div');
+      wrap.style.cssText='display:flex;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:4px 8px;';
+      const img=document.createElement('img');
+      img.src=s.logo;
+      img.alt=s.name||'';
+      img.style.cssText=s.tier==='secondary'?'height:34px;max-width:100px;object-fit:contain;':'height:20px;max-width:65px;object-fit:contain;';
+      img.title=s.name||'';
+      img.onerror=function(){this.parentElement.style.display='none';};
+      wrap.appendChild(img);
+      ss.appendChild(wrap);
+    });
+    ss.style.display=nonMain.length?'flex':'none';
+  }
+}
+
+// ── LOAD SPONSORS para broadcast — usa .on() para tiempo real ──
+function loadSponsorBar(){
+  db.ref('config/event/sponsors').on('value',snap=>{
+    const sponsors=_parseSponsors(snap.val());
+    _currentSponsors=sponsors;
+    _renderSponsorsOnScreen(sponsors);
+  });
+}
+
+// ── SPONSORS EN CEREMONIA ──
+function addSponsorsToСeremony(){
+  const render=(sponsors)=>{
+    const section=document.getElementById('ceremony-sponsors-section');
+    if(!section||!sponsors.length){if(section)section.style.display='none';return;}
+    section.style.display='block';
+    section.innerHTML=`<div class="ceremony-sponsors">${sponsors.map(s=>{
+      if(!s.logo)return`<span style="font-family:'Bebas Neue',cursive;font-size:13px;color:var(--muted)">${s.name||''}</span>`;
+      const cls=s.tier==='main'?'sponsor-logo-main':s.tier==='secondary'?'sponsor-logo-secondary':'sponsor-logo-small';
+      return`<img src="${s.logo}" class="${cls}" alt="${s.name||''}" onerror="this.style.display='none'"/>`;
+    }).join('')}</div>`;
+  };
+  if(_currentSponsors&&_currentSponsors.length){render(_currentSponsors);}
+  else{db.ref('config/event/sponsors').once('value',snap=>{const s=_parseSponsors(snap.val());_currentSponsors=s;render(s);});}
+}
+
+// ── ADMIN: listar sponsors ──
+function loadSponsorsAdmin(){
+  db.ref('config/event/sponsors').once('value',snap=>{
+    const sponsors=_parseSponsors(snap.val());
+    _currentSponsors=sponsors;
+    const el=document.getElementById('sponsors-list-admin');if(!el)return;
+    if(!sponsors.length){el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:8px 0">Sin patrocinadores. Agrega el primero abajo.</div>';return;}
+    el.innerHTML=sponsors.map((s,i)=>{
+      const tl=s.tier==='main'?'Principal':s.tier==='secondary'?'Secundario':'Pequeño';
+      const tc=s.tier==='main'?'sponsor-tier-main':s.tier==='secondary'?'sponsor-tier-secondary':'sponsor-tier-small';
+      return`<div class="sponsor-admin-item">
+        ${s.logo?`<img src="${s.logo}" style="height:36px;max-width:90px;object-fit:contain;background:rgba(255,255,255,.05);border-radius:6px;padding:3px;" onerror="this.style.display='none'"/>`:'<div style="width:36px;height:36px;background:rgba(255,255,255,.05);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px">🏢</div>'}
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name||'Sin nombre'}</div>
+          <span class="sponsor-tier-badge ${tc}">${tl}</span>
+        </div>
+        <button class="btn-sm btn-danger" onclick="removeSponsor(${i})" style="font-size:11px;padding:5px 8px;flex-shrink:0">✕</button>
+      </div>`;
+    }).join('');
+  });
+}
+
+// ── AGREGAR SPONSOR ──
+function addSponsor(){
+  const name=document.getElementById('new-sponsor-name')?.value.trim();
+  const urlInput=document.getElementById('new-sponsor-url')?.value.trim();
+  const tier=document.getElementById('new-sponsor-tier')?.value||'secondary';
+  if(!name){showToast('⚠️ Ingresa el nombre');return;}
+  const logo=_newSponsorBase64||urlInput;
+  if(!logo){showToast('⚠️ Sube un logo o ingresa una URL');return;}
+  db.ref('config/event/sponsors').once('value',snap=>{
+    let sponsors=_parseSponsors(snap.val());
+    if(tier==='main')sponsors=sponsors.filter(s=>s.tier!=='main');
+    sponsors.push({name,logo,tier});
+    db.ref('config/event/sponsors').set(sponsors).then(()=>{
+      _currentSponsors=sponsors;
+      showToast('✅ '+name+' agregado');
+      document.getElementById('new-sponsor-name').value='';
+      document.getElementById('new-sponsor-tier').value='secondary';
+      clearNewSponsor();
+      loadSponsorsAdmin();
+    });
+  });
+}
+
+// ── ELIMINAR SPONSOR ──
+function removeSponsor(idx){
+  if(!confirm('¿Eliminar este patrocinador?'))return;
+  db.ref('config/event/sponsors').once('value',snap=>{
+    let sponsors=_parseSponsors(snap.val());
+    sponsors.splice(idx,1);
+    db.ref('config/event/sponsors').set(sponsors).then(()=>{
+      _currentSponsors=sponsors;
+      loadSponsorsAdmin();
+      showToast('Patrocinador eliminado');
+    });
+  });
 }
 
 // ════════ SEA CONDITIONS ════════
@@ -1753,9 +1830,6 @@ function listenNotifications(){
   });
 }
 
-// ════════ SPONSOR ════════
-// loadSponsorBar: handled by newer version below
-
 // ════════ WHITE LABEL ════════
 function previewWL(){
   const name=document.getElementById('wl-org-name')?.value||'WaveScore Pro';
@@ -1776,10 +1850,9 @@ function loadWLForm(){
   });
 }
 function saveWhiteLabel(){
-  const logoUrl = _wlLogoData || document.getElementById('wl-logo-url')?.value||'';
+  const logoUrl=_wlLogoData||document.getElementById('wl-logo-url')?.value||'';
   const wl={orgName:document.getElementById('wl-org-name')?.value||'',logoUrl,primaryColor:document.getElementById('wl-color1')?.value||'#00c6fb',accentColor:document.getElementById('wl-color2')?.value||'#ffd166',updatedAt:Date.now()};
   db.ref('config/whiteLabel').set(wl);applyWhiteLabel(wl);
-  // Update brand name
   if(wl.orgName){
     db.ref('config/event/brandName').set(wl.orgName);
     document.querySelectorAll('.tlogo,.bc-brand,.gate-logo').forEach(el=>el.textContent='🌊 '+wl.orgName.toUpperCase());
@@ -1793,19 +1866,40 @@ function applyWhiteLabel(wl){
 }
 
 // ════════ ATHLETES ════════
-// previewAthPhoto defined below
+let _athPhotoDataLocal=null;
+function handleAthFileUpload(event){
+  const file=event.target.files[0];if(!file)return;
+  if(file.size>2*1024*1024){showToast('⚠️ Imagen mayor a 2MB');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    _athPhotoDataLocal=e.target.result;
+    document.getElementById('ath-preview').src=_athPhotoDataLocal;
+    document.getElementById('ath-preview-row').style.display='flex';
+    document.getElementById('ath-file-name').textContent=file.name;
+    document.getElementById('ath-photo').value='';
+  };
+  reader.readAsDataURL(file);
+}
+function previewAthPhoto(){
+  const url=document.getElementById('ath-photo')?.value;
+  if(url){
+    _athPhotoDataLocal=null;
+    document.getElementById('ath-preview').src=url;
+    document.getElementById('ath-preview-row').style.display='flex';
+  }
+}
+function clearAthPhoto(){
+  _athPhotoDataLocal=null;
+  document.getElementById('ath-preview-row').style.display='none';
+  document.getElementById('ath-preview').src='';
+  document.getElementById('ath-file-input').value='';
+  document.getElementById('ath-photo').value='';
+}
 function saveAthlete(){
   const name=document.getElementById('ath-name')?.value.trim();
   if(!name){showToast('⚠️ Ingresa el nombre');return;}
-  // Use uploaded base64 OR URL
-  const photo = _athPhotoData || document.getElementById('ath-photo')?.value.trim() || '';
-  db.ref('athletes').push({
-    name,
-    country:document.getElementById('ath-country')?.value.trim()||'',
-    number:parseInt(document.getElementById('ath-number')?.value)||0,
-    photo,
-    createdAt:Date.now()
-  });
+  const photo=_athPhotoDataLocal||document.getElementById('ath-photo')?.value.trim()||'';
+  db.ref('athletes').push({name,country:document.getElementById('ath-country')?.value.trim()||'',number:parseInt(document.getElementById('ath-number')?.value)||0,photo,createdAt:Date.now()});
   ['ath-name','ath-country','ath-number','ath-photo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   clearAthPhoto();
   showToast('✅ Atleta agregado: '+name);
@@ -1816,11 +1910,31 @@ function listenAthletes(){
     const list=[];snap.forEach(c=>list.push({id:c.key,...c.val()}));
     if(!list.length){el.innerHTML='<div style="color:var(--muted);font-size:13px">Sin atletas.</div>';return;}
     el.innerHTML=list.map(a=>`<div style="background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;display:flex;align-items:center;gap:10px;margin-bottom:8px">
-      ${a.photo?`<img src="${a.photo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border)"/>`:`<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:16px">🏄</div>`}
+      ${a.photo?`<img src="${a.photo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border)" onerror="this.style.display='none'"/>`:`<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:16px">🏄</div>`}
       <div style="flex:1"><div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px">${a.name}</div><div style="font-size:11px;color:var(--muted)">${a.country||''}${a.number?' · #'+a.number:''}</div></div>
       <button class="btn-sm btn-danger" onclick="if(confirm('¿Eliminar?'))db.ref('athletes/${a.id}').remove()" style="font-size:11px;padding:5px 8px">✕</button>
     </div>`).join('');
   });
+}
+
+// ════════ WHITE LABEL LOGO UPLOAD ════════
+function handleLogoUpload(event){
+  const file=event.target.files[0];if(!file)return;
+  if(file.size>2*1024*1024){showToast('⚠️ Logo mayor a 2MB');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    _wlLogoData=e.target.result;
+    document.getElementById('wl-logo-preview-img').src=_wlLogoData;
+    document.getElementById('wl-logo-preview-row').style.display='flex';
+    document.getElementById('wl-logo-url').value='';
+  };
+  reader.readAsDataURL(file);
+}
+function clearLogo(){
+  _wlLogoData=null;
+  document.getElementById('wl-logo-preview-row').style.display='none';
+  document.getElementById('wl-logo-file').value='';
+  document.getElementById('wl-logo-url').value='';
 }
 
 // ════════ QR ════════
@@ -1837,8 +1951,18 @@ function showAthleteQR(surferName,status){
     <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Olas</span><span style="font-family:'Bebas Neue',cursive;font-size:15px;color:var(--ocean)">${st.waveCount}</span></div>`:'';
   document.getElementById('qr-modal').classList.add('open');
 }
+function showEventQR(){
+  const modal=document.getElementById('event-qr-modal');
+  const url=window.location.href.split('?')[0];
+  document.getElementById('eqr-url-text').textContent=url;
+  const qrContainer=document.getElementById('eqr-qr-img');
+  const qrUrl=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}`;
+  qrContainer.innerHTML=`<img src="${qrUrl}" style="width:180px;height:180px;border-radius:8px"/>`;
+  modal.classList.add('open');
+}
 
 // ════════ ATHLETE PROFILE (QR landing) ════════
+function checkPublicView(){return false;}
 function checkAthleteQRLanding(){
   const params=new URLSearchParams(window.location.search);
   const name=params.get('athlete');
@@ -1934,8 +2058,6 @@ function loadAdminData(){
     if(document.getElementById('adm-event-code'))document.getElementById('adm-event-code').value=ev.code||'SURF2025';
     if(ev.startsAt&&document.getElementById('adm-start-date'))document.getElementById('adm-start-date').value=new Date(ev.startsAt).toISOString().slice(0,16);
     if(ev.endsAt&&document.getElementById('adm-end-date'))document.getElementById('adm-end-date').value=new Date(ev.endsAt).toISOString().slice(0,16);
-    if(ev.sponsorLogo&&document.getElementById('adm-sponsor-logo'))document.getElementById('adm-sponsor-logo').value=ev.sponsorLogo;
-    if(ev.sponsorText&&document.getElementById('adm-sponsor-text'))document.getElementById('adm-sponsor-text').value=ev.sponsorText;
     renderCurrentEvent(cfg);
   });
 }
@@ -1946,18 +2068,16 @@ function saveEventConfig(){
   if(!code||code.length<4){showToast('⚠️ Código mínimo 4 caracteres');return;}
   const startStr=document.getElementById('adm-start-date')?.value;
   const endStr=document.getElementById('adm-end-date')?.value;
-  const sponsorLogo = _sponsorLogoData || document.getElementById('adm-sponsor-logo')?.value.trim()||'';
-  const ev={name,code,sponsorLogo,sponsorText:document.getElementById('adm-sponsor-text')?.value.trim()||'',updatedAt:Date.now()};
-  if(startStr) ev.startsAt=new Date(startStr).getTime();
-  // Only save endsAt if explicitly set — don't block access by default
-  if(endStr) ev.endsAt=new Date(endStr).getTime();
-  db.ref('config/event').set(ev);
+  const ev={name,code,updatedAt:Date.now()};
+  if(startStr)ev.startsAt=new Date(startStr).getTime();
+  if(endStr)ev.endsAt=new Date(endStr).getTime();
+  db.ref('config/event').update(ev);
   renderCurrentEvent({event:ev});
   showToast('✅ Evento guardado: '+name+' · Código: '+code);
   loadGateEventName();
 }
 function clearEventDates(){
-  if(!confirm('¿Quitar las fechas de inicio/fin? El evento quedará siempre activo.'))return;
+  if(!confirm('¿Quitar las fechas de inicio/fin?'))return;
   db.ref('config/event/startsAt').remove();
   db.ref('config/event/endsAt').remove();
   if(document.getElementById('adm-start-date'))document.getElementById('adm-start-date').value='';
@@ -1988,1434 +2108,176 @@ function changeAdminCode(){
   showToast('✅ Código Admin cambiado');
 }
 
-// ════════ JUDGE SCORECARD ════════
+// ════════ JUDGE VIEW ════════
+function listenHeatForJudge(){
+  db.ref('heat').on('value',snap=>{
+    heatState=snap.val();
+    renderJudgeView();
+  });
+}
 function renderJudgeView(){
   const view=document.getElementById('judge-view');if(!view)return;
   if(!heatState||!heatState.surfers){
     view.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:10px">
-      <div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:5px;color:var(--ocean)">JUEZ ${judgeNum}</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:3px">Esperando heat...</div>
-    </div>`;return;
+      <div style="font-size:40px">🌊</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:4px;color:var(--muted)">ESPERANDO HEAT...</div>
+    </div>`;
+    return;
   }
-  const status=calculate_heat_status(heatState.surfers);const maxW=10;
-  const statusBar=`<div class="sc-status-bar">${status.map(st=>`<div class="sc-status-chip ${st.isLeading?'leader-chip':''}">
-    <div style="width:10px;height:10px;border-radius:50%;background:${st.color};flex-shrink:0"></div>
-    <div class="scn">${st.name}</div><div class="sct">${st.total.toFixed(2)}</div>
-  </div>`).join('')}</div>`;
-  const rows=heatState.surfers.map((s,si)=>{
-    const st=status.find(x=>x.idx===si)||{};
-    const waves=(s.waves||[]).slice().sort((a,b)=>a.timestamp-b.timestamp);
-    const sortedSc=[...waves].map(w=>w.score).sort((a,b)=>b-a);
-    const best1=sortedSc[0],best2=sortedSc[1];
-    const cells=Array.from({length:maxW},(_,wi)=>{
-      const w=waves[wi];const isNext=wi===waves.length;
-      if(isNext){const pv=pendingInput[si]!==undefined?pendingInput[si]:'';
-        return`<td class="sc-input-cell"><input class="sc-wave-input" type="number" min="0.1" max="10" step="0.1" id="inp-${si}" value="${pv}" placeholder="—" oninput="judgeInputChange(${si},this.value)" onkeydown="if(event.key==='Enter')judgeSubmitSurfer(${si})" onfocus="judgeActiveSurfer=${si}"/></td>`;}
-      else if(w){const isB1=w.score===best1&&!waves.slice(0,wi).some(x=>x.score===best1);const isB2=!isB1&&w.score===best2&&!waves.slice(0,wi).some(x=>x.score===best2);
-        return`<td class="sc-wave-cell"><span class="sc-score-chip ${isB1?'best1':isB2?'best2':''}">${w.score.toFixed(1)}</span></td>`;}
-      return`<td class="sc-wave-cell"><span class="sc-score-chip empty">—</span></td>`;
-    }).join('');
-    const needsCell=st.isLeading?`<td class="sc-needs-cell leader">🥇</td>`:`<td class="sc-needs-cell ${st.isCombo?'combo':'needs'}">${st.statusLabel||''}</td>`;
-    return`<tr class="sc-row"><td><div class="sc-surfer-cell"><div class="sc-lycra" style="background:${s.color}"></div><div><div class="sc-sname">${s.name}</div><div style="font-size:9px;color:var(--muted);font-family:'Bebas Neue',cursive">P${s.priority} · #${st.position||'?'}</div></div></div></td>${cells}<td class="sc-total-cell ${st.isLeading?'leading':''}">${st.total.toFixed(2)}</td>${needsCell}</tr>`;
-  }).join('');
-  const submitBtns=heatState.surfers.map((s,si)=>{
-    const hp=pendingInput[si]!==undefined&&pendingInput[si]!=='';const sent=judgeScores[si]!==undefined&&!hp;
-    if(!hp&&!sent)return'';
-    return`<button class="sc-send-btn ${sent?'sent':''}" onclick="judgeSubmitSurfer(${si})" ${sent?'disabled':''}>${sent?`✓ ENVIADA — ${s.name.toUpperCase()}`:`ENVIAR OLA ${(s.waves||[]).length+1} — ${s.name.toUpperCase()}`}</button>`;
-  }).filter(Boolean).join('');
-  const hist=myHistory.length?`<div style="margin-top:12px;border-top:1px solid rgba(255,255,255,.07);padding-top:10px">
-    <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:6px">MIS ÚLTIMAS NOTAS</div>
-    ${myHistory.slice(0,5).map(x=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)">
-      <span style="color:var(--muted)">${x.surferName} · O${x.waveNum} · ${x.time}</span>
-      <span style="font-family:'Bebas Neue',cursive;font-size:15px;color:var(--ocean)">${x.score.toFixed(1)}</span>
-    </div>`).join('')}</div>`:'';
+  const status=calculate_heat_status(heatState.surfers);
   view.innerHTML=`<div class="sc-wrap">
-    <div class="sc-header-row"><span>JUEZ ${judgeNum} — ${heatState.name||'HEAT'}</span><span style="color:var(--ocean)">PLANILLA ISA</span></div>
-    ${statusBar}
-    <div style="overflow-x:auto;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.02)">
-      <table class="sc-table"><thead><tr>
+    <div class="sc-header-row">
+      <div>${(heatState.name||'Heat').toUpperCase()}</div>
+      <div style="color:var(--ocean)">JUEZ ${judgeNum}</div>
+    </div>
+    <div class="sc-status-bar">
+      ${status.slice(0,2).map((st,i)=>`<div class="sc-status-chip ${i===0?'leader-chip':''}">
+        <div style="width:8px;height:8px;border-radius:50%;background:${st.color}"></div>
+        <div class="scn">${st.name}</div>
+        <div class="sct">${st.total.toFixed(2)}</div>
+      </div>`).join('')}
+    </div>
+    <div style="overflow-x:auto">
+    <table class="sc-table">
+      <thead><tr>
         <th class="surfer-th">SURFISTA</th>
-        ${Array.from({length:maxW},(_,i)=>`<th>O${i+1}</th>`).join('')}
+        ${Array.from({length:Math.max(...heatState.surfers.map(s=>(s.waves||[]).length),1)+1},(_,i)=>`<th>OLA ${i+1}</th>`).join('')}
         <th class="total-th">TOTAL</th>
-        <th style="color:var(--green);font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:1px">NECESITA</th>
-      </tr></thead><tbody>${rows}</tbody></table>
+        <th>NECESITA</th>
+      </tr></thead>
+      <tbody>
+        ${heatState.surfers.map((s,si)=>{
+          const st=status.find(x=>x.idx===si)||{};
+          const waves=(s.waves||[]).slice().sort((a,b)=>b.score-a.score);
+          const maxWaves=Math.max(...heatState.surfers.map(x=>(x.waves||[]).length),1)+1;
+          const scoredIndices=new Set();
+          if(waves[0])scoredIndices.add(0);
+          if(waves[1])scoredIndices.add(1);
+          return`<tr class="sc-row">
+            <td><div class="sc-surfer-cell"><div class="sc-lycra" style="background:${s.color}"></div><div class="sc-sname">${s.name}</div></div></td>
+            ${Array.from({length:maxWaves},(_,wi)=>{
+              if(wi<waves.length){
+                const chipClass=wi===0?'best1':wi===1?'best2':'';
+                return`<td class="sc-wave-cell"><span class="sc-score-chip ${chipClass}">${waves[wi].score.toFixed(2)}</span></td>`;
+              }
+              if(wi===waves.length){
+                return`<td class="sc-input-cell"><input class="sc-wave-input" id="sc-inp-${si}" type="number" min="0.1" max="10" step="0.1" placeholder="—" onchange="submitJudgeScore(${si},this.value)"/></td>`;
+              }
+              return`<td class="sc-wave-cell"><span class="sc-score-chip empty">—</span></td>`;
+            }).join('')}
+            <td class="sc-total-cell ${st.isLeading?'leading':''}">${st.total.toFixed(2)}</td>
+            <td class="sc-needs-cell ${st.isLeading?'leader':st.isCombo?'combo':'needs'}">${st.statusLabel||'—'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
     </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:6px;display:flex;gap:12px;flex-wrap:wrap">
-      <span style="background:rgba(255,209,102,.15);color:var(--gold);border-radius:4px;padding:2px 6px;font-family:'Bebas Neue',cursive;font-size:11px">7.5</span> Mejor ola
-      <span style="background:rgba(0,198,251,.08);color:rgba(0,198,251,.8);border-radius:4px;padding:2px 6px;font-family:'Bebas Neue',cursive;font-size:11px">6.2</span> 2da mejor
-      <span style="color:var(--muted)">⏎ Enter = enviar</span>
-    </div>
-    <div style="margin-top:8px">${submitBtns}</div>${hist}</div>`;
+  </div>`;
 }
-function judgeInputChange(si,val){pendingInput[si]=val;judgeActiveSurfer=si;}
-function judgeSubmitSurfer(si){
-  if(!db)return;
-  if(localTimerSec===0){showToast('⏱️ Tiempo terminado');return;}
-  const score=parseFloat(pendingInput[si]);
-  if(isNaN(score)||score<.1||score>10){showToast('⚠️ Nota inválida (0.1–10.0)');return;}
-  const s=heatState.surfers[si];const wn=(s.waves||[]).length+1;
-  db.ref(`pendingScores/surfer${si}/judge${judgeNum}`).set({value:score,judgeNum,surferIdx:si,timestamp:Date.now()});
-  judgeScores[si]=score;delete pendingInput[si];
-  myHistory.unshift({score,surferName:s.name,waveNum:wn,time:new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})});
-  renderJudgeView();showToast(`✓ ${score.toFixed(1)} — ${s.name} O${wn}`);
-}
-function listenHeatForJudge(){
-  db.ref('heat').on('value',snap=>{heatState=snap.val();renderJudgeView();});
-  db.ref('pendingScores').on('value',snap=>{
-    const data=snap.val()||{};
-    if(heatState&&heatState.surfers)heatState.surfers.forEach((_,i)=>{if(!data['surfer'+i]||!data['surfer'+i]['judge'+judgeNum])delete judgeScores[i];});
-    renderJudgeView();
-  });
+function submitJudgeScore(surferIdx,val){
+  const score=parseFloat(val);
+  if(isNaN(score)||score<0.1||score>10){showToast('⚠️ Nota inválida (0.1 – 10)');return;}
+  db.ref(`pendingScores/surfer${surferIdx}/judge${judgeNum}`).set({value:Math.round(score*100)/100,judgeNum,timestamp:Date.now()});
+  showToast(`✅ Nota enviada: ${score.toFixed(2)} — J${judgeNum}`);
+  const inp=document.getElementById(`sc-inp-${surferIdx}`);if(inp)inp.value='';
 }
 
-// ════════ EXPORTS ════════
+// ════════ EXPORT ════════
 function exportAllToExcel(){
-  db.ref('rounds').once('value',snap=>{
-    const rounds=[];snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
-    if(!rounds.length){showToast('Sin rondas');return;}
-    let csv='WaveScore Pro — Resultados\n\nRONDA,POS,ATLETA,LYCRA,OLA 1,OLA 2,TOTAL,OLAS,INTERF.\n';
-    rounds.forEach(r=>{(r.results||[]).forEach(s=>{csv+=`"${r.name}",${s.position},"${s.name}","${s.lycra}",${s.best.toFixed(2)},${s.adjSecond.toFixed(2)},${s.total.toFixed(2)},${s.waveCount},${s.interference>0?'Sí':'No'}\n`;});csv+='\n';});
-    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
-    a.download=`WaveScore_${new Date().toLocaleDateString('es-CO').replace(/\//g,'-')}.csv`;a.click();showToast('📊 Excel descargado');
+  db.ref('rounds').orderByChild('timestamp').once('value',snap=>{
+    const rounds=[];snap.forEach(c=>rounds.unshift({id:c.key,...c.val()}));
+    if(!rounds.length){showToast('Sin rondas para exportar');return;}
+    let csv='RONDA,FECHA,DURACIÓN,POS,SURFISTA,LYCRA,TOTAL,OLA1,OLA2,OLAS,INTERFERENCIA\n';
+    rounds.forEach(r=>{
+      const date=new Date(r.timestamp).toLocaleString('es-CO');
+      (r.results||[]).forEach(s=>{
+        csv+=`"${r.name}","${date}","${r.duration} min",${s.position},"${s.name}","${s.lycra}",${s.total.toFixed(2)},${s.best.toFixed(2)},${s.adjSecond.toFixed(2)},${s.waveCount},${s.interference}\n`;
+      });
+    });
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='WaveScore_Resultados.csv';a.click();
+    URL.revokeObjectURL(url);
+    showToast('📊 Excel exportado');
   });
 }
 function exportActaOficial(){
-  db.ref('rounds').once('value',snap=>{
-    const rounds=[];snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
-    db.ref('config/event').once('value',snapEv=>{
-      const ev=snapEv.val()||{};const now=new Date();
-      const win=window.open('','_blank');
-      win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Acta Oficial</title>
-      <style>body{font-family:'Times New Roman',serif;padding:40px 60px;color:#000;max-width:800px;margin:0 auto;}
-      .hdr{text-align:center;border-bottom:3px double #000;padding-bottom:16px;margin-bottom:20px;}
-      h1{font-size:22px;text-transform:uppercase;letter-spacing:3px;margin:4px 0;}
-      h2{font-size:14px;color:#555;font-weight:normal;}
-      table{width:100%;border-collapse:collapse;margin-bottom:20px;}
-      th{background:#000;color:#fff;padding:8px 12px;text-align:left;font-size:11px;letter-spacing:1px;}
-      td{padding:8px 12px;border-bottom:1px solid #ddd;font-size:13px;}
-      tr:first-child td{background:#fffde7;font-weight:bold;}
-      .rnd{font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:2px;margin:18px 0 6px;border-bottom:2px solid #000;padding-bottom:3px;}
-      .sigs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:60px;}
-      .sig{text-align:center;border-top:1px solid #000;padding-top:6px;font-size:12px;}
-      @media print{button{display:none}}
-/* ── DEMO TOUR ── */
-#tour-overlay{position:fixed;inset:0;z-index:1100;display:none;pointer-events:none;}
-#tour-overlay.show{display:block;}
-.tour-card{
-  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  background:rgba(2,12,27,.92);border:2px solid var(--ocean);border-radius:20px;
-  padding:16px 20px;width:calc(100% - 32px);max-width:600px;
-  box-shadow:0 0 40px rgba(0,198,251,.25);animation:fadeInUp .3s ease;
-  pointer-events:all;z-index:1101;backdrop-filter:blur(16px);}
-.tour-step-badge{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:4px;color:var(--ocean);margin-bottom:4px;}
-.tour-title{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;margin-bottom:6px;color:#fff;}
-.tour-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
-.tour-highlight{color:var(--ocean);font-weight:600;}
-.tour-progress{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;}
-.tour-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s;}
-.tour-dot.active{background:var(--ocean);width:18px;border-radius:4px;}
-.tour-dot.done{background:var(--green);}
-.tour-btns{display:flex;gap:8px;}
-.tour-btn-skip{padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:var(--muted);font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:2px;cursor:pointer;pointer-events:all;}
-.tour-btn-next{flex:1;padding:8px 14px;background:linear-gradient(90deg,var(--deep),var(--ocean));border:none;border-radius:8px;color:#fff;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;cursor:pointer;pointer-events:all;}
-.tour-btn-finish{flex:1;padding:8px 14px;background:linear-gradient(90deg,#16a34a,#22c55e);border:none;border-radius:8px;color:#fff;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;cursor:pointer;pointer-events:all;}
-.tour-spotlight{position:fixed;border:3px solid var(--ocean);border-radius:14px;
-  box-shadow:0 0 0 9999px rgba(0,0,0,.25);z-index:1090;
-  transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;}
-
-/* ── EVENT QR ── */
-#event-qr-modal{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);}
-#event-qr-modal.open{display:flex;}
-.eqr-card{background:linear-gradient(160deg,#0a1f3a,#020c1b);border:2px solid var(--ocean);border-radius:24px;padding:28px;max-width:380px;width:100%;text-align:center;}
-.eqr-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:4px;color:var(--ocean);margin-bottom:4px;}
-.eqr-sub{font-size:11px;color:var(--muted);letter-spacing:3px;margin-bottom:16px;}
-.eqr-qr{width:200px;height:200px;margin:0 auto 16px;background:#fff;border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:center;}
-.eqr-url{font-size:11px;color:var(--muted);word-break:break-all;margin-bottom:14px;padding:8px;background:rgba(255,255,255,.04);border-radius:8px;}
-.eqr-instructions{background:rgba(0,198,251,.06);border:1px solid rgba(0,198,251,.15);border-radius:12px;padding:12px;margin-bottom:14px;text-align:left;}
-.eqr-inst-row{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.5;}
-.eqr-inst-row:last-child{margin-bottom:0;}
-.eqr-inst-num{font-family:'Bebas Neue',cursive;font-size:14px;color:var(--ocean);min-width:18px;}
-
-/* ATHLETE PUBLIC VIEW */
-#athlete-public-view{min-height:100vh;background:linear-gradient(160deg,#020c1b,#0a1f3a);padding:0;}
-.apv-header{background:rgba(0,0,0,.4);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);}
-.apv-brand{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:4px;background:linear-gradient(90deg,var(--ocean),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.apv-event{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:var(--muted);}
-.apv-content{padding:14px;max-width:600px;margin:0 auto;}
-.apv-timer{text-align:center;padding:16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:18px;margin-bottom:12px;}
-.apv-timer-num{font-family:'Bebas Neue',cursive;font-size:clamp(48px,15vw,80px);color:var(--ocean);letter-spacing:4px;line-height:1;}
-.apv-timer-num.warn{color:var(--gold);}
-.apv-timer-num.danger{color:var(--red);animation:blink .8s infinite;}
-.apv-timer-lbl{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);}
-.apv-call-banner{background:linear-gradient(90deg,rgba(46,213,115,.12),rgba(0,198,251,.08));border:2px solid var(--green);border-radius:14px;padding:14px 16px;margin-bottom:12px;display:none;animation:fadeInUp .4s ease;}
-.apv-call-banner.show{display:block;}
-.apv-call-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--green);margin-bottom:4px;}
-.apv-call-name{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;}
-.apv-call-msg{font-size:12px;color:var(--muted);margin-top:4px;}
-.apv-heat-name{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:var(--ocean);text-align:center;margin-bottom:8px;}
-.apv-surfer-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 14px;margin-bottom:8px;transition:all .3s;}
-.apv-surfer-row.leading{border-color:var(--gold);background:rgba(255,209,102,.05);}
-.apv-pos{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);min-width:28px;}
-.apv-pos.gold{color:var(--gold);}
-.apv-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-.apv-name{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;flex:1;}
-.apv-total{font-family:'Bebas Neue',cursive;font-size:24px;color:var(--ocean);}
-.apv-total.gold{color:var(--gold);}
-.apv-needs{font-size:10px;color:var(--green);margin-top:2px;}
-.apv-needs.combo{color:var(--red);}
-.apv-sea{display:flex;gap:12px;flex-wrap:wrap;background:rgba(0,91,234,.07);border:1px solid rgba(0,198,251,.1);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:2px;}
-
-/* IMAGE UPLOAD */
-.img-upload-area{border:2px dashed rgba(0,198,251,.3);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px;background:rgba(0,198,251,.03);}
-.img-upload-area:hover{border-color:var(--ocean);background:rgba(0,198,251,.07);}
-.img-upload-area input[type=file]{display:none;}
-.img-upload-label{font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:3px;color:var(--ocean);display:block;margin-bottom:4px;}
-.img-upload-sub{font-size:11px;color:var(--muted);}
-.img-preview-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px;margin-bottom:10px;}
-.img-or-divider{display:flex;align-items:center;gap:10px;margin:8px 0;color:var(--muted);font-size:11px;}
-.img-or-divider::before,.img-or-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
-
-/* MULTI-SPONSOR */
-.sponsor-logo-main{max-height:52px;max-width:160px;object-fit:contain;filter:brightness(1.1);}
-.sponsor-logo-secondary{max-height:36px;max-width:110px;object-fit:contain;opacity:.9;}
-.sponsor-logo-small{max-height:24px;max-width:80px;object-fit:contain;opacity:.75;}
-.sponsor-admin-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:8px 12px;margin-bottom:6px;}
-.sponsor-tier-badge{font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;padding:2px 7px;border-radius:6px;}
-.sponsor-tier-main{background:rgba(255,209,102,.15);color:var(--gold);border:1px solid rgba(255,209,102,.3);}
-.sponsor-tier-secondary{background:rgba(0,198,251,.1);color:var(--ocean);border:1px solid rgba(0,198,251,.2);}
-.sponsor-tier-small{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid rgba(255,255,255,.1);}
-/* Ceremony sponsors */
-.ceremony-sponsors{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
-</style></head><body>
-      <div class="hdr"><div style="font-size:28px">🌊</div><h1>WaveScore Pro</h1><h1>${ev.name||'Acta de Resultados'}</h1><h2>Acta Oficial de Competencia · ${now.toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</h2></div>
-      <button onclick="window.print()" style="margin-bottom:16px;padding:10px 24px;background:#000;color:#fff;border:none;border-radius:6px;cursor:pointer">🖨️ IMPRIMIR</button>
-      ${rounds.map(r=>`<div class="rnd">${r.name} · ${r.duration} min</div>
-      <table><tr><th>POS</th><th>LYCRA</th><th>ATLETA</th><th>OLA 1</th><th>OLA 2</th><th>TOTAL</th><th>OLAS</th><th>INTERF.</th></tr>
-      ${(r.results||[]).map(s=>`<tr><td>${s.position}°</td><td>${s.lycra}</td><td>${s.name}</td><td>${s.best.toFixed(2)}</td><td>${s.adjSecond.toFixed(2)}${s.interference>=1?' ⚠️':''}</td><td><strong>${s.total.toFixed(2)}</strong></td><td>${s.waveCount}</td><td>${s.interference===0?'No':s.interference===1?'Simple':'Doble'}</td></tr>`).join('')}
-      </table>`).join('')}
-      <div class="sigs"><div class="sig"><br><strong>Director de Competencia</strong></div><div class="sig"><br><strong>Head Judge</strong></div><div class="sig"><br><strong>Rep. Atletas</strong></div></div>
-      <div style="margin-top:40px;font-size:10px;color:#999;text-align:center">WaveScore Pro · ${now.toLocaleString('es-CO')}</div>
-<!-- DEMO TOUR OVERLAY -->
-<div id="tour-overlay">
-  <div class="tour-card">
-    <div class="tour-step-badge" id="tour-step-badge">PASO 1 DE 10</div>
-    <div class="tour-title" id="tour-title">—</div>
-    <div class="tour-desc" id="tour-desc">—</div>
-    <div class="tour-progress" id="tour-progress"></div>
-    <div class="tour-btns">
-      <button class="tour-btn-skip" onclick="endTour()">✕ SALIR DEL TOUR</button>
-      <button class="tour-btn-next" id="tour-next-btn" onclick="tourNext()">SIGUIENTE →</button>
-    </div>
-  </div>
-</div>
-<div class="tour-spotlight" id="tour-spotlight" style="display:none"></div>
-
-<!-- EVENT QR MODAL -->
-<div id="event-qr-modal">
-  <div class="eqr-card">
-    <div class="eqr-title">📱 QR DEL EVENTO</div>
-    <div class="eqr-sub" id="eqr-event-name">WAVESCORE PRO</div>
-    <div class="eqr-qr" id="eqr-code"></div>
-    <div class="eqr-url" id="eqr-url-text">Generando link...</div>
-    <div class="eqr-instructions">
-      <div class="eqr-inst-row"><span class="eqr-inst-num">1</span><span>El atleta escanea este QR con su celular</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">2</span><span>Ve la pantalla pública en tiempo real</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">3</span><span>Recibe notificaciones de llamados al heat</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">4</span><span>Ve posiciones, tiempo y condiciones del mar</span></div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn-sm btn-go" onclick="printEventQR()" style="flex:1;padding:11px">🖨️ IMPRIMIR</button>
-      <button class="btn-sm btn-gray" onclick="document.getElementById('event-qr-modal').classList.remove('open')" style="flex:1;padding:11px">CERRAR</button>
-    </div>
-  </div>
-</div>
-
-<!-- ATHLETE PUBLIC VIEW (QR landing for event) -->
-<div id="athlete-public-view" style="display:none">
-  <div class="apv-header">
-    <div class="apv-brand">🌊 WAVESCORE PRO</div>
-    <div class="apv-event" id="apv-event-name">—</div>
-  </div>
-  <div class="apv-content">
-    <div class="apv-call-banner" id="apv-call-banner">
-      <div class="apv-call-title">📢 LLAMADO AL HEAT</div>
-      <div class="apv-call-name" id="apv-call-name">—</div>
-      <div class="apv-call-msg" id="apv-call-msg">—</div>
-    </div>
-    <div class="apv-timer">
-      <div class="apv-timer-num" id="apv-timer">—:——</div>
-      <div class="apv-timer-lbl">TIEMPO RESTANTE</div>
-    </div>
-    <div class="apv-sea" id="apv-sea" style="display:none">
-      <span>🌊 <span style="color:var(--ocean)" id="apv-wave">—</span>m</span>
-      <span>💨 <span style="color:var(--ocean)" id="apv-wind">—</span> km/h</span>
-      <span id="apv-sea-label" style="color:var(--muted)"></span>
-    </div>
-    <div class="apv-heat-name" id="apv-heat-name">Esperando heat...</div>
-    <div id="apv-scoreboard"></div>
-    <div style="margin-top:16px;text-align:center;font-size:11px;color:var(--muted)">
-      🌊 WaveScore Pro · Actualización en tiempo real
-    </div>
-  </div>
-</div>
-</body></html>`);
-      win.document.close();
-    });
+  db.ref('rounds').orderByChild('timestamp').once('value',snap=>{
+    const rounds=[];snap.forEach(c=>rounds.unshift({id:c.key,...c.val()}));
+    if(!rounds.length){showToast('Sin rondas');return;}
+    const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><title>Acta Oficial WaveScore Pro</title>
+    <style>body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:20px;color:#1a1a1a;}
+    h1{text-align:center;font-size:24px;border-bottom:3px solid #005bea;padding-bottom:10px;}
+    h2{font-size:16px;color:#005bea;margin-top:24px;margin-bottom:8px;}
+    table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+    th{background:#005bea;color:#fff;padding:8px 10px;text-align:left;font-size:12px;}
+    td{padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:12px;}
+    tr:first-child td{font-weight:bold;background:#fffbeb;}
+    .footer{text-align:center;margin-top:32px;color:#6b7280;font-size:11px;border-top:1px solid #e5e7eb;padding-top:12px;}
+    @media print{body{padding:10px;}}
+    </style></head><body>
+    <h1>🌊 ACTA OFICIAL DE RESULTADOS</h1>
+    <p style="text-align:center;color:#6b7280;font-size:12px">Generado: ${new Date().toLocaleString('es-CO')} · WaveScore Pro</p>
+    ${rounds.map(r=>`<h2>${r.name} <span style="font-weight:normal;color:#6b7280;font-size:13px">· ${new Date(r.timestamp).toLocaleString('es-CO')} · ${r.duration} min</span></h2>
+    <table><thead><tr><th>#</th><th>Surfista</th><th>Lycra</th><th>Total</th><th>Ola 1</th><th>Ola 2</th><th>Olas</th></tr></thead>
+    <tbody>${(r.results||[]).map(s=>`<tr>
+      <td>${s.position}</td><td>${s.name}</td><td>${s.lycra}</td>
+      <td>${s.total.toFixed(2)}</td><td>${s.best.toFixed(2)}</td><td>${s.adjSecond.toFixed(2)}</td><td>${s.waveCount}</td>
+    </tr>`).join('')}</tbody></table>`).join('')}
+    <div class="footer">WaveScore Pro · Sistema Oficial de Puntuación · ${new Date().getFullYear()}</div>
+    </body></html>`;
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    const w=window.open(url,'_blank');
+    if(w)setTimeout(()=>w.print(),800);
+    showToast('📋 Acta generada');
   });
 }
-function exportCurrentHeatPDF(){
-  if(!heatState||!heatState.surfers){showToast('Sin heat activo');return;}
-  const status=calculate_heat_status(heatState.surfers);
-  openSimplePDF(heatState.name||'Heat',heatState.duration||20,status);
-}
-function exportRoundPDF(id){
-  db.ref('rounds/'+id).once('value',snap=>{const r=snap.val();if(r)openSimplePDF(r.name,r.duration,r.results);});
-}
-function openSimplePDF(name,dur,results){
-  const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${name}</title>
-  <style>body{font-family:Arial,sans-serif;padding:40px;color:#000;max-width:700px;margin:0 auto;}h1{font-size:22px;text-transform:uppercase;border-bottom:3px solid #000;padding-bottom:8px;}
-  table{width:100%;border-collapse:collapse;margin-top:20px;}th{background:#000;color:#fff;padding:8px 12px;text-align:left;font-size:11px;}td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;}tr:first-child td{background:#fffde7;font-weight:bold;}@media print{button{display:none}}
-/* ── DEMO TOUR ── */
-#tour-overlay{position:fixed;inset:0;z-index:1100;display:none;pointer-events:none;}
-#tour-overlay.show{display:block;}
-.tour-card{
-  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-  background:rgba(2,12,27,.92);border:2px solid var(--ocean);border-radius:20px;
-  padding:16px 20px;width:calc(100% - 32px);max-width:600px;
-  box-shadow:0 0 40px rgba(0,198,251,.25);animation:fadeInUp .3s ease;
-  pointer-events:all;z-index:1101;backdrop-filter:blur(16px);}
-.tour-step-badge{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:4px;color:var(--ocean);margin-bottom:4px;}
-.tour-title{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;margin-bottom:6px;color:#fff;}
-.tour-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
-.tour-highlight{color:var(--ocean);font-weight:600;}
-.tour-progress{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;}
-.tour-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s;}
-.tour-dot.active{background:var(--ocean);width:18px;border-radius:4px;}
-.tour-dot.done{background:var(--green);}
-.tour-btns{display:flex;gap:8px;}
-.tour-btn-skip{padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:var(--muted);font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:2px;cursor:pointer;pointer-events:all;}
-.tour-btn-next{flex:1;padding:8px 14px;background:linear-gradient(90deg,var(--deep),var(--ocean));border:none;border-radius:8px;color:#fff;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;cursor:pointer;pointer-events:all;}
-.tour-btn-finish{flex:1;padding:8px 14px;background:linear-gradient(90deg,#16a34a,#22c55e);border:none;border-radius:8px;color:#fff;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;cursor:pointer;pointer-events:all;}
-.tour-spotlight{position:fixed;border:3px solid var(--ocean);border-radius:14px;
-  box-shadow:0 0 0 9999px rgba(0,0,0,.25);z-index:1090;
-  transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;}
 
-/* ── EVENT QR ── */
-#event-qr-modal{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);}
-#event-qr-modal.open{display:flex;}
-.eqr-card{background:linear-gradient(160deg,#0a1f3a,#020c1b);border:2px solid var(--ocean);border-radius:24px;padding:28px;max-width:380px;width:100%;text-align:center;}
-.eqr-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:4px;color:var(--ocean);margin-bottom:4px;}
-.eqr-sub{font-size:11px;color:var(--muted);letter-spacing:3px;margin-bottom:16px;}
-.eqr-qr{width:200px;height:200px;margin:0 auto 16px;background:#fff;border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:center;}
-.eqr-url{font-size:11px;color:var(--muted);word-break:break-all;margin-bottom:14px;padding:8px;background:rgba(255,255,255,.04);border-radius:8px;}
-.eqr-instructions{background:rgba(0,198,251,.06);border:1px solid rgba(0,198,251,.15);border-radius:12px;padding:12px;margin-bottom:14px;text-align:left;}
-.eqr-inst-row{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.5;}
-.eqr-inst-row:last-child{margin-bottom:0;}
-.eqr-inst-num{font-family:'Bebas Neue',cursive;font-size:14px;color:var(--ocean);min-width:18px;}
-
-/* ATHLETE PUBLIC VIEW */
-#athlete-public-view{min-height:100vh;background:linear-gradient(160deg,#020c1b,#0a1f3a);padding:0;}
-.apv-header{background:rgba(0,0,0,.4);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);}
-.apv-brand{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:4px;background:linear-gradient(90deg,var(--ocean),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.apv-event{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:var(--muted);}
-.apv-content{padding:14px;max-width:600px;margin:0 auto;}
-.apv-timer{text-align:center;padding:16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:18px;margin-bottom:12px;}
-.apv-timer-num{font-family:'Bebas Neue',cursive;font-size:clamp(48px,15vw,80px);color:var(--ocean);letter-spacing:4px;line-height:1;}
-.apv-timer-num.warn{color:var(--gold);}
-.apv-timer-num.danger{color:var(--red);animation:blink .8s infinite;}
-.apv-timer-lbl{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);}
-.apv-call-banner{background:linear-gradient(90deg,rgba(46,213,115,.12),rgba(0,198,251,.08));border:2px solid var(--green);border-radius:14px;padding:14px 16px;margin-bottom:12px;display:none;animation:fadeInUp .4s ease;}
-.apv-call-banner.show{display:block;}
-.apv-call-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--green);margin-bottom:4px;}
-.apv-call-name{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;}
-.apv-call-msg{font-size:12px;color:var(--muted);margin-top:4px;}
-.apv-heat-name{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;color:var(--ocean);text-align:center;margin-bottom:8px;}
-.apv-surfer-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 14px;margin-bottom:8px;transition:all .3s;}
-.apv-surfer-row.leading{border-color:var(--gold);background:rgba(255,209,102,.05);}
-.apv-pos{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);min-width:28px;}
-.apv-pos.gold{color:var(--gold);}
-.apv-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-.apv-name{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;flex:1;}
-.apv-total{font-family:'Bebas Neue',cursive;font-size:24px;color:var(--ocean);}
-.apv-total.gold{color:var(--gold);}
-.apv-needs{font-size:10px;color:var(--green);margin-top:2px;}
-.apv-needs.combo{color:var(--red);}
-.apv-sea{display:flex;gap:12px;flex-wrap:wrap;background:rgba(0,91,234,.07);border:1px solid rgba(0,198,251,.1);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:2px;}
-
-/* IMAGE UPLOAD */
-.img-upload-area{border:2px dashed rgba(0,198,251,.3);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px;background:rgba(0,198,251,.03);}
-.img-upload-area:hover{border-color:var(--ocean);background:rgba(0,198,251,.07);}
-.img-upload-area input[type=file]{display:none;}
-.img-upload-label{font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:3px;color:var(--ocean);display:block;margin-bottom:4px;}
-.img-upload-sub{font-size:11px;color:var(--muted);}
-.img-preview-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px;margin-bottom:10px;}
-.img-or-divider{display:flex;align-items:center;gap:10px;margin:8px 0;color:var(--muted);font-size:11px;}
-.img-or-divider::before,.img-or-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
-
-/* MULTI-SPONSOR */
-.sponsor-logo-main{max-height:52px;max-width:160px;object-fit:contain;filter:brightness(1.1);}
-.sponsor-logo-secondary{max-height:36px;max-width:110px;object-fit:contain;opacity:.9;}
-.sponsor-logo-small{max-height:24px;max-width:80px;object-fit:contain;opacity:.75;}
-.sponsor-admin-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:8px 12px;margin-bottom:6px;}
-.sponsor-tier-badge{font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;padding:2px 7px;border-radius:6px;}
-.sponsor-tier-main{background:rgba(255,209,102,.15);color:var(--gold);border:1px solid rgba(255,209,102,.3);}
-.sponsor-tier-secondary{background:rgba(0,198,251,.1);color:var(--ocean);border:1px solid rgba(0,198,251,.2);}
-.sponsor-tier-small{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid rgba(255,255,255,.1);}
-/* Ceremony sponsors */
-.ceremony-sponsors{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
-</style></head><body>
-  <h1>🌊 WaveScore Pro</h1>
-  <p>${name} · ${dur} min · ${new Date().toLocaleString('es-CO')}</p>
-  <button onclick="window.print()" style="margin:10px 0;padding:8px 20px;background:#000;color:#fff;border:none;border-radius:4px;cursor:pointer">🖨️ IMPRIMIR</button>
-  <table><tr><th>POS</th><th>LYCRA</th><th>ATLETA</th><th>OLA 1</th><th>OLA 2</th><th>TOTAL</th><th>OLAS</th></tr>
-  ${results.map(s=>`<tr><td>${s.position}</td><td>${s.lycra}</td><td>${s.name}</td><td>${s.best.toFixed(2)}</td><td>${s.adjSecond.toFixed(2)}${s.interference>=1?' ⚠️':''}</td><td><strong>${s.total.toFixed(2)}</strong></td><td>${s.waveCount}</td></tr>`).join('')}
-  </table>
-<!-- DEMO TOUR OVERLAY -->
-<div id="tour-overlay">
-  <div class="tour-card">
-    <div class="tour-step-badge" id="tour-step-badge">PASO 1 DE 10</div>
-    <div class="tour-title" id="tour-title">—</div>
-    <div class="tour-desc" id="tour-desc">—</div>
-    <div class="tour-progress" id="tour-progress"></div>
-    <div class="tour-btns">
-      <button class="tour-btn-skip" onclick="endTour()">✕ SALIR DEL TOUR</button>
-      <button class="tour-btn-next" id="tour-next-btn" onclick="tourNext()">SIGUIENTE →</button>
-    </div>
-  </div>
-</div>
-<div class="tour-spotlight" id="tour-spotlight" style="display:none"></div>
-
-<!-- EVENT QR MODAL -->
-<div id="event-qr-modal">
-  <div class="eqr-card">
-    <div class="eqr-title">📱 QR DEL EVENTO</div>
-    <div class="eqr-sub" id="eqr-event-name">WAVESCORE PRO</div>
-    <div class="eqr-qr" id="eqr-code"></div>
-    <div class="eqr-url" id="eqr-url-text">Generando link...</div>
-    <div class="eqr-instructions">
-      <div class="eqr-inst-row"><span class="eqr-inst-num">1</span><span>El atleta escanea este QR con su celular</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">2</span><span>Ve la pantalla pública en tiempo real</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">3</span><span>Recibe notificaciones de llamados al heat</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">4</span><span>Ve posiciones, tiempo y condiciones del mar</span></div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn-sm btn-go" onclick="printEventQR()" style="flex:1;padding:11px">🖨️ IMPRIMIR</button>
-      <button class="btn-sm btn-gray" onclick="document.getElementById('event-qr-modal').classList.remove('open')" style="flex:1;padding:11px">CERRAR</button>
-    </div>
-  </div>
-</div>
-
-<!-- ATHLETE PUBLIC VIEW (QR landing for event) -->
-<div id="athlete-public-view" style="display:none">
-  <div class="apv-header">
-    <div class="apv-brand">🌊 WAVESCORE PRO</div>
-    <div class="apv-event" id="apv-event-name">—</div>
-  </div>
-  <div class="apv-content">
-    <div class="apv-call-banner" id="apv-call-banner">
-      <div class="apv-call-title">📢 LLAMADO AL HEAT</div>
-      <div class="apv-call-name" id="apv-call-name">—</div>
-      <div class="apv-call-msg" id="apv-call-msg">—</div>
-    </div>
-    <div class="apv-timer">
-      <div class="apv-timer-num" id="apv-timer">—:——</div>
-      <div class="apv-timer-lbl">TIEMPO RESTANTE</div>
-    </div>
-    <div class="apv-sea" id="apv-sea" style="display:none">
-      <span>🌊 <span style="color:var(--ocean)" id="apv-wave">—</span>m</span>
-      <span>💨 <span style="color:var(--ocean)" id="apv-wind">—</span> km/h</span>
-      <span id="apv-sea-label" style="color:var(--muted)"></span>
-    </div>
-    <div class="apv-heat-name" id="apv-heat-name">Esperando heat...</div>
-    <div id="apv-scoreboard"></div>
-    <div style="margin-top:16px;text-align:center;font-size:11px;color:var(--muted)">
-      🌊 WaveScore Pro · Actualización en tiempo real
-    </div>
-  </div>
-</div>
-</body></html>`);win.document.close();
-}
-
-// ════════ DEMO MODE ════════
-const DEMO_SURFERS=[{name:'Gabriel Medina',color:'#ff4757',lycra:'Rojo'},{name:'Italo Ferreira',color:'#f0f0f0',lycra:'Blanco'},{name:'Filipe Toledo',color:'#ffd166',lycra:'Amarillo'},{name:'John John Florence',color:'#54a0ff',lycra:'Azul'}];
-const DEMO_WAVES=[[0,7.23],[2,6.87],[1,8.43],[3,5.90],[0,9.10],[1,7.55],[2,8.67],[3,7.20],[1,9.43],[0,6.33],[3,8.80],[2,7.90],[0,8.90],[2,6.10],[1,5.67],[3,9.23]];
-
-function toggleDemo(){if(demoRunning)stopDemo();else startDemo();}
+// ════════ DEMO ════════
+function showDemoMenu(){document.getElementById('demo-menu').style.display='block';}
 function startDemo(){
-  demoRunning=true;demoStep=0;heatBestWave={score:0,surfer:''};currentLeader=null;prevTotals={};
-  const btn=document.getElementById('demo-btn');btn.textContent='⏹ DETENER DEMO';btn.classList.add('running');
+  if(demoRunning){stopAllDemo();return;}
+  demoRunning=true;demoStep=0;
+  document.getElementById('demo-btn').classList.add('running');
   document.getElementById('demo-badge').classList.add('show');
-  demoHeatState={name:'Heat 1 — Open Men',duration:20,active:true,timestamp:Date.now(),surfers:DEMO_SURFERS.map((s,i)=>({...s,waves:[],interference:0,priority:i+1}))};
-  db.ref('heat').set(demoHeatState);
-  db.ref('timer').set({running:true,startedAt:Date.now(),startSec:1200,remaining:1200,total:1200});
-  timerStartedAt=Date.now();timerStartSec=1200;localTimerSec=1200;timerRunning=true;runLocalTimer();
-  showToast('🎬 Demo iniciado');playDemoWave();
-}
-function playDemoWave(){
-  if(!demoRunning||demoStep>=DEMO_WAVES.length){
-    setTimeout(()=>{if(demoRunning){timerRunning=false;clearInterval(timerInterval);localTimerSec=0;renderTimerDisplay(0);
-      db.ref('timer').update({running:false,remaining:0});
-      const st=calculate_heat_status(demoHeatState.surfers);triggerHeatEnd(demoHeatState,st);setTimeout(stopDemo,5000);}},1000);return;
-  }
-  const[si,score]=DEMO_WAVES[demoStep++];
-  demoHeatState.surfers[si].waves.push({score,scores:[score-.3,score+.2,score,score-.1,score+.3],timestamp:Date.now()});
-  const myP=demoHeatState.surfers[si].priority,n=demoHeatState.surfers.length;
-  demoHeatState.surfers.forEach((_,i)=>{if(demoHeatState.surfers[i].priority>myP)demoHeatState.surfers[i].priority--;});
-  demoHeatState.surfers[si].priority=n;
-  db.ref('heat/surfers').set(demoHeatState.surfers);
-  showLastWaveFlash(demoHeatState.surfers[si].name,score);
-  demoInterval=setTimeout(playDemoWave,1800+Math.random()*2200);
-}
-function stopDemo(){
-  demoRunning=false;clearTimeout(demoInterval);clearInterval(timerInterval);timerRunning=false;
-  const btn=document.getElementById('demo-btn');btn.textContent='🎬 MODO DEMO';btn.classList.remove('running');
-  document.getElementById('demo-badge').classList.remove('show');showToast('Demo detenido');
-}
-
-
-// ════════════════════════════════════════
-// DEMO TOUR — Tour guiado interactivo completo
-// ════════════════════════════════════════
-let tourStep = 0;
-let tourSpotlightTimeout = null;
-
-const TOUR_STEPS_ADMIN = [
-  {
-    title: '🌊 WaveScore Pro — Panel Admin',
-    desc: 'Este tour muestra todo lo que puedes hacer como <span class="tour-highlight">administrador del sistema</span>. Tú controlas el acceso, los eventos y la configuración desde cualquier lugar del mundo.',
-    target: null, position: 'center'
-  },
-  {
-    title: '📋 Configurar el Evento',
-    desc: 'Defines el <span class="tour-highlight">nombre del campeonato</span>, el <span class="tour-highlight">código de acceso</span> que le das a los jueces y operadores, y las <span class="tour-highlight">fechas de validez</span>. El sistema se bloquea automáticamente al terminar.',
-    action: ()=>{ adminTab('events'); },
-    target: 'adm-events', position: 'right'
-  },
-  {
-    title: '🏄 Atletas con Fotos',
-    desc: 'Agrega <span class="tour-highlight">foto, país y dorsal</span> de cada atleta. Las fotos aparecen en el <span class="tour-highlight">podio de ceremonia</span> con fuegos artificiales al finalizar el heat.',
-    action: ()=>{ adminTab('athletes'); },
-    target: 'adm-athletes', position: 'right'
-  },
-  {
-    title: '🏆 Bracket Automático',
-    desc: 'Escribe los atletas y el sistema genera el bracket completo: <span class="tour-highlight">Ronda 1 → Cuartos → Semis → Final</span>. Soporta eliminación directa o repechaje, sin límite de atletas.',
-    action: ()=>{
-      adminTab('bracket');
-      setTimeout(()=>{
-        const n=document.getElementById('brk-name');if(n)n.value='Campeonato Nacional 2025';
-        const a=document.getElementById('brk-athletes');
-        if(a)a.value='Gabriel Medina\nItalo Ferreira\nFilipe Toledo\nJohn Florence\nCarissa Moore\nSteph Gilmore\nTyler Wright\nSage Erickson';
-        generateBracket();
-      },400);
-    },
-    target: 'bracket-view', position: 'top'
-  },
-  {
-    title: '🎨 White Label',
-    desc: 'Cambia el <span class="tour-highlight">nombre, logo y colores</span> para que luzca como la federación que contrata el servicio. La federación ve su propia marca, no WaveScore Pro.',
-    action: ()=>{ adminTab('whitelabel'); },
-    target: 'adm-whitelabel', position: 'right'
-  },
-  {
-    title: '🔐 Seguridad Total',
-    desc: 'Tú defines el <span class="tour-highlight">código del evento</span> y lo compartes con el operador. El operador <span class="tour-highlight">nunca puede cambiar</span> configuraciones críticas. Solo tú tienes el código Admin.',
-    action: ()=>{ adminTab('security'); },
-    target: 'adm-security', position: 'right'
-  },
-  {
-    title: '📊 Historial y Exportaciones',
-    desc: 'Exporta resultados a <span class="tour-highlight">Excel/CSV</span> para la federación, o genera el <span class="tour-highlight">Acta Oficial</span> con campos de firma digital. Todo con un clic.',
-    action: ()=>{ adminTab('rounds'); },
-    target: 'adm-rounds', position: 'top'
-  },
-  {
-    title: '🎬 Demo de la Competencia',
-    desc: 'Usa el <span class="tour-highlight">Modo Demo</span> para mostrarle a la federación cómo se ve el sistema en vivo — con olas, animaciones, fuegos artificiales y ceremonia final. Perfecto para reuniones de ventas.',
-    action: null, target: 'demo-btn', position: 'top'
-  }
-];
-
-const TOUR_STEPS_OPERATOR = [
-  {
-    title: '🎛️ Panel del Operador',
-    desc: 'Como operador manejas el heat en tiempo real. Tienes <span class="tour-highlight">4 pestañas</span>: Heat, Puntuación, Mar/Llamados y Rondas. Todo sincronizado con jueces y pantalla pública automáticamente.',
-    action: ()=>{ opTab('heat'); },
-    target: 'op-tabs'
-  },
-  {
-    title: '🏄 Configurar el Heat',
-    desc: 'Define el nombre, duración y los surfistas. El sistema asigna automáticamente las <span class="tour-highlight">lycras por color</span> (Rojo, Blanco, Amarillo, Azul) y el <span class="tour-highlight">sistema de prioridad ISA</span>.',
-    action: ()=>{ opTab('heat'); setTimeout(()=>{const el=document.getElementById('op-heat');if(el)el.scrollTop=0;},300); },
-    target: 'op-heat'
-  },
-  {
-    title: '⏱️ Cronómetro Sincronizado',
-    desc: 'Un solo clic inicia el cronómetro en <span class="tour-highlight">TODOS los dispositivos</span> al mismo tiempo. Bocina al inicio, alerta a los 5 minutos, bocina larga al finalizar.',
-    action: ()=>{ opTab('heat'); },
-    target: 'timer-bar'
-  },
-  {
-    title: '📊 Registrar Olas',
-    desc: 'Ingresa las <span class="tour-highlight">notas de los 5 jueces</span>. El sistema elimina la más alta y la más baja, promedia las 3 restantes y calcula el score ISA en tiempo real.',
-    action: ()=>{ opTab('score'); },
-    target: 'op-score'
-  },
-  {
-    title: '🌊 Condiciones del Mar',
-    desc: 'Actualiza <span class="tour-highlight">altura de ola, viento, dirección y temperatura del agua</span> desde la playa. Se refleja al instante en la pantalla pública y en el celular de cada atleta.',
-    action: ()=>{ opTab('campo'); setTimeout(()=>{
-      const h=document.getElementById('op-sc-height');if(h)h.value='1.8';
-      const w=document.getElementById('op-sc-wind');if(w)w.value='12';
-      const l=document.getElementById('op-sc-label');if(l)l.value='Olas perfectas — viento offshore';
-    },400); },
-    target: 'op-campo'
-  },
-  {
-    title: '📢 Llamados al Heat',
-    desc: 'Escribe el nombre del atleta y toca ENVIAR. La notificación aparece <span class="tour-highlight">instantáneamente en todos los celulares</span> conectados — con bocina y vibración incluidas.',
-    action: ()=>{ opTab('campo'); setTimeout(()=>{
-      const n=document.getElementById('op-call-name');if(n)n.value='Gabriel Medina';
-      const m=document.getElementById('op-call-msg');if(m)m.value='Preséntate en la zona de competencia';
-    },400); },
-    target: 'op-campo'
-  },
-  {
-    title: '📱 QR del Evento para Atletas',
-    desc: 'Toca <span class="tour-highlight">📱 QR EVENTO</span> para generar un código QR único. Los atletas lo escanean al llegar y desde ese momento ven posiciones en tiempo real, reciben llamados al heat con bocina en su celular y pueden seguir todo el torneo.',
-    action: ()=>{ opTab('heat'); },
-    target: 'timer-bar'
-  },
-  {
-    title: '🏆 Finalizar con Ceremonia',
-    desc: 'Al terminar toca <span class="tour-highlight">"Finalizar con Ceremonia"</span> — fuegos artificiales, confeti y podio con fotos de los atletas en la pantalla pública. Los resultados se guardan automáticamente.',
-    action: ()=>{
-      opTab('heat');
-      if(!heatState||!heatState.surfers){
-        const fakeHeat={name:'Heat Demo',duration:20,active:true,timestamp:Date.now(),
-          surfers:DEMO_SURFERS.map((s,i)=>({...s,waves:[{score:9.1-(i*.8),timestamp:Date.now()-5000},{score:7.4-(i*.5),timestamp:Date.now()-3000}],interference:0,priority:i+1}))};
-        db.ref('heat').set(fakeHeat);heatState=fakeHeat;
-      }
-      setTimeout(()=>{const st=calculate_heat_status(heatState.surfers);triggerHeatEnd(heatState,st);},600);
-    },
-    target: 'surfers-grid'
-  },
-  {
-    title: '📺 Pantalla Pública / Anunciador',
-    desc: 'La vista <span class="tour-highlight">Pantalla/Anunciador</span> muestra posiciones, tiempo y animaciones en TV. El anunciador tiene información extra: lo que necesita cada surfista para tomar el liderato.',
-    action: null, target: null
-  }
-];
-
-function showDemoMenu(){
-  const menu=document.getElementById('demo-menu');
-  if(!menu) return;
-  const isRunning = demoRunning || (document.getElementById('tour-overlay')?.classList.contains('show'));
-  // Update stop button visibility
-  const stopBtn=document.getElementById('demo-menu-stop');
-  const tourBtn=document.getElementById('demo-menu-tour');
-  const simBtn=document.getElementById('demo-menu-sim');
-  if(stopBtn) stopBtn.style.display=isRunning?'block':'none';
-  if(tourBtn) tourBtn.style.display=isRunning?'none':'block';
-  if(simBtn) simBtn.style.display=isRunning?'none':'block';
-  menu.style.display=menu.style.display==='none'?'block':'none';
+  document.getElementById('demo-menu-stop').style.display='block';
+  const names=['Kelly Slater','Italo Ferreira','Gabriel Medina','João Chianca'];
+  const demoSurfers=names.slice(0,4).map((name,i)=>({name,color:LYCRA_COLORS[i],lycra:LYCRA_NAMES[i],waves:[],interference:0,priority:i+1}));
+  db.ref('heat').set({name:'Demo Heat — Open Men',duration:20,surfers:demoSurfers,active:true,timestamp:Date.now()});
+  db.ref('timer').set({running:false,remaining:1200,total:1200});
+  localTimerSec=1200;renderTimerDisplay(1200);
+  demoHeatState={name:'Demo Heat — Open Men',surfers:demoSurfers};
+  demoInterval=setInterval(()=>{
+    if(!demoRunning){clearInterval(demoInterval);return;}
+    const si=Math.floor(Math.random()*4);
+    const score=Math.round((Math.random()*6+3)*100)/100;
+    const surfers=JSON.parse(JSON.stringify(demoHeatState.surfers));
+    if(!surfers[si].waves)surfers[si].waves=[];
+    surfers[si].waves.push({score,scores:[score,score,score,score,score],timestamp:Date.now()});
+    demoHeatState.surfers=surfers;
+    db.ref('heat/surfers').set(surfers);
+  },3000);
 }
 function stopAllDemo(){
-  // Stop tour
-  endTour();
-  // Stop demo simulation
-  if(demoRunning) stopDemo();
-  // Close any open modals
-  const heatModal=document.getElementById('heat-end-modal');
-  if(heatModal) heatModal.classList.remove('show');
-  // Close menu
+  demoRunning=false;clearInterval(demoInterval);
+  document.getElementById('demo-btn').classList.remove('running');
+  document.getElementById('demo-badge').classList.remove('show');
+  document.getElementById('demo-menu-stop').style.display='none';
   document.getElementById('demo-menu').style.display='none';
   showToast('Demo detenido');
 }
-// Close menu when clicking outside
-document.addEventListener('click',(e)=>{
-  const menu=document.getElementById('demo-menu');
-  const btn=document.getElementById('demo-btn');
-  if(menu&&btn&&!menu.contains(e.target)&&!btn.contains(e.target)){
-    menu.style.display='none';
-  }
-});
-
 function startTour(){
   document.getElementById('demo-menu').style.display='none';
-  tourStep=0;
-  // Use correct tour for current role - NEVER give operator admin access
-  if(role==='admin'){
-    window._activeTour = TOUR_STEPS_ADMIN;
-  } else {
-    // Operator, judge, broadcast all get operator tour
-    window._activeTour = TOUR_STEPS_OPERATOR;
-    // Make sure operator view is visible
-    if(role==='operator'){opTab('heat');}
-  }
-  showTourStep();
-}
-
-function showTourStep(){
-  const tour = window._activeTour || TOUR_STEPS_OPERATOR;
-  const step = tour[tourStep];
-  if(!step){endTour();return;}
-  const overlay=document.getElementById('tour-overlay');
-  overlay.classList.add('show');
-  // Update content
-  document.getElementById('tour-step-badge').textContent=`PASO ${tourStep+1} DE ${tour.length}`;
-  document.getElementById('tour-title').textContent=step.title;
-  document.getElementById('tour-desc').innerHTML=step.desc;
-  // Progress dots
-  document.getElementById('tour-progress').innerHTML=tour.map((_,i)=>
-    `<div class="tour-dot ${i<tourStep?'done':i===tourStep?'active':''}"></div>`).join('');
-  // Last step button
-  const nextBtn=document.getElementById('tour-next-btn');
-  if(tourStep===tour.length-1){
-    nextBtn.textContent='🎉 FINALIZAR TOUR';
-    nextBtn.className='tour-btn-finish';
-  } else {
-    nextBtn.textContent='SIGUIENTE →';
-    nextBtn.className='tour-btn-next';
-  }
-  // Run action
-  if(step.action) step.action();
-  // Scroll target into view and highlight it
-  clearTimeout(tourSpotlightTimeout);
-  tourSpotlightTimeout=setTimeout(()=>{
-    if(step.target){
-      const el=document.getElementById(step.target);
-      if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
-    }
-    highlightElement(step.target);
-  }, 400);
-}
-
-function tourNext(){
-  // Close any open modals before advancing
-  const heatModal = document.getElementById('heat-end-modal');
-  if(heatModal) heatModal.classList.remove('show');
-  const qrModal = document.getElementById('qr-modal');
-  if(qrModal) qrModal.classList.remove('open');
-  tourStep++;
-  const tour = window._activeTour || TOUR_STEPS_OPERATOR;
-  if(tourStep>=tour.length){endTour();return;}
-  showTourStep();
-}
-
-function highlightElement(elId){
-  const spotlight=document.getElementById('tour-spotlight');
-  if(!elId||!spotlight){
-    if(spotlight)spotlight.style.display='none';
-    return;
-  }
-  const el=document.getElementById(elId);
-  if(!el){spotlight.style.display='none';return;}
-
-  // Scroll into view first
-  el.scrollIntoView({behavior:'smooth', block:'center'});
-
-  // Wait for scroll then position spotlight accurately
-  setTimeout(()=>{
-    const rect=el.getBoundingClientRect();
-    const pad=10;
-    // Keep spotlight above the tour card (card is ~220px at bottom)
-    const availH=window.innerHeight-240;
-    const topPos=Math.max(Math.min(rect.top-pad, availH-rect.height), 55);
-    spotlight.style.cssText=`
-      display:block;position:fixed;
-      top:${topPos}px;
-      left:${Math.max(rect.left-pad, 2)}px;
-      width:${Math.min(rect.width+pad*2, window.innerWidth-8)}px;
-      height:${Math.min(rect.height+pad*2, availH)}px;
-      border:3px solid var(--ocean);
-      border-radius:14px;
-      box-shadow:0 0 0 9999px rgba(0,0,0,.3);
-      z-index:1090;
-      transition:all .5s cubic-bezier(.4,0,.2,1);
-      pointer-events:none;`;
-  }, 400);
-}
-
-function endTour(){
-  document.getElementById('tour-overlay').classList.remove('show');
-  document.getElementById('tour-spotlight').style.display='none';
-  showToast('🎓 Tour finalizado — ¡WaveScore Pro listo para usar!');
-  tourStep=0;
-}
-
-
-// ════════════════════════════════════════
-// EVENT QR — Un QR para todos los atletas
-// ════════════════════════════════════════
-function showEventQR(){
-  const modal = document.getElementById('event-qr-modal');
-  if(!modal) return;
-  
-  // Build the public URL with ?view=public parameter
-  const baseUrl = window.location.href.split('?')[0];
-  const publicUrl = baseUrl + '?view=public';
-  
-  // Show event name
-  db.ref('config/event').once('value', snap=>{
-    const ev = snap.val()||{};
-    const evName = ev.name || 'WaveScore Pro';
-    document.getElementById('eqr-event-name').textContent = evName.toUpperCase();
-    document.getElementById('eqr-url-text').textContent = publicUrl;
-    
-    // Generate QR
-    const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(publicUrl)}&color=00c6fb&bgcolor=020c1b`;
-    document.getElementById('eqr-code').innerHTML = 
-      `<img src="${qrImg}" style="width:180px;height:180px;border-radius:8px"/>`;
-    
-    modal.classList.add('open');
-  });
-}
-
-function printEventQR(){
-  const baseUrl = window.location.href.split('?')[0];
-  const publicUrl = baseUrl + '?view=public';
-  const evName = document.getElementById('eqr-event-name').textContent;
-  const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(publicUrl)}&color=000000&bgcolor=ffffff`;
-  
-  const win = window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
-  <title>QR del Evento — ${evName}</title>
-  <style>
-    body{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#fff;}
-    .container{text-align:center;padding:40px;border:3px solid #000;border-radius:20px;max-width:400px;}
-    h1{font-size:28px;text-transform:uppercase;letter-spacing:4px;margin:0 0 4px;}
-    h2{font-size:14px;color:#666;font-weight:normal;margin:0 0 24px;}
-    img{width:260px;height:260px;margin:0 auto 20px;display:block;}
-    .instructions{text-align:left;background:#f8f8f8;border-radius:10px;padding:16px;margin-top:16px;}
-    .inst-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
-    .inst-num{font-weight:bold;color:#005bea;min-width:20px;}
-    .url{font-size:11px;color:#888;word-break:break-all;margin-top:12px;}
-    @media print{button{display:none}}
-  
-/* IMAGE UPLOAD */
-.img-upload-area{border:2px dashed rgba(0,198,251,.3);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px;background:rgba(0,198,251,.03);}
-.img-upload-area:hover{border-color:var(--ocean);background:rgba(0,198,251,.07);}
-.img-upload-area input[type=file]{display:none;}
-.img-upload-label{font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:3px;color:var(--ocean);display:block;margin-bottom:4px;}
-.img-upload-sub{font-size:11px;color:var(--muted);}
-.img-preview-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px;margin-bottom:10px;}
-.img-or-divider{display:flex;align-items:center;gap:10px;margin:8px 0;color:var(--muted);font-size:11px;}
-.img-or-divider::before,.img-or-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
-
-/* MULTI-SPONSOR */
-.sponsor-logo-main{max-height:52px;max-width:160px;object-fit:contain;filter:brightness(1.1);}
-.sponsor-logo-secondary{max-height:36px;max-width:110px;object-fit:contain;opacity:.9;}
-.sponsor-logo-small{max-height:24px;max-width:80px;object-fit:contain;opacity:.75;}
-.sponsor-admin-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:8px 12px;margin-bottom:6px;}
-.sponsor-tier-badge{font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;padding:2px 7px;border-radius:6px;}
-.sponsor-tier-main{background:rgba(255,209,102,.15);color:var(--gold);border:1px solid rgba(255,209,102,.3);}
-.sponsor-tier-secondary{background:rgba(0,198,251,.1);color:var(--ocean);border:1px solid rgba(0,198,251,.2);}
-.sponsor-tier-small{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid rgba(255,255,255,.1);}
-/* Ceremony sponsors */
-.ceremony-sponsors{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
-</style></head><body>
-  <div class="container">
-    <h1>🌊 WaveScore Pro</h1>
-    <h2>${evName}</h2>
-    <img src="${qrImg}"/>
-    <div class="instructions">
-      <div class="inst-row"><span class="inst-num">1</span><span>Escanea con tu celular</span></div>
-      <div class="inst-row"><span class="inst-num">2</span><span>Ve posiciones en tiempo real</span></div>
-      <div class="inst-row"><span class="inst-num">3</span><span>Recibe llamados al heat</span></div>
-      <div class="inst-row"><span class="inst-num">4</span><span>Sigue el torneo desde tu celular</span></div>
-    </div>
-    <div class="url">${publicUrl}</div>
-    <br>
-    <button onclick="window.print()" style="padding:10px 24px;background:#000;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">🖨️ IMPRIMIR</button>
-  </div>
-  </body></html>`);
-  win.document.close();
-}
-
-// ════════════════════════════════════════
-// ATHLETE PUBLIC VIEW — Vista pública del evento
-// ════════════════════════════════════════
-function checkPublicView(){
-  const params = new URLSearchParams(window.location.search);
-  if(params.get('view') !== 'public') return false;
-  
-  // Show public view
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('athlete-public-view').style.display = 'block';
-  
-  // Init Firebase
-  try{
-    let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}
-    db=firebase.database(fbApp);
-    initPublicView();
-  }catch(e){console.error(e);}
-  return true;
-}
-
-function initPublicView(){
-  // Load event name
-  db.ref('config/event').once('value', snap=>{
-    const ev=snap.val()||{};
-    const el=document.getElementById('apv-event-name');
-    if(el) el.textContent=(ev.name||'WaveScore Pro').toUpperCase();
-  });
-  
-  // Listen to heat
-  db.ref('heat').on('value', snap=>{
-    const heat=snap.val();
-    const heatNameEl=document.getElementById('apv-heat-name');
-    const scoreboard=document.getElementById('apv-scoreboard');
-    if(!heat||!heat.surfers){
-      if(heatNameEl) heatNameEl.textContent='Esperando heat...';
-      if(scoreboard) scoreboard.innerHTML='';
-      return;
-    }
-    if(heatNameEl) heatNameEl.textContent=(heat.name||'Heat').toUpperCase();
-    const status=calculate_heat_status(heat.surfers);
-    if(scoreboard) scoreboard.innerHTML=status.map((st,pos)=>`
-      <div class="apv-surfer-row ${pos===0?'leading':''}">
-        <div class="apv-pos ${pos===0?'gold':''}">${st.position}</div>
-        <div class="apv-dot" style="background:${st.color}"></div>
-        <div style="flex:1">
-          <div class="apv-name">${st.name}</div>
-          <div class="apv-needs ${st.isCombo?'combo':''}">${st.isLeading?'🥇 LÍDER':st.statusLabel}</div>
-        </div>
-        <div>
-          <div class="apv-total ${pos===0?'gold':''}">${st.total.toFixed(2)}</div>
-          <div style="font-size:10px;color:var(--muted);text-align:right">${st.waveCount} olas</div>
-        </div>
-      </div>`).join('');
-  });
-  
-  // Listen to timer
-  db.ref('timer').on('value', snap=>{
-    const t=snap.val();if(!t)return;
-    if(t.running){
-      timerStartedAt=t.startedAt||Date.now();
-      timerStartSec=t.startSec||t.remaining||0;
-      localTimerSec=Math.max(0,timerStartSec-Math.floor((Date.now()-timerStartedAt)/1000));
-      if(!timerRunning){
-        timerRunning=true;
-        const apvInterval=setInterval(()=>{
-          if(!timerRunning){clearInterval(apvInterval);return;}
-          localTimerSec=Math.max(0,timerStartSec-Math.floor((Date.now()-timerStartedAt)/1000));
-          updatePublicTimer(localTimerSec);
-          if(localTimerSec===0){timerRunning=false;clearInterval(apvInterval);}
-        },500);
-      }
-    } else {
-      timerRunning=false;
-      localTimerSec=t.remaining||0;
-      updatePublicTimer(localTimerSec);
-    }
-  });
-  
-  // Listen to notifications
-  let lastNotifTs=Date.now();
-  db.ref('notification').on('value', snap=>{
-    const n=snap.val();if(!n||n.timestamp<=lastNotifTs)return;
-    lastNotifTs=n.timestamp;
-    if(n.type==='heatCall'){
-      const banner=document.getElementById('apv-call-banner');
-      document.getElementById('apv-call-name').textContent=n.name.toUpperCase();
-      document.getElementById('apv-call-msg').textContent=n.msg;
-      banner.classList.add('show');
-      playHorn('warn');
-      // Vibrate on mobile
-      if(navigator.vibrate) navigator.vibrate([300,100,300]);
-      setTimeout(()=>banner.classList.remove('show'),8000);
-    }
-  });
-  
-  // Listen to sea conditions
-  db.ref('config/seaConditions').on('value', snap=>{
-    const sc=snap.val();
-    const seaEl=document.getElementById('apv-sea');
-    if(!sc||(!sc.waveHeight&&!sc.wind)){if(seaEl)seaEl.style.display='none';return;}
-    if(seaEl)seaEl.style.display='flex';
-    const waveEl=document.getElementById('apv-wave');
-    const windEl=document.getElementById('apv-wind');
-    const lblEl=document.getElementById('apv-sea-label');
-    if(waveEl)waveEl.textContent=sc.waveHeight||'—';
-    if(windEl)windEl.textContent=sc.wind||'—';
-    if(lblEl)lblEl.textContent=sc.label||'';
-  });
-}
-
-function updatePublicTimer(sec){
-  const el=document.getElementById('apv-timer');if(!el)return;
-  const m=Math.floor(sec/60),s=sec%60;
-  el.textContent=m+':'+(s<10?'0':'')+s;
-  el.className='apv-timer-num '+(sec<=60?'danger':sec<=300?'warn':'');
-}
-
-
-// ════════════════════════════════════════
-// IMAGE UPLOAD — convierte a base64 y guarda en Firebase
-// ════════════════════════════════════════
-function fileToBase64(file, maxSizeMB=1){
-  // Always compress to ensure Firebase storage limits are respected
-  return new Promise((resolve, reject)=>{
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      const img = new Image();
-      img.onload = ()=>{
-        const canvas = document.createElement('canvas');
-        // Keep logos small: max 200x200 for logos, 400x400 for athlete photos
-        const isLogo = maxSizeMB === 0.5;
-        const maxDim = isLogo ? 150 : 400;
-        let w=img.width, h=img.height;
-        if(w>maxDim){h=Math.round(h*(maxDim/w));w=maxDim;}
-        if(h>maxDim){w=Math.round(w*(maxDim/h));h=maxDim;}
-        canvas.width=w; canvas.height=h;
-        const ctx = canvas.getContext('2d');
-        // White background for logos with transparency (like Quiksilver black logo)
-        ctx.fillStyle = 'transparent';
-        ctx.fillRect(0,0,w,h);
-        ctx.drawImage(img,0,0,w,h);
-        // Use PNG for logos to preserve transparency, JPEG for photos
-        const format = isLogo ? 'image/png' : 'image/jpeg';
-        const quality = isLogo ? 0.9 : 0.75;
-        const result = canvas.toDataURL(format, quality);
-        console.log('Compressed image:', file.name, '->', Math.round(result.length/1024)+'KB');
-        resolve(result);
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-// ATHLETE PHOTO
-let _athPhotoData = null;
-async function handleAthFileUpload(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  if(file.size > 5 * 1024 * 1024){showToast('⚠️ Imagen muy grande. Máximo 5MB.');return;}
-  try{
-    const b64 = await fileToBase64(file);
-    _athPhotoData = b64;
-    document.getElementById('ath-preview').src = b64;
-    document.getElementById('ath-preview-row').style.display='flex';
-    document.getElementById('ath-file-name').textContent = file.name;
-    document.getElementById('ath-photo').value = ''; // Clear URL field
-    showToast('✅ Foto lista para guardar');
-  }catch(e){showToast('❌ Error al cargar la imagen');}
-}
-function previewAthPhoto(){
-  const url = document.getElementById('ath-photo')?.value;
-  if(url){
-    _athPhotoData = null; // Clear file upload
-    document.getElementById('ath-preview').src = url;
-    document.getElementById('ath-preview-row').style.display='flex';
-    document.getElementById('ath-file-name').textContent = 'Desde URL';
-  }
-}
-function clearAthPhoto(){
-  _athPhotoData = null;
-  document.getElementById('ath-preview').src='';
-  document.getElementById('ath-preview-row').style.display='none';
-  document.getElementById('ath-photo').value='';
-  document.getElementById('ath-file-input').value='';
-}
-
-// WL LOGO
-let _wlLogoData = null;
-async function handleLogoUpload(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  try{
-    const b64 = await fileToBase64(file, 0.5); // logo mode
-    _wlLogoData = b64;
-    document.getElementById('wl-logo-preview-img').src = b64;
-    document.getElementById('wl-logo-preview-row').style.display='flex';
-    document.getElementById('wl-logo-url').value='';
-    document.getElementById('wl-preview-logo').innerHTML=`<img src="${b64}" style="height:44px;object-fit:contain"/>`;
-    showToast('✅ Logo cargado');
-  }catch(e){showToast('❌ Error al cargar el logo');}
-}
-function clearLogo(){
-  _wlLogoData=null;
-  document.getElementById('wl-logo-preview-row').style.display='none';
-  document.getElementById('wl-logo-file').value='';
-  document.getElementById('wl-preview-logo').innerHTML='🌊';
-}
-
-// SPONSOR LOGO
-let _sponsorLogoData = null;
-async function handleSponsorLogoUpload(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  try{
-    const b64 = await fileToBase64(file, 0.5); // logo mode
-    _sponsorLogoData = b64;
-    document.getElementById('sponsor-preview-img').src = b64;
-    document.getElementById('sponsor-preview-row').style.display='flex';
-    document.getElementById('adm-sponsor-logo').value='';
-    showToast('✅ Logo del patrocinador cargado');
-  }catch(e){showToast('❌ Error al cargar el logo');}
-}
-function clearSponsorLogo(){
-  _sponsorLogoData=null;
-  document.getElementById('sponsor-preview-row').style.display='none';
-  document.getElementById('sponsor-logo-file').value='';
-}
-
-
-// ════════════════════════════════════════
-// MULTI-SPONSOR SYSTEM
-// ════════════════════════════════════════
-let _newSponsorLogoData = null;
-
-async function handleNewSponsorFile(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  try{
-    const b64 = await fileToBase64(file, 0.5); // 0.5 = logo mode = 150px max
-    _newSponsorLogoData = b64;
-    document.getElementById('new-sponsor-preview-img').src = b64;
-    document.getElementById('new-sponsor-preview-row').style.display='flex';
-    document.getElementById('new-sponsor-url').value='';
-    showToast('✅ Logo listo');
-  }catch(e){showToast('❌ Error al cargar');}
-}
-function clearNewSponsor(){
-  _newSponsorLogoData=null;
-  const pr=document.getElementById('new-sponsor-preview-row');
-  if(pr)pr.style.display='none';
-  const sf=document.getElementById('new-sponsor-file');
-  if(sf)sf.value='';
-  const su=document.getElementById('new-sponsor-url');
-  if(su)su.value='';
-  const pi=document.getElementById('new-sponsor-preview-img');
-  if(pi)pi.src='';
-}
-
-function addSponsor(){
-  const name = document.getElementById('new-sponsor-name')?.value.trim();
-  const logo = document.getElementById('new-sponsor-url')?.value.trim();
-  const tier = document.getElementById('new-sponsor-tier')?.value || 'main';
-  if(!name){showToast('⚠️ Ingresa el nombre del patrocinador');return;}
-  if(!logo){showToast('⚠️ Ingresa la URL del logo');return;}
-  if(!logo.startsWith('http')){showToast('⚠️ La URL debe empezar con https://');return;}
-  // Check for duplicates before saving
-  db.ref('sponsors').once('value', snap=>{
-    const existing = [];
-    snap.forEach(c=>existing.push(c.val().name.toLowerCase()));
-    if(existing.includes(name.toLowerCase())){
-      showToast('⚠️ Ya existe un patrocinador con ese nombre');
-      return;
-    }
-    saveSponsorToFirebase(name, logo, tier);
-  });
-}
-
-function previewNewSponsor(){
-  const url = document.getElementById('new-sponsor-url')?.value.trim();
-  if(!url){showToast('⚠️ Ingresa una URL primero');return;}
-  const row = document.getElementById('new-sponsor-preview-row');
-  const img = document.getElementById('new-sponsor-preview-img');
-  if(row && img){
-    img.src = url;
-    img.onerror = ()=>showToast('❌ No se pudo cargar la imagen. Verifica la URL.');
-    img.onload = ()=>showToast('✅ Logo visible');
-    row.style.display='flex';
-  }
-}
-
-function saveSponsorToFirebase(name, logo, tier){
-  const tierLabels={main:'⭐ Principal',secondary:'Secundario',small:'Pequeño'};
-  const data = {name, logo, tier, createdAt:Date.now()};
-  console.log('Saving sponsor:', name, tier);
-  db.ref('sponsors').push(data)
-    .then((ref)=>{
-      console.log('✅ Saved! Key:', ref.key, 'Total size:', Math.round(JSON.stringify(data).length/1024)+'KB');
-      showToast('✅ '+name+' agregado ('+tierLabels[tier]+')');
-      document.getElementById('new-sponsor-name').value='';
-      document.getElementById('new-sponsor-url').value='';
-      document.getElementById('new-sponsor-tier').value='main';
-      clearNewSponsor();
-      // Small delay then refresh
-      setTimeout(()=>{
-        renderSponsorsAdminList();
-        loadSponsorsDisplay();
-      }, 300);
-    })
-    .catch(e=>{
-      console.error('Sponsor save error:', e);
-      showToast('❌ Error al guardar: '+e.message);
-    });
-}
-
-function renderSponsorsAdminList(){
-  const el=document.getElementById('sponsors-list-admin');
-  if(!el){
-    // Element not in DOM yet, retry after tab switch
-    setTimeout(renderSponsorsAdminList, 500);
-    return;
-  }
-  el.innerHTML='<div style="color:var(--muted);font-size:11px;padding:8px 0">Cargando...</div>';
-  db.ref('sponsors').once('value', snap=>{
-    if(!document.getElementById('sponsors-list-admin'))return; // Tab changed
-    const list=[];
-    snap.forEach(c=>list.push({id:c.key,...c.val()}));
-    if(!list.length){
-      el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:10px 0">Sin patrocinadores aún.</div>';
-      return;
-    }
-    list.sort((a,b)=>{const o={main:0,secondary:1,small:2};return(o[a.tier]||1)-(o[b.tier]||1);});
-    const tierLabels={main:'⭐ PRINCIPAL',secondary:'SECUNDARIO',small:'PEQUEÑO'};
-    const tierColors={main:'sponsor-tier-main',secondary:'sponsor-tier-secondary',small:'sponsor-tier-small'};
-    const tierDesc={main:'Grande — cronómetro + ceremonia',secondary:'Mediano — barra lateral',small:'Pequeño — barra lateral'};
-    el.innerHTML=`
-      <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:8px">
-        ${list.length} PATROCINADOR(ES) ACTIVO(S)
-      </div>`+
-      list.map(s=>`
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px">
-        <!-- Logo preview -->
-        <div style="width:64px;height:48px;background:rgba(255,255,255,.08);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
-          ${s.logo?`<img src="${s.logo}" style="max-width:60px;max-height:44px;object-fit:contain"/>`:'<span style="font-size:22px">🏆</span>'}
-        </div>
-        <!-- Info -->
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;margin-bottom:4px">${s.name}</div>
-          <span class="sponsor-tier-badge ${tierColors[s.tier]||'sponsor-tier-small'}" style="font-size:10px;letter-spacing:1px">${tierLabels[s.tier]||s.tier}</span>
-          <div style="font-size:10px;color:var(--muted);margin-top:3px">${tierDesc[s.tier]||''}</div>
-        </div>
-        <!-- Delete -->
-        <button onclick="deleteSponsor('${s.id}')" style="background:rgba(255,71,87,.12);border:1px solid rgba(255,71,87,.3);border-radius:8px;padding:7px 10px;color:var(--red);cursor:pointer;font-size:12px;flex-shrink:0">✕</button>
-      </div>`).join('');
-  });
-}
-
-function loadSponsorsAdmin(){
-  // Always render immediately when called
-  const el = document.getElementById('sponsors-list-admin');
-  if(el) el.innerHTML = '<div style="color:var(--muted);font-size:11px;padding:6px 0">Cargando patrocinadores...</div>';
-  renderSponsorsAdminList();
-}
-
-function deleteSponsor(id){
-  if(confirm('¿Eliminar patrocinador?')){
-    db.ref('sponsors/'+id).remove().then(()=>{
-      renderSponsorsAdminList();
-      loadSponsorsDisplay();
-      showToast('Patrocinador eliminado');
-    });
-  }
-}
-
-function loadSponsorsDisplay(){
-  db.ref('sponsors').once('value', snap=>{
-    const list=[];snap.forEach(c=>list.push({id:c.key,...c.val()}));
-    if(!list.length)return;
-    list.sort((a,b)=>{const o={main:0,secondary:1,small:2};return(o[a.tier]||1)-(o[b.tier]||1);});
-
-    const main=list.find(s=>s.tier==='main');
-    const others=list.filter(s=>s.tier!=='main');
-
-    // ── RIGHT: Main sponsor (large, next to timer) ──
-    const mainEl=document.getElementById('bc-main-sponsor');
-    const mainCt=document.getElementById('bc-main-sponsor-content');
-    if(mainEl&&mainCt){
-      if(main){
-        mainEl.style.display='flex';
-        mainCt.innerHTML=main.logo
-          ?`<img src="${main.logo}" style="max-height:70px;max-width:140px;object-fit:contain"/>`
-          :`<span style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--ocean);letter-spacing:3px">${main.name}</span>`;
-      } else {
-        mainEl.style.display='none';
-      }
-    }
-
-    // ── LEFT: Secondary + small sponsors (below brand) ──
-    const secEl=document.getElementById('bc-secondary-sponsors');
-    if(secEl){
-      if(others.length){
-        secEl.style.display='flex';
-        secEl.innerHTML=others.map(s=>{
-          const h=s.tier==='secondary'?'36px':'22px';
-          const mw=s.tier==='secondary'?'100px':'70px';
-          return s.logo
-            ?`<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:4px 8px;display:flex;align-items:center">
-                <img src="${s.logo}" style="height:${h};max-width:${mw};object-fit:contain" title="${s.name}"/>
-              </div>`
-            :`<span style="font-family:'Bebas Neue',cursive;font-size:11px;color:var(--muted);letter-spacing:2px;background:rgba(255,255,255,.05);border-radius:6px;padding:3px 8px">${s.name}</span>`;
-        }).join('');
-      } else {
-        secEl.style.display='none';
-      }
-    }
-
-    // ── Timer bar sponsor (operator view) ──
-    const timerEl=document.getElementById('main-sponsor-timer');
-    const timerCt=document.getElementById('main-sponsor-timer-content');
-    if(timerEl&&timerCt&&main){
-      timerEl.style.display='flex';
-      timerCt.innerHTML=main.logo
-        ?`<img src="${main.logo}" style="height:30px;max-width:100px;object-fit:contain;background:rgba(255,255,255,.05);border-radius:6px;padding:3px"/>`
-        :`<span style="font-family:'Bebas Neue',cursive;font-size:14px;color:var(--ocean);letter-spacing:2px">${main.name}</span>`;
-    }
-  });
-}
-
-// Override loadSponsorBar to use new system
-function loadSponsorBar(){
-  db.ref('sponsors').on('value', snap=>{
-    const list=[];
-    snap.forEach(c=>list.push({id:c.key,...c.val()}));
-    if(!list.length)return;
-    const main=list.find(s=>s.tier==='main');
-    const others=list.filter(s=>s.tier!=='main');
-    const mainCt=document.getElementById('bc-main-sponsor-content');
-    const mainWrap=document.getElementById('bc-main-sponsor');
-    if(main&&main.logo&&mainWrap&&mainCt){
-      mainWrap.style.display='flex';
-      mainCt.innerHTML=`<img src="${main.logo}" style="max-height:60px;max-width:140px;object-fit:contain"/>`;
-    }
-    const secEl=document.getElementById('bc-secondary-sponsors');
-    if(secEl&&others.length){
-      secEl.style.display='flex';
-      secEl.innerHTML=others.map(s=>`<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:4px 8px"><img src="${s.logo}" style="height:34px;max-width:100px;object-fit:contain" title="${s.name}" onerror="this.parentElement.style.display='none'"/></div>`).join('');
-    } else if(secEl){
-      secEl.style.display='none';secEl.innerHTML='';
-    }
-  });
-}
-
-// Sponsors in ceremony — called from triggerHeatEnd directly
-function addSponsorsToСeremony(){
-  setTimeout(()=>{
-    db.ref('sponsors').once('value', snap=>{
-      const list=[];snap.forEach(c=>list.push({id:c.key,...c.val()}));
-      const el=document.getElementById('ceremony-sponsors-section');
-      if(!list.length){if(el)el.style.display='none';return;}
-      list.sort((a,b)=>a.tier==='main'?-1:b.tier==='main'?1:0);
-      if(el){
-        el.style.display='block';
-        el.className='ceremony-sponsors';
-        el.innerHTML=`<div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:var(--muted);width:100%;text-align:center;margin-bottom:10px">PATROCINADORES</div>`+
-          list.map(s=>{
-            const h=s.tier==='main'?'50px':s.tier==='secondary'?'34px':'22px';
-            const mw=s.tier==='main'?'150px':'90px';
-            if(s.logo){
-              return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
-                <img src="${s.logo}" style="height:${h};max-width:${mw};object-fit:contain;background:rgba(255,255,255,.07);border-radius:8px;padding:4px"/>
-                <span style="font-family:'Bebas Neue',cursive;font-size:8px;letter-spacing:1px;color:var(--muted)">${s.tier==='main'?s.name.toUpperCase():''}</span>
-              </div>`;
-            }
-            return `<span style="font-family:'Bebas Neue',cursive;font-size:${s.tier==='main'?'16px':'11px'};color:var(--ocean);letter-spacing:2px">${s.name}</span>`;
-          }).join('<div style="width:1px;background:rgba(255,255,255,.1);align-self:stretch"></div>');
-      }
-    });
-  }, 600);
-}
-
-// ════════ LOGOUT ════════
-function logoutToGate(){
-  // Reset all state
-  role=null;judgeNum=null;heatState=null;
-  timerRunning=false;clearInterval(timerInterval);
-  demoRunning=false;clearTimeout(demoInterval);
-  judgeScores={};pendingInput={};myHistory=[];
-  prevTotals={};currentLeader=null;heatBestWave={score:0,surfer:''};
-  // Hide all views
-  ['op-view','op-tabs','judge-view','broadcast-view','admin-view','timer-bar','sea-bar'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.style.display='none';
-  });
-  ['top-badge','top-admin-badge','logout-btn','demo-btn'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.style.display='none';
-  });
-  // Reset gate
-  document.getElementById('gate-input').value='';
-  document.getElementById('gate-error').textContent='';
-  document.querySelectorAll('.grole').forEach(b=>b.classList.remove('active'));
-  document.getElementById('judge-sel').style.display='none';
-  document.getElementById('enter-btn').disabled=true;
-  document.getElementById('gate-input').placeholder='Código de acceso';
-  // Show gate
-  document.getElementById('app').style.display='none';
-  document.getElementById('gate').style.display='flex';
-  // Remove Firebase listeners
-  if(db){db.ref('heat').off();db.ref('timer').off();db.ref('pendingScores').off();db.ref('rounds').off();db.ref('notification').off();db.ref('config/seaConditions').off();}
-  showToast('Sesión cerrada');
+  showToast('Tour guiado — próximamente');
 }
 
 // ════════ TOAST ════════
 let toastTimeout=null;
 function showToast(msg){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove('show'),2800);
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>el.classList.remove('show'),2500);
 }
 </script>
-
-<!-- DEMO TOUR OVERLAY -->
-<div id="tour-overlay">
-  <div class="tour-card">
-    <div class="tour-step-badge" id="tour-step-badge">PASO 1 DE 10</div>
-    <div class="tour-title" id="tour-title">—</div>
-    <div class="tour-desc" id="tour-desc">—</div>
-    <div class="tour-progress" id="tour-progress"></div>
-    <div class="tour-btns">
-      <button class="tour-btn-skip" onclick="endTour()">✕ SALIR DEL TOUR</button>
-      <button class="tour-btn-next" id="tour-next-btn" onclick="tourNext()">SIGUIENTE →</button>
-    </div>
-  </div>
-</div>
-<div class="tour-spotlight" id="tour-spotlight" style="display:none"></div>
-
-<!-- EVENT QR MODAL -->
-<div id="event-qr-modal">
-  <div class="eqr-card">
-    <div class="eqr-title">📱 QR DEL EVENTO</div>
-    <div class="eqr-sub" id="eqr-event-name">WAVESCORE PRO</div>
-    <div class="eqr-qr" id="eqr-code"></div>
-    <div class="eqr-url" id="eqr-url-text">Generando link...</div>
-    <div class="eqr-instructions">
-      <div class="eqr-inst-row"><span class="eqr-inst-num">1</span><span>El atleta escanea este QR con su celular</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">2</span><span>Ve la pantalla pública en tiempo real</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">3</span><span>Recibe notificaciones de llamados al heat</span></div>
-      <div class="eqr-inst-row"><span class="eqr-inst-num">4</span><span>Ve posiciones, tiempo y condiciones del mar</span></div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn-sm btn-go" onclick="printEventQR()" style="flex:1;padding:11px">🖨️ IMPRIMIR</button>
-      <button class="btn-sm btn-gray" onclick="document.getElementById('event-qr-modal').classList.remove('open')" style="flex:1;padding:11px">CERRAR</button>
-    </div>
-  </div>
-</div>
-
-<!-- ATHLETE PUBLIC VIEW (QR landing for event) -->
-<div id="athlete-public-view" style="display:none">
-  <div class="apv-header">
-    <div class="apv-brand">🌊 WAVESCORE PRO</div>
-    <div class="apv-event" id="apv-event-name">—</div>
-  </div>
-  <div class="apv-content">
-    <div class="apv-call-banner" id="apv-call-banner">
-      <div class="apv-call-title">📢 LLAMADO AL HEAT</div>
-      <div class="apv-call-name" id="apv-call-name">—</div>
-      <div class="apv-call-msg" id="apv-call-msg">—</div>
-    </div>
-    <div class="apv-timer">
-      <div class="apv-timer-num" id="apv-timer">—:——</div>
-      <div class="apv-timer-lbl">TIEMPO RESTANTE</div>
-    </div>
-    <div class="apv-sea" id="apv-sea" style="display:none">
-      <span>🌊 <span style="color:var(--ocean)" id="apv-wave">—</span>m</span>
-      <span>💨 <span style="color:var(--ocean)" id="apv-wind">—</span> km/h</span>
-      <span id="apv-sea-label" style="color:var(--muted)"></span>
-    </div>
-    <div class="apv-heat-name" id="apv-heat-name">Esperando heat...</div>
-    <div id="apv-scoreboard"></div>
-    <div style="margin-top:16px;text-align:center;font-size:11px;color:var(--muted)">
-      🌊 WaveScore Pro · Actualización en tiempo real
-    </div>
-  </div>
-</div>
 </body>
 </html>

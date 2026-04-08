@@ -273,7 +273,7 @@ select.sinput option{background:#0a1f3a;}
 /* DEMO */
 #demo-btn{position:fixed;bottom:24px;right:24px;z-index:700;padding:12px 20px;background:linear-gradient(90deg,#7c3aed,#a78bfa);border:none;border-radius:50px;color:#fff;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:3px;box-shadow:0 8px 30px rgba(124,58,237,.4);transition:all .2s;display:none;}
 #demo-btn.running{background:linear-gradient(90deg,#dc2626,#ef4444);}
-.demo-badge{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,rgba(124,58,237,.9),rgba(167,139,250,.9));border-radius:20px;padding:5px 18px;font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:#fff;z-index:700;display:none;backdrop-filter:blur(10px);}
+.demo-badge{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,rgba(124,58,237,.9),rgba(167,139,250,.9));border-radius:20px;padding:5px 18px;font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:#fff;z-index:700;display:none;backdrop-filter:blur(10px);}
 .demo-badge.show{display:block;}
 
 /* QR */
@@ -2283,6 +2283,9 @@ function startDemo(){
 }
 function stopAllDemo(){
   demoRunning=false;clearInterval(demoInterval);
+  // Detener timer
+  timerRunning=false;clearInterval(timerInterval);
+  db.ref('timer').update({running:false,remaining:localTimerSec});
   document.getElementById('demo-btn').classList.remove('running');
   document.getElementById('demo-badge').classList.remove('show');
   document.getElementById('demo-menu-stop').style.display='none';

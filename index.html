@@ -1590,6 +1590,7 @@ function renderBroadcast(){
   if(overlayVisible)renderOverlay();
   // Animations
   checkAnimationTriggers(heatState,status);
+setTimeout(loadSponsorBar,100);
   loadSponsorsDisplay();
   // Update prevTotals
   heatState.surfers.forEach((s,i)=>{

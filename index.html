@@ -226,10 +226,10 @@ select.sinput option{background:#0a1f3a;}
 .ann-total{font-family:'Bebas Neue',cursive;font-size:24px;color:var(--ocean);}
 .ann-total.gold{color:var(--gold);}
 .sponsor-bar{display:flex;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.05);padding:8px 16px;position:relative;z-index:2;}
-.lw-popup{position:fixed;bottom:100px;right:20px;transform:translateX(200px);opacity:0;background:rgba(2,12,27,.95);border:2px solid var(--ocean);border-radius:16px;padding:12px 20px;text-align:center;z-index:100;backdrop-filter:blur(20px);transition:all .3s;pointer-events:none;}
-.lw-popup.show{transform:translateX(0);opacity:1;}
+.lw-popup{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-120px);opacity:0;background:rgba(2,12,27,.92);border:1px solid var(--ocean);border-radius:12px;padding:6px 18px;text-align:center;z-index:100;backdrop-filter:blur(20px);transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;display:flex;align-items:center;gap:12px;}
+.lw-popup.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .lw-surfer{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:4px;color:var(--muted);}
-.lw-score{font-family:'Bebas Neue',cursive;font-size:44px;color:var(--ocean);line-height:1;animation:newWaveIn .4s ease;}
+.lw-score{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--ocean);line-height:1;animation:newWaveIn .4s ease;}
 .lw-label{font-size:11px;color:var(--muted);letter-spacing:2px;}
 
 /* ADMIN */
@@ -395,6 +395,17 @@ select.sinput option{background:#0a1f3a;}
 .sponsor-tier-secondary{background:rgba(0,198,251,.1);color:var(--ocean);border:1px solid rgba(0,198,251,.2);}
 .sponsor-tier-small{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid rgba(255,255,255,.1);}
 .ceremony-sponsors{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
+
+/* BIG WAVE ANIMATION */
+#big-wave-overlay{position:fixed;inset:0;z-index:950;pointer-events:none;display:none;align-items:center;justify-content:center;background:rgba(0,10,30,.6);backdrop-filter:blur(4px);}
+#big-wave-overlay.show{display:flex;}
+.bwa-inner{text-align:center;animation:bigWaveIn .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes bigWaveIn{0%{transform:scale(0) rotate(-10deg);opacity:0;}100%{transform:scale(1) rotate(0deg);opacity:1;}}
+.bwa-wave{font-size:clamp(80px,15vw,140px);line-height:1;animation:waveRock 1s ease-in-out infinite alternate;}
+@keyframes waveRock{0%{transform:rotate(-8deg) scale(1);}100%{transform:rotate(8deg) scale(1.1);}}
+.bwa-score{font-family:'Bebas Neue',cursive;font-size:clamp(80px,18vw,160px);color:var(--gold);line-height:1;text-shadow:0 0 60px rgba(255,209,102,.8);}
+.bwa-name{font-family:'Bebas Neue',cursive;font-size:clamp(20px,4vw,36px);letter-spacing:6px;color:#fff;margin-top:8px;}
+.bwa-label{font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:6px;color:var(--gold);margin-top:4px;}
 </style>
 </head>
 <body>
@@ -827,6 +838,16 @@ select.sinput option{background:#0a1f3a;}
       </div>
       <div id="adm-rounds-list"><div style="color:var(--muted);font-size:13px">Sin rondas.</div></div>
     </div>
+  </div>
+</div>
+
+<!-- BIG WAVE OVERLAY -->
+<div id="big-wave-overlay">
+  <div class="bwa-inner">
+    <div class="bwa-wave">🌊</div>
+    <div class="bwa-score" id="bwa-score">—</div>
+    <div class="bwa-name" id="bwa-name">—</div>
+    <div class="bwa-label">MEJOR OLA DEL HEAT</div>
   </div>
 </div>
 
@@ -1571,6 +1592,7 @@ function checkAnimationTriggers(hs,status){
           const bw=document.getElementById('best-wave-banner');
           bw.classList.add('show');clearTimeout(bestWaveTimeout);
           bestWaveTimeout=setTimeout(()=>bw.classList.remove('show'),4000);
+          showBigWaveAnimation(w.score,s.name);
           if(w.score>=9.0)spawnConfetti(50,'#00c6fb');
         }
       }
@@ -1675,7 +1697,7 @@ function _renderSponsorsOnScreen(sponsors){
   const timerWrap=document.getElementById('main-sponsor-timer');
   const timerContent=document.getElementById('main-sponsor-timer-content');
   if(main&&main.logo){
-    if(bcMainContent)bcMainContent.innerHTML=`<img src="${main.logo}" style="max-height:90px;max-width:180px;object-fit:contain;" alt="${main.name||''}" onerror="this.style.display='none'"/>`;
+    if(bcMainContent)bcMainContent.innerHTML=`<img src="${main.logo}" style="max-height:110px;max-width:220px;object-fit:contain;" alt="${main.name||''}" onerror="this.style.display='none'"/>`;
     if(bcMainWrap)bcMainWrap.style.display='flex';
     if(timerContent)timerContent.innerHTML=`<img src="${main.logo}" style="max-height:32px;max-width:100px;object-fit:contain;" onerror="this.style.display='none'"/>`;
     if(timerWrap)timerWrap.style.display='flex';
@@ -1694,7 +1716,7 @@ function _renderSponsorsOnScreen(sponsors){
       const img=document.createElement('img');
       img.src=s.logo;
       img.alt=s.name||'';
-      img.style.cssText=s.tier==='secondary'?'height:50px;max-width:140px;object-fit:contain;':'height:32px;max-width:90px;object-fit:contain;';
+      img.style.cssText=s.tier==='secondary'?'height:60px;max-width:160px;object-fit:contain;':'height:36px;max-width:100px;object-fit:contain;';
       img.title=s.name||'';
       img.onerror=function(){this.parentElement.style.display='none';};
       wrap.appendChild(img);
@@ -2244,8 +2266,9 @@ function startDemo(){
   const names=['Kelly Slater','Italo Ferreira','Gabriel Medina','João Chianca'];
   const demoSurfers=names.slice(0,4).map((name,i)=>({name,color:LYCRA_COLORS[i],lycra:LYCRA_NAMES[i],waves:[],interference:0,priority:i+1}));
   db.ref('heat').set({name:'Demo Heat — Open Men',duration:20,surfers:demoSurfers,active:true,timestamp:Date.now()});
-  db.ref('timer').set({running:false,remaining:1200,total:1200});
-  localTimerSec=1200;renderTimerDisplay(1200);
+  localTimerSec=1200;timerStartedAt=Date.now();timerStartSec=1200;
+  db.ref('timer').set({running:true,startedAt:Date.now(),startSec:1200,remaining:1200,total:1200});
+  renderTimerDisplay(1200);timerRunning=true;runLocalTimer();
   demoHeatState={name:'Demo Heat — Open Men',surfers:demoSurfers};
   demoInterval=setInterval(()=>{
     if(!demoRunning){clearInterval(demoInterval);return;}
@@ -2269,6 +2292,21 @@ function stopAllDemo(){
 function startTour(){
   document.getElementById('demo-menu').style.display='none';
   showToast('Tour guiado — próximamente');
+}
+
+// ════════ BIG WAVE ANIMATION ════════
+let bigWaveTimeout=null;
+function showBigWaveAnimation(score,surferName){
+  const overlay=document.getElementById('big-wave-overlay');
+  const scoreEl=document.getElementById('bwa-score');
+  const nameEl=document.getElementById('bwa-name');
+  if(!overlay||!scoreEl||!nameEl)return;
+  scoreEl.textContent=score.toFixed(2);
+  nameEl.textContent=surferName.toUpperCase();
+  overlay.classList.add('show');
+  spawnConfetti(score>=9.5?80:50,'#ffd166');
+  clearTimeout(bigWaveTimeout);
+  bigWaveTimeout=setTimeout(()=>overlay.classList.remove('show'),2500);
 }
 
 // ════════ TOAST ════════

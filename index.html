@@ -1590,6 +1590,7 @@ function renderBroadcast(){
   if(overlayVisible)renderOverlay();
   // Animations
   checkAnimationTriggers(heatState,status);
+  loadSponsorsDisplay();
   // Update prevTotals
   heatState.surfers.forEach((s,i)=>{
     const st=status.find(x=>x.idx===i)||{};

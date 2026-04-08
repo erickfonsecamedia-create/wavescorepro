@@ -1104,7 +1104,7 @@ function initRole(){
     document.getElementById('broadcast-view').style.display='block';
     document.getElementById('sea-bar').style.display='flex';
     document.getElementById('demo-btn').style.display='block';
-    listenHeat();listenTimer();listenSeaConditions();loadSponsorBar();listenNotifications();
+    listenHeat();listenTimer();listenSeaConditions();listenNotifications();
   } else if(role==='admin'){
     document.getElementById('top-admin-badge').style.display='inline-block';
     document.getElementById('admin-view').style.display='block';
@@ -1590,7 +1590,7 @@ function renderBroadcast(){
   if(overlayVisible)renderOverlay();
   // Animations
   checkAnimationTriggers(heatState,status);
-setTimeout(loadSponsorBar,100);
+setTimeout(loadSponsorBar,500);
   loadSponsorsDisplay();
   // Update prevTotals
   heatState.surfers.forEach((s,i)=>{

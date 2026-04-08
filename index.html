@@ -1104,7 +1104,8 @@ function initRole(){
     document.getElementById('broadcast-view').style.display='block';
     document.getElementById('sea-bar').style.display='flex';
     document.getElementById('demo-btn').style.display='block';
-    listenHeat();listenTimer();listenSeaConditions();listenNotifications();
+   listenHeat();listenTimer();listenSeaConditions();listenNotifications();
+db.ref('sponsors').on('value',snap=>{const list=[];snap.forEach(c=>list.push({id:c.key,...c.val()}));const main=list.find(s=>s.tier==='main');const others=list.filter(s=>s.tier!=='main');const mc=document.getElementById('bc-main-sponsor-content');const mw=document.getElementById('bc-main-sponsor');if(main&&main.logo&&mw&&mc){mw.style.display='flex';mc.innerHTML=`<img src="${main.logo}" style="max-height:60px;max-width:140px;object-fit:contain"/>`;}const se=document.getElementById('bc-secondary-sponsors');if(se&&others.length){se.style.display='flex';se.innerHTML=others.map(s=>`<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:4px 8px"><img src="${s.logo}" style="height:34px;max-width:100px;object-fit:contain" title="${s.name}"/></div>`).join('');}});
   } else if(role==='admin'){
     document.getElementById('top-admin-badge').style.display='inline-block';
     document.getElementById('admin-view').style.display='block';

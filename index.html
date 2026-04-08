@@ -3264,21 +3264,25 @@ function loadSponsorsDisplay(){
 
 // Override loadSponsorBar to use new system
 function loadSponsorBar(){
-  db.ref('sponsors').once('value', snap=>{
-    if(snap.exists()){loadSponsorsDisplay();return;}
-    // Old single sponsor fallback
-    db.ref('config/event').once('value', snapEv=>{
-      const ev=snapEv.val()||{};
-      const bar=document.getElementById('sponsor-bar');
-      const ct=document.getElementById('sponsor-content');
-      if(!bar||!ct)return;
-      if(ev.sponsorLogo||ev.sponsorText){
-        bar.style.display='block';
-        ct.innerHTML=ev.sponsorLogo
-          ?`<img src="${ev.sponsorLogo}" class="sponsor-logo-main"/>`
-          :`<span style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:3px;color:var(--ocean)">${ev.sponsorText}</span>`;
-      }
-    });
+  db.ref('sponsors').on('value', snap=>{
+    const list=[];
+    snap.forEach(c=>list.push({id:c.key,...c.val()}));
+    if(!list.length)return;
+    const main=list.find(s=>s.tier==='main');
+    const others=list.filter(s=>s.tier!=='main');
+    const mainCt=document.getElementById('bc-main-sponsor-content');
+    const mainWrap=document.getElementById('bc-main-sponsor');
+    if(main&&main.logo&&mainWrap&&mainCt){
+      mainWrap.style.display='flex';
+      mainCt.innerHTML=`<img src="${main.logo}" style="max-height:60px;max-width:140px;object-fit:contain"/>`;
+    }
+    const secEl=document.getElementById('bc-secondary-sponsors');
+    if(secEl&&others.length){
+      secEl.style.display='flex';
+      secEl.innerHTML=others.map(s=>`<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:4px 8px"><img src="${s.logo}" style="height:34px;max-width:100px;object-fit:contain" title="${s.name}" onerror="this.parentElement.style.display='none'"/></div>`).join('');
+    } else if(secEl){
+      secEl.style.display='none';secEl.innerHTML='';
+    }
   });
 }
 

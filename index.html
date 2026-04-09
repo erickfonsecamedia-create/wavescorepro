@@ -208,13 +208,13 @@ select.sinput option{background:#0a1f3a;}
 .bc-needs.combo{color:var(--red);}
 .bc-needs.leader{color:var(--gold);}
 .bc-priority{font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:var(--muted);margin-top:3px;}
-.priority-display{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0;}
-.priority-chip{display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 12px;min-width:70px;transition:all .3s;}
+.priority-display{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:4px 0;}
+.priority-chip{display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:5px 10px;min-width:55px;transition:all .3s;}
 .priority-chip.p1{border-color:var(--gold);background:rgba(255,209,102,.08);}
-.priority-num{font-family:'Bebas Neue',cursive;font-size:24px;color:var(--muted);line-height:1;}
+.priority-num{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--muted);line-height:1;}
 .priority-chip.p1 .priority-num{color:var(--gold);}
-.priority-dot{width:12px;height:12px;border-radius:50%;}
-.priority-name{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:1px;text-align:center;}
+.priority-dot{width:9px;height:9px;border-radius:50%;}
+.priority-name{font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:1px;text-align:center;}
 .ann-panel{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.07);margin-top:14px;padding:14px;border-radius:14px;}
 .ann-panel-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--muted);margin-bottom:10px;}
 .ann-row{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 14px;margin-bottom:6px;}
@@ -226,7 +226,7 @@ select.sinput option{background:#0a1f3a;}
 .ann-total{font-family:'Bebas Neue',cursive;font-size:24px;color:var(--ocean);}
 .ann-total.gold{color:var(--gold);}
 .sponsor-bar{display:flex;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.05);padding:8px 16px;position:relative;z-index:2;}
-.lw-popup{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-120px);opacity:0;background:rgba(2,12,27,.92);border:1px solid var(--ocean);border-radius:12px;padding:6px 18px;text-align:center;z-index:100;backdrop-filter:blur(20px);transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;display:flex;align-items:center;gap:12px;}
+.lw-popup{position:fixed;top:195px;left:50%;transform:translateX(-50%) translateY(-60px);opacity:0;background:rgba(2,12,27,.92);border:1px solid var(--ocean);border-radius:12px;padding:6px 18px;text-align:center;z-index:100;backdrop-filter:blur(20px);transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;display:flex;align-items:center;gap:12px;}
 .lw-popup.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .lw-surfer{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:4px;color:var(--muted);}
 .lw-score{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--ocean);line-height:1;animation:newWaveIn .4s ease;}
@@ -1479,11 +1479,16 @@ function renderBroadcast(){
   const status=calculate_heat_status(heatState.surfers);
   document.getElementById('bc-event-badge').textContent=(heatState.name||'HEAT').toUpperCase();
   const pSorted=[...heatState.surfers].map((s,i)=>({...s,idx:i})).sort((a,b)=>(a.priority||99)-(b.priority||99));
-  document.getElementById('bc-priority-display').innerHTML=`<div class="priority-display">${pSorted.map((s,i)=>`
+  // Ordenar por puntaje para mostrar ranking real
+  const rankSorted=[...heatState.surfers].map((s,i)=>{
+    const st2=status.find(x=>x.idx===i)||{};
+    return{...s,idx:i,total:st2.total||0,position:st2.position||i+1};
+  }).sort((a,b)=>a.position-b.position);
+  document.getElementById('bc-priority-display').innerHTML=`<div class="priority-display">${rankSorted.map((s,i)=>`
     <div class="priority-chip ${i===0?'p1':''}">
-      <div class="priority-num">${s.priority}</div>
+      <div class="priority-num">#${s.position}</div>
       <div class="priority-dot" style="background:${s.color}"></div>
-      <div class="priority-name">${s.name.split(' ')[0]}</div>
+      <div class="priority-name">${s.name.split(' ')[0].toUpperCase()}</div>
     </div>`).join('')}
   </div>`;
   document.getElementById('bc-surfers').innerHTML=heatState.surfers.map((s,i)=>{

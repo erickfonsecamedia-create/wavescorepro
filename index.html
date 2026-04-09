@@ -586,6 +586,7 @@ select.sinput option{background:#0a1f3a;}
         <div style="display:flex;gap:6px">
           <button class="btn-sm btn-go" onclick="exportAllToExcel()" style="font-size:11px;padding:7px 12px">📊 EXCEL</button>
           <button class="btn-sm" onclick="exportActaOficial()" style="font-size:11px;padding:7px 12px;background:linear-gradient(90deg,#1e3a5f,#3b82f6);color:#fff;border-radius:9px;border:none">📋 ACTA</button>
+          <button class="btn-sm" onclick="exportTournamentReport()" style="font-size:11px;padding:7px 12px;background:linear-gradient(90deg,#7c3aed,#a78bfa);color:#fff;border-radius:9px;border:none">🏆 REPORTE</button>
           <button class="btn-sm btn-danger" onclick="clearAllRounds()" style="font-size:11px">✕</button>
         </div>
       </div>
@@ -834,6 +835,7 @@ select.sinput option{background:#0a1f3a;}
         <div style="display:flex;gap:6px">
           <button class="btn-sm btn-go" onclick="exportAllToExcel()" style="font-size:11px;padding:7px 12px">📊 EXCEL</button>
           <button class="btn-sm" onclick="exportActaOficial()" style="font-size:11px;padding:7px 12px;background:linear-gradient(90deg,#1e3a5f,#3b82f6);color:#fff;border-radius:9px;border:none">📋 ACTA</button>
+          <button class="btn-sm" onclick="exportTournamentReport()" style="font-size:11px;padding:7px 12px;background:linear-gradient(90deg,#7c3aed,#a78bfa);color:#fff;border-radius:9px;border:none">🏆 REPORTE</button>
           <button class="btn-sm btn-danger" onclick="clearAllRounds()" style="font-size:11px">✕ TODO</button>
         </div>
       </div>
@@ -2082,7 +2084,95 @@ function showEventQR(){
 }
 
 // ════════ ATHLETE PROFILE (QR landing) ════════
-function checkPublicView(){return false;}
+function checkPublicView(){
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('view')!=='public') return false;
+  // Vista publica - mostrar scores en vivo y rondas
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').style.display='none';
+  // Crear vista publica si no existe
+  let pv=document.getElementById('public-live-view');
+  if(!pv){
+    pv=document.createElement('div');
+    pv.id='public-live-view';
+    pv.style.cssText='min-height:100vh;background:linear-gradient(160deg,#020c1b,#0a1f3a);padding:16px;';
+    document.body.appendChild(pv);
+  }
+  pv.style.display='block';
+  try{
+    let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}
+    db=firebase.database(fbApp);
+    loadPublicView(pv);
+  }catch(e){console.error(e);}
+  return true;
+}
+
+function loadPublicView(container){
+  // Header
+  container.innerHTML=`
+    <div style="text-align:center;padding:16px 0 8px">
+      <div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--ocean)">🌊 WAVESCORE PRO</div>
+      <div id="pv-event-name" style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;margin-top:4px">CARGANDO...</div>
+    </div>
+    <div id="pv-heat-info" style="text-align:center;margin-bottom:12px"></div>
+    <div id="pv-scores" style="max-width:500px;margin:0 auto"></div>
+    <div style="max-width:500px;margin:16px auto 0">
+      <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:8px">RESULTADOS</div>
+      <div id="pv-rounds"></div>
+    </div>
+    <div style="text-align:center;margin-top:20px;font-size:10px;color:rgba(255,255,255,.2)">🌊 WaveScore Pro · Actualización en tiempo real</div>`;
+
+  // Cargar nombre del evento
+  db.ref('config/event/name').once('value',snap=>{
+    const el=document.getElementById('pv-event-name');
+    if(el&&snap.val())el.textContent=snap.val().toUpperCase();
+  });
+
+  // Escuchar heat en tiempo real
+  db.ref('heat').on('value',snap=>{
+    const heat=snap.val();
+    const hi=document.getElementById('pv-heat-info');
+    const sc=document.getElementById('pv-scores');
+    if(!hi||!sc)return;
+    if(!heat||!heat.surfers){
+      hi.innerHTML='<div style="color:var(--muted);font-size:13px">Sin heat activo</div>';
+      sc.innerHTML='';
+      return;
+    }
+    hi.innerHTML=`<div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:var(--ocean)">${heat.name||'HEAT ACTIVO'}</div>`;
+    const status=calculate_heat_status(heat.surfers);
+    sc.innerHTML=status.map(s=>`
+      <div style="background:rgba(255,255,255,.04);border:1px solid ${s.position===1?'var(--gold)':'rgba(255,255,255,.08)'};border-radius:12px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px">
+        <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:${s.position===1?'var(--gold)':'var(--muted)'};min-width:28px">#${s.position}</div>
+        <div style="width:10px;height:10px;border-radius:50%;background:${heat.surfers[s.idx]?.color||'#fff'};flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px">${s.name}</div>
+          <div style="font-size:11px;color:var(--muted)">${s.waveCount} olas · ${s.isLeading?'🥇 LÍDER':s.isCombo?'🔄 COMBO':'Necesita '+((s.best*2-s.total+0.01).toFixed(2))}</div>
+        </div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${s.total.toFixed(2)}</div>
+      </div>`).join('');
+  });
+
+  // Escuchar rondas
+  db.ref('rounds').on('value',snap=>{
+    const el=document.getElementById('pv-rounds');if(!el)return;
+    const rounds=[];
+    snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
+    rounds.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if(!rounds.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">Sin resultados guardados</div>';return;}
+    el.innerHTML=rounds.filter(r=>r.results&&r.results.length).map(r=>`
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;margin-bottom:8px">${r.name}</div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:8px">${new Date(r.timestamp).toLocaleString('es-CO')}</div>
+        ${(r.results||[]).filter(s=>s&&s.name).map(s=>`
+          <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+            <span style="font-family:'Bebas Neue',cursive;font-size:13px;color:${s.position===1?'var(--gold)':'var(--muted)'};min-width:24px">#${s.position}</span>
+            <span style="flex:1;font-size:13px">${s.name}</span>
+            <span style="font-family:'Bebas Neue',cursive;font-size:16px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${(s.total||0).toFixed(2)}</span>
+          </div>`).join('')}
+      </div>`).join('');
+  });
+}
 function checkAthleteQRLanding(){
   const params=new URLSearchParams(window.location.search);
   const name=params.get('athlete');
@@ -2155,20 +2245,100 @@ function buildRounds(athletes,perHeat,advance){
   if(current.length>0)rounds.push({round:rNum,name:'Gran Final',heats:[{id:`R${rNum}H1`,athletes:current,completed:false}],advanceCount:1});
   return rounds;
 }
+// ════ BRACKET DRAG & DROP ════
+let _bracketEdit = null;
+let _dragInfo = null;
+
 function renderBracket(bracket){
   const el=document.getElementById('bracket-view');if(!el)return;
   if(!bracket||!bracket.rounds){el.innerHTML='<div style="color:var(--muted);font-size:13px">Sin bracket.</div>';return;}
-  el.innerHTML=`<div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:var(--ocean);margin-bottom:12px">${bracket.name}</div>
-  <div class="bracket-container">${bracket.rounds.map(round=>`
-    <div class="bracket-round">
-      <div class="bracket-round-title">${round.name}</div>
-      ${round.heats.map(heat=>`<div class="bracket-heat ${heat.completed?'completed':''}">
-        <div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:5px">${heat.id}</div>
-        ${heat.athletes.map(name=>`<div class="bracket-surfer-row"><div class="bsr-name">${name||'TBD'}</div></div>`).join('')}
-      </div>`).join('')}
-    </div>`).join('<div style="display:flex;align-items:center;font-size:14px;color:rgba(255,255,255,.2);padding:0 2px">›</div>')}</div>`;
+  _bracketEdit = JSON.parse(JSON.stringify(bracket));
+  _drawBracketEdit();
 }
-function clearBracket(){if(confirm('¿Eliminar bracket?'))db.ref('bracket').remove();}
+
+function _drawBracketEdit(){
+  const el=document.getElementById('bracket-view');if(!el||!_bracketEdit)return;
+  const b=_bracketEdit;
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:var(--ocean)">${b.name}</div>
+      <div style="display:flex;gap:8px">
+        <div style="font-size:11px;color:var(--muted);padding:6px 10px;background:rgba(0,198,251,.06);border-radius:8px;border:1px solid rgba(0,198,251,.15)">💡 Arrastra para reordenar</div>
+        <button class="btn-sm btn-go" onclick="saveBracketEdits()" style="padding:8px 14px;font-size:11px">💾 GUARDAR</button>
+        <button class="btn-sm btn-danger" onclick="clearBracket()" style="padding:8px 12px;font-size:11px">🗑️</button>
+      </div>
+    </div>
+    <div class="bracket-container">
+      ${b.rounds.map((round,ri)=>`
+        <div class="bracket-round">
+          <div class="bracket-round-title">${round.name}</div>
+          ${round.heats.map((heat,hi)=>`
+            <div class="bracket-heat ${heat.completed?'completed':''}"
+              id="bh-${ri}-${hi}"
+              ondragover="brkDragOver(event,${ri},${hi})"
+              ondrop="brkDrop(event,${ri},${hi})"
+              ondragleave="document.getElementById('bh-${ri}-${hi}').style.borderColor=''"
+              style="min-height:60px;transition:border-color .2s">
+              <div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:6px">${heat.id}</div>
+              ${heat.athletes.map((name,ai)=>`
+                <div class="bracket-surfer-row"
+                  draggable="true"
+                  ondragstart="brkDragStart(event,${ri},${hi},${ai})"
+                  ondragend="brkDragEnd(event)"
+                  style="cursor:grab;border-radius:6px;padding:3px 5px;transition:all .15s;user-select:none"
+                  onmouseover="this.style.background='rgba(0,198,251,.1)'"
+                  onmouseout="this.style.background=''">
+                  <div class="bsr-name">${name||'TBD'}</div>
+                  <span style="color:rgba(255,255,255,.25);font-size:12px">⠿</span>
+                </div>`).join('')}
+            </div>`).join('')}
+        </div>
+        ${ri<b.rounds.length-1?'<div style="display:flex;align-items:center;font-size:14px;color:rgba(255,255,255,.2);padding:0 2px">›</div>':''}`).join('')}
+    </div>`;
+}
+
+function brkDragStart(event,ri,hi,ai){
+  _dragInfo={ri,hi,ai};
+  event.dataTransfer.effectAllowed='move';
+  event.target.style.opacity='0.4';
+}
+function brkDragEnd(event){
+  event.target.style.opacity='1';
+  document.querySelectorAll('.bracket-heat').forEach(el=>el.style.borderColor='');
+}
+function brkDragOver(event,ri,hi){
+  event.preventDefault();
+  event.dataTransfer.dropEffect='move';
+  const el=document.getElementById('bh-'+ri+'-'+hi);
+  if(el)el.style.borderColor='var(--ocean)';
+}
+function brkDrop(event,ri,hi){
+  event.preventDefault();
+  if(!_dragInfo||!_bracketEdit)return;
+  const src=_dragInfo;
+  if(src.ri===ri&&src.hi===hi){_dragInfo=null;return;}
+  const srcAthletes=_bracketEdit.rounds[src.ri].heats[src.hi].athletes;
+  const dstAthletes=_bracketEdit.rounds[ri].heats[hi].athletes;
+  const srcName=srcAthletes[src.ai];
+  // Intercambiar si hay atleta en misma posición, sino mover al final
+  if(dstAthletes[src.ai]!==undefined){
+    const tmp=dstAthletes[src.ai];
+    dstAthletes[src.ai]=srcName;
+    srcAthletes[src.ai]=tmp;
+  } else {
+    srcAthletes.splice(src.ai,1);
+    dstAthletes.push(srcName);
+  }
+  _dragInfo=null;
+  _drawBracketEdit();
+}
+function saveBracketEdits(){
+  if(!_bracketEdit)return;
+  db.ref('bracket').set(_bracketEdit).then(()=>{
+    showToast('✅ Bracket guardado');
+  });
+}
+function clearBracket(){if(confirm('¿Eliminar bracket?')){db.ref('bracket').remove();document.getElementById('bracket-view').innerHTML='<div style="color:var(--muted);font-size:13px">Sin bracket generado.</div>';_bracketEdit=null;}}
 
 // ════════ ADMIN ════════
 function loadAdminData(){
@@ -2304,8 +2474,9 @@ function submitJudgeScore(surferIdx,val){
 
 // ════════ EXPORT ════════
 function exportAllToExcel(){
-  db.ref('rounds').orderByChild('timestamp').once('value',snap=>{
-    const rounds=[];snap.forEach(c=>rounds.unshift({id:c.key,...c.val()}));
+  db.ref('rounds').once('value',snap=>{
+    const rounds=[];snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
+    rounds.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
     if(!rounds.length){showToast('Sin rondas para exportar');return;}
     let csv='RONDA,FECHA,DURACIÓN,POS,SURFISTA,LYCRA,TOTAL,OLA1,OLA2,OLAS,INTERFERENCIA\n';
     rounds.forEach(r=>{
@@ -2322,8 +2493,9 @@ function exportAllToExcel(){
   });
 }
 function exportActaOficial(){
-  db.ref('rounds').orderByChild('timestamp').once('value',snap=>{
-    const rounds=[];snap.forEach(c=>rounds.unshift({id:c.key,...c.val()}));
+  db.ref('rounds').once('value',snap=>{
+    const rounds=[];snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
+    rounds.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
     if(!rounds.length){showToast('Sin rondas');return;}
     const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><title>Acta Oficial WaveScore Pro</title>
     <style>body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:20px;color:#1a1a1a;}
@@ -2351,6 +2523,112 @@ function exportActaOficial(){
     const w=window.open(url,'_blank');
     if(w)setTimeout(()=>w.print(),800);
     showToast('📋 Acta generada');
+  });
+}
+
+// ════════ REPORTE FINAL DEL TORNEO ════════
+function exportTournamentReport(){
+  db.ref('rounds').once('value',snap=>{
+    const rounds=[];
+    snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
+    rounds.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+    const validRounds=rounds.filter(r=>r.results&&r.results.length);
+    if(!validRounds.length){showToast('Sin rondas para reportar');return;}
+
+    // Calcular ranking general del torneo
+    const ranking={};
+    validRounds.forEach(r=>{
+      (r.results||[]).forEach(s=>{
+        if(!s.name)return;
+        if(!ranking[s.name])ranking[s.name]={name:s.name,color:s.color||'#fff',rounds:0,totalPoints:0,best:0,positions:[]};
+        ranking[s.name].rounds++;
+        ranking[s.name].totalPoints+=s.total||0;
+        ranking[s.name].best=Math.max(ranking[s.name].best,s.best||0);
+        ranking[s.name].positions.push(s.position);
+      });
+    });
+    const overall=Object.values(ranking).sort((a,b)=>{
+      const avgA=a.totalPoints/a.rounds;
+      const avgB=b.totalPoints/b.rounds;
+      return avgB-avgA;
+    });
+
+    db.ref('config/event/name').once('value',snap2=>{
+      const eventName=snap2.val()||'Torneo de Surf';
+      const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>
+      <title>Reporte Final — ${eventName}</title>
+      <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;max-width:850px;margin:0 auto;padding:24px;color:#1a1a1a;background:#fff;}
+        .header{text-align:center;padding:24px 0 16px;border-bottom:4px solid #005bea;margin-bottom:24px;}
+        .header h1{font-size:28px;color:#005bea;letter-spacing:2px;text-transform:uppercase;}
+        .header p{color:#6b7280;font-size:13px;margin-top:6px;}
+        .section-title{font-size:16px;font-weight:700;color:#005bea;text-transform:uppercase;letter-spacing:2px;margin:24px 0 10px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;}
+        table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:12px;}
+        th{background:#005bea;color:#fff;padding:9px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;}
+        td{padding:8px 12px;border-bottom:1px solid #f3f4f6;}
+        tr:nth-child(even) td{background:#f9fafb;}
+        .gold{background:#fffbeb!important;font-weight:700;color:#92400e;}
+        .pos{font-weight:700;font-size:14px;}
+        .pos-1{color:#d97706;}
+        .pos-2{color:#6b7280;}
+        .pos-3{color:#92400e;}
+        .footer{text-align:center;margin-top:32px;color:#9ca3af;font-size:11px;border-top:1px solid #e5e7eb;padding-top:16px;}
+        .badge{display:inline-block;background:#005bea;color:#fff;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;}
+        @media print{body{padding:10px;}button{display:none;}}
+      </style></head><body>
+      <div class="header">
+        <div style="font-size:32px;margin-bottom:8px">🌊</div>
+        <h1>${eventName}</h1>
+        <p>Acta Oficial de Resultados · Generado: ${new Date().toLocaleString('es-CO')}</p>
+        <p style="margin-top:4px">${validRounds.length} ronda(s) · WaveScore Pro</p>
+      </div>
+
+      <div class="section-title">🏆 Ranking General del Torneo</div>
+      <table>
+        <thead><tr><th>#</th><th>Surfista</th><th>Rondas</th><th>Promedio</th><th>Mejor Ola</th><th>Posiciones</th></tr></thead>
+        <tbody>${overall.map((s,i)=>`
+          <tr class="${i===0?'gold':''}">
+            <td class="pos pos-${i+1}">${i===1?'🥇':i===2?'🥈':i===3?'🥉':'#'+(i+1)}</td>
+            <td><strong>${s.name}</strong></td>
+            <td>${s.rounds}</td>
+            <td><strong>${(s.totalPoints/s.rounds).toFixed(2)}</strong></td>
+            <td>${s.best.toFixed(2)}</td>
+            <td>${s.positions.map(p=>'#'+p).join(', ')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <div class="section-title">📋 Resultados por Ronda</div>
+      ${validRounds.map((r,ri)=>`
+        <div style="margin-bottom:4px;font-size:13px;font-weight:600;color:#374151">${r.name} <span style="font-weight:normal;color:#9ca3af">· ${new Date(r.timestamp).toLocaleString('es-CO')} · ${r.duration||20} min</span></div>
+        <table>
+          <thead><tr><th>#</th><th>Surfista</th><th>Total</th><th>Ola 1</th><th>Ola 2</th><th>Olas</th><th>Interferencia</th></tr></thead>
+          <tbody>${(r.results||[]).filter(s=>s&&s.name).map(s=>`
+            <tr class="${s.position===1?'gold':''}">
+              <td class="pos">${s.position}</td>
+              <td>${s.name}${s.lycra?' <span class="badge">'+s.lycra+'</span>':''}</td>
+              <td><strong>${(s.total||0).toFixed(2)}</strong></td>
+              <td>${(s.best||0).toFixed(2)}</td>
+              <td>${(s.adjSecond||0).toFixed(2)}</td>
+              <td>${s.waveCount||0}</td>
+              <td>${s.interference>0?'⚠️ '+s.interference:'—'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`).join('')}
+
+      <div class="footer">
+        <p>WaveScore Pro · Sistema Oficial de Puntuación de Surf</p>
+        <p style="margin-top:4px">${new Date().getFullYear()} · Documento generado automáticamente</p>
+      </div>
+      </body></html>`;
+
+      const blob=new Blob([html],{type:'text/html'});
+      const url=URL.createObjectURL(blob);
+      const w=window.open(url,'_blank');
+      if(w)setTimeout(()=>w.print(),1000);
+      showToast('🏆 Reporte del torneo generado');
+    });
   });
 }
 

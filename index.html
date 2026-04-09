@@ -1444,10 +1444,10 @@ function renderRoundsList(rounds,elId){
       <div style="font-size:11px;color:var(--muted)">${new Date(r.timestamp).toLocaleString('es-CO')} · ${r.duration} min</div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      ${(r.results||[]).map(s=>`<div style="text-align:center">
-        <div style="font-size:10px;color:${s.color};font-family:'Bebas Neue',cursive">${s.name}</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:20px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${s.total.toFixed(2)}</div>
-        <div style="font-size:9px;color:var(--muted)">#${s.position}</div>
+      ${(r.results||[]).filter(s=>s&&s.total!=null).map(s=>`<div style="text-align:center">
+        <div style="font-size:10px;color:${s.color||'#fff'};font-family:'Bebas Neue',cursive">${s.name||'—'}</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:20px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${(s.total||0).toFixed(2)}</div>
+        <div style="font-size:9px;color:var(--muted)">#${s.position||'—'}</div>
       </div>`).join('')}
     </div>
     <div style="display:flex;gap:6px">

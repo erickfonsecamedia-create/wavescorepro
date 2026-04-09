@@ -422,7 +422,7 @@ select.sinput option{background:#0a1f3a;}
     <div class="gate-error" id="gate-error"></div>
     <div class="gate-roles">
       <div class="grole" onclick="pickRole('operator')" id="r-operator"><span class="ri">🎛️</span><span class="rl">Operador</span><span class="rd">Maneja el heat</span></div>
-      <div class="grole" onclick="pickRole('judge')" id="r-judge"><span class="ri">🏄</span><span class="rl">Juez</span><span class="rd">Ingresa notas</span></div>
+      <div class="grole" onclick="pickRole('judge');loadJudgeSlots()" id="r-judge"><span class="ri">🏄</span><span class="rl">Juez</span><span class="rd">Ingresa notas</span></div>
       <div class="grole" onclick="pickRole('broadcast')" id="r-broadcast"><span class="ri">📺</span><span class="rl">Pantalla / Anunciador</span><span class="rd">Vista pública</span></div>
       <div class="grole" onclick="pickRole('admin')" id="r-admin"><span class="ri">🔐</span><span class="rl">Admin</span><span class="rd">Solo para Erick</span></div>
     </div>
@@ -432,6 +432,7 @@ select.sinput option{background:#0a1f3a;}
         <option value="1">Juez 1</option><option value="2">Juez 2</option>
         <option value="3">Juez 3</option><option value="4">Juez 4</option><option value="5">Juez 5</option>
       </select>
+      <div id="judge-slots-info" style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px"></div>
     </div>
     <input class="gate-input" id="gate-input" type="password" placeholder="Código de acceso" maxlength="24"
       oninput="checkEnterReady()" onkeydown="if(event.key==='Enter')checkAccess()"/>
@@ -975,6 +976,40 @@ function loadGateEventName(){
 }
 
 // ════════ GATE ════════
+function loadJudgeSlots(){
+  db.ref('activeJudges').once('value', snap=>{
+    const active = snap.val() || {};
+    const sel = document.getElementById('judge-num');
+    const info = document.getElementById('judge-slots-info');
+    if(!sel) return;
+    // Reset all options
+    for(let i=0;i<sel.options.length;i++){
+      const num = parseInt(sel.options[i].value);
+      if(active[num]){
+        sel.options[i].disabled = true;
+        sel.options[i].text = `Juez ${num} — EN USO`;
+      } else {
+        sel.options[i].disabled = false;
+        sel.options[i].text = `Juez ${num}`;
+      }
+    }
+    // Auto-select first available
+    for(let i=0;i<sel.options.length;i++){
+      if(!sel.options[i].disabled){sel.selectedIndex=i;break;}
+    }
+    const taken = Object.keys(active).length;
+    if(info) info.textContent = taken > 0 ? `${taken} juez(ces) activo(s)` : 'Todos los slots disponibles';
+  });
+}
+
+function registerJudgeSlot(num){
+  db.ref('activeJudges/'+num).set({active:true, since:Date.now()});
+}
+
+function releaseJudgeSlot(num){
+  if(num) db.ref('activeJudges/'+num).remove();
+}
+
 function pickRole(r){
   role=r;
   document.querySelectorAll('.grole').forEach(b=>b.classList.remove('active'));
@@ -992,7 +1027,10 @@ function checkEnterReady(){
 function checkAccess(){
   const val=document.getElementById('gate-input').value.trim().toUpperCase();
   if(!val){showGateError('Ingresa el código');return;}
-  if(role==='judge') judgeNum=parseInt(document.getElementById('judge-num').value);
+  if(role==='judge'){
+    judgeNum=parseInt(document.getElementById('judge-num').value);
+    registerJudgeSlot(judgeNum);
+  }
   if(val===ADMIN_CODE_DEFAULT){
     if(role!=='admin'){role='admin';pickRole('admin');}
     if(!db){try{let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}db=firebase.database(fbApp);}catch(e){console.warn('Firebase init failed');}}
@@ -1038,6 +1076,7 @@ function enterApp(){
 function logoutToGate(){
   document.getElementById('app').style.display='none';
   document.getElementById('gate').style.display='flex';
+  releaseJudgeSlot(judgeNum);
   role=null;judgeNum=null;heatState=null;
   document.querySelectorAll('.grole').forEach(b=>b.classList.remove('active'));
   document.getElementById('gate-input').value='';
@@ -1046,6 +1085,10 @@ function logoutToGate(){
 
 // ════════ ROLE INIT ════════
 function initRole(){
+  // Reset todos los badges primero
+  document.getElementById('top-badge').style.display='none';
+  document.getElementById('top-admin-badge').style.display='none';
+
   if(role==='operator'){
     document.getElementById('top-badge').textContent='OPERADOR';
     document.getElementById('top-badge').style.display='inline-block';
@@ -1062,6 +1105,11 @@ function initRole(){
     document.getElementById('top-badge').style.display='inline-block';
     document.getElementById('judge-view').style.display='block';
     document.getElementById('timer-bar').style.display='flex';
+    // Jueces no controlan el timer
+    const tbStart=document.getElementById('tbtn-start');
+    const tbReset=document.querySelector('.tbtn-reset');
+    if(tbStart)tbStart.style.display='none';
+    if(tbReset)tbReset.style.display='none';
     listenHeatForJudge();listenTimer();listenNotifications();
   } else if(role==='broadcast'){
     document.getElementById('top-badge').textContent='PANTALLA / ANUNCIADOR';

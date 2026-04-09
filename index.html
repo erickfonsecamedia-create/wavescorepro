@@ -1427,8 +1427,11 @@ function saveRound(){
 function clearAllRounds(){if(confirm('¿Eliminar todo el historial?'))db.ref('rounds').remove();}
 function deleteRound(id){if(confirm('¿Eliminar?'))db.ref('rounds/'+id).remove();}
 function listenRounds(elId){
-  db.ref('rounds').orderByChild('timestamp').on('value',snap=>{
-    const r=[];snap.forEach(c=>r.unshift({id:c.key,...c.val()}));
+  db.ref('rounds').on('value',snap=>{
+    const r=[];
+    snap.forEach(c=>r.push({id:c.key,...c.val()}));
+    // Ordenar por timestamp descendente (más reciente primero)
+    r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     renderRoundsList(r,elId);
   });
 }

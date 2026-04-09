@@ -1425,20 +1425,45 @@ function renderPendingScores(){
 function saveRound(){
   if(!heatState||!heatState.surfers)return;
   const status=calculate_heat_status(heatState.surfers);
-  db.ref('rounds').push({name:heatState.name||'Heat',timestamp:Date.now(),duration:heatState.duration||20,
-    results:status.map(s=>({position:s.position,name:s.name,color:s.color,lycra:s.lycra,
-      total:s.total,best:s.best,adjSecond:s.adjSecond,waveCount:s.waveCount,interference:s.interference}))});
-  showToast('Ronda guardada');
+  const data={
+    name:heatState.name||'Heat',
+    timestamp:Date.now(),
+    duration:heatState.duration||20,
+    results:status.map(s=>({
+      position:s.position,
+      name:s.name,
+      color:s.color,
+      lycra:s.lycra||'',
+      total:s.total||0,
+      best:s.best||0,
+      adjSecond:s.adjSecond||0,
+      waveCount:s.waveCount||0,
+      interference:s.interference||0
+    }))
+  };
+  db.ref('rounds').push(data).then(()=>{
+    showToast('✅ Ronda guardada');
+    // Forzar reload del historial
+    db.ref('rounds').once('value',snap=>{
+      const r=[];
+      snap.forEach(c=>r.push({id:c.key,...c.val()}));
+      r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+      renderRoundsList(r,'rounds-list');
+      renderRoundsList(r,'adm-rounds-list');
+    });
+  }).catch(e=>showToast('❌ Error al guardar: '+e.message));
 }
 function clearAllRounds(){if(confirm('¿Eliminar todo el historial?'))db.ref('rounds').remove();}
 function deleteRound(id){if(confirm('¿Eliminar?'))db.ref('rounds/'+id).remove();}
 function listenRounds(elId){
+  // Cancelar listener previo para evitar duplicados
+  db.ref('rounds').off('value');
   db.ref('rounds').on('value',snap=>{
     const r=[];
     snap.forEach(c=>r.push({id:c.key,...c.val()}));
-    // Ordenar por timestamp descendente (más reciente primero)
     r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    renderRoundsList(r,elId);
+    renderRoundsList(r,'rounds-list');
+    renderRoundsList(r,'adm-rounds-list');
   });
 }
 function renderRoundsList(rounds,elId){

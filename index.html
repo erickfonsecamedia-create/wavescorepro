@@ -1511,7 +1511,7 @@ function renderBroadcast(){
       </div>
       <div class="bc-divider"></div>
       ${st.isLeading?'<div class="bc-needs leader">🥇 LÍDER</div>':`<div class="bc-needs ${st.isCombo?'combo':''}">${st.statusLabel||''}</div>`}
-      <div class="bc-priority" style="${(s.waves||[]).length>=15?'color:var(--red)':'(s.waves||[]).length>=12?'color:var(--gold)':''"}">${(s.waves||[]).length}/15 OLAS${(s.waves||[]).length>=15?' 🚫':(s.waves||[]).length>=12?' ⚠️':''}</div>
+            <div class="bc-priority">${(s.waves||[]).length>=15?'🚫':''} ${(s.waves||[]).length}/15 OLAS</div>
     </div>`;
   }).join('');
   if(broadcastMode==='announce'){

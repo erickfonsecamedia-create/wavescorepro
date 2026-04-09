@@ -2235,14 +2235,24 @@ function generateBracket(){
 function buildRounds(athletes,perHeat,advance){
   const rounds=[];let current=[...athletes],rNum=1;
   const rNames=['Ronda 1','Ronda 2','Cuartos','Semifinal','Final'];
-  while(current.length>perHeat){
+  const MAX_ROUNDS=8; // Seguridad contra loop infinito
+  while(current.length>perHeat && rNum<=MAX_ROUNDS){
     const heats=[];
-    for(let i=0;i<current.length;i+=perHeat)heats.push({id:`R${rNum}H${heats.length+1}`,athletes:current.slice(i,i+perHeat),completed:false});
+    for(let i=0;i<current.length;i+=perHeat){
+      heats.push({id:`R${rNum}H${heats.length+1}`,athletes:current.slice(i,i+perHeat),completed:false});
+    }
     rounds.push({round:rNum,name:rNum<=rNames.length?rNames[rNum-1]:`Ronda ${rNum}`,heats,advanceCount:advance});
-    const winners=[];heats.forEach(h=>{for(let i=0;i<advance;i++)winners.push(h.athletes[i]||'TBD');});
+    const winners=[];
+    heats.forEach(h=>{
+      for(let i=0;i<Math.min(advance,h.athletes.length);i++)winners.push(h.athletes[i]||'TBD');
+    });
+    // Si los ganadores son los mismos o más que los actuales, parar
+    if(winners.length>=current.length){break;}
     current=winners;rNum++;
   }
-  if(current.length>0)rounds.push({round:rNum,name:'Gran Final',heats:[{id:`R${rNum}H1`,athletes:current,completed:false}],advanceCount:1});
+  if(current.length>0){
+    rounds.push({round:rNum,name:'Gran Final',heats:[{id:`R${rNum}H1`,athletes:current,completed:false}],advanceCount:1});
+  }
   return rounds;
 }
 // ════ BRACKET DRAG & DROP ════

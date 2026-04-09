@@ -1289,6 +1289,7 @@ function recordWave(){
   const score=calcWaveScore(vals);
   const surfers=JSON.parse(JSON.stringify(heatState.surfers));
   if(!surfers[idx].waves)surfers[idx].waves=[];
+  if(surfers[idx].waves.length>=15){showToast('⚠️ Máximo 15 olas alcanzado');return;}
   surfers[idx].waves.push({score,scores:vals,timestamp:Date.now()});
   db.ref('heat/surfers').set(surfers);
   for(let i=1;i<=5;i++){const el=document.getElementById('ji-'+i);if(el)el.value='';}
@@ -1330,9 +1331,11 @@ function autoRecordFromPending(si){
   const vals=[1,2,3,4,5].map(j=>ps['judge'+j]?.value||5);
   const score=calcWaveScore(vals);
   const s=JSON.parse(JSON.stringify(heatState.surfers));
-  if(!s[si].waves)s[si].waves=[];s[si].waves.push({score,scores:vals,timestamp:Date.now()});
+  if(!s[si].waves)s[si].waves=[];
+  if(s[si].waves.length>=15){showToast('⚠️ Máximo 15 olas alcanzado');return;}
+  s[si].waves.push({score,scores:vals,timestamp:Date.now()});
   db.ref('heat/surfers').set(s);db.ref('pendingScores/surfer'+si).remove();
-  rotatePriority(si,s);showToast(`Ola: ${score.toFixed(2)}`);
+  rotatePriority(si,s);showToast(`Ola: ${score.toFixed(2)} (${s[si].waves.length}/15)`);
 }
 
 // ════════ PENDING SCORES ════════
@@ -1508,7 +1511,7 @@ function renderBroadcast(){
       </div>
       <div class="bc-divider"></div>
       ${st.isLeading?'<div class="bc-needs leader">🥇 LÍDER</div>':`<div class="bc-needs ${st.isCombo?'combo':''}">${st.statusLabel||''}</div>`}
-      <div class="bc-priority">P${s.priority} · ${(s.waves||[]).length} OLAS</div>
+      <div class="bc-priority" style="${(s.waves||[]).length>=15?'color:var(--red)':'(s.waves||[]).length>=12?'color:var(--gold)':''"}">${(s.waves||[]).length}/15 OLAS${(s.waves||[]).length>=15?' 🚫':(s.waves||[]).length>=12?' ⚠️':''}</div>
     </div>`;
   }).join('');
   if(broadcastMode==='announce'){
@@ -2277,8 +2280,18 @@ function startDemo(){
   demoHeatState={name:'Demo Heat — Open Men',surfers:demoSurfers};
   demoInterval=setInterval(()=>{
     if(!demoRunning){clearInterval(demoInterval);return;}
-    const si=Math.floor(Math.random()*4);
-    const score=Math.round((Math.random()*6+3)*100)/100;
+    // Elegir surfista que no haya llegado al max de olas
+    const available=demoHeatState.surfers.map((s,i)=>i).filter(i=>(demoHeatState.surfers[i].waves||[]).length<15);
+    if(!available.length){stopAllDemo();showToast('Demo: todos llegaron al máximo de olas');return;}
+    const si=available[Math.floor(Math.random()*available.length)];
+    // Score realista ISA: mayoría entre 5-9, ocasionalmente excelente
+    const rand=Math.random();
+    let score;
+    if(rand<0.05) score=Math.round((Math.random()*2+8)*100)/100;      // 5% excelente 8-10
+    else if(rand<0.25) score=Math.round((Math.random()*2+6)*100)/100; // 20% bueno 6-8
+    else if(rand<0.65) score=Math.round((Math.random()*2+4)*100)/100; // 40% promedio 4-6
+    else score=Math.round((Math.random()*2+2)*100)/100;               // 35% bajo 2-4
+    score=Math.min(10,Math.max(0.1,score));
     const surfers=JSON.parse(JSON.stringify(demoHeatState.surfers));
     if(!surfers[si].waves)surfers[si].waves=[];
     surfers[si].waves.push({score,scores:[score,score,score,score,score],timestamp:Date.now()});
@@ -2288,9 +2301,7 @@ function startDemo(){
 }
 function stopAllDemo(){
   demoRunning=false;clearInterval(demoInterval);
-  // Detener timer
-  timerRunning=false;clearInterval(timerInterval);
-  db.ref('timer').update({running:false,remaining:localTimerSec});
+  timerStop();
   document.getElementById('demo-btn').classList.remove('running');
   document.getElementById('demo-badge').classList.remove('show');
   document.getElementById('demo-menu-stop').style.display='none';
@@ -2315,6 +2326,14 @@ function showBigWaveAnimation(score,surferName){
   spawnConfetti(score>=9.5?80:50,'#ffd166');
   clearTimeout(bigWaveTimeout);
   bigWaveTimeout=setTimeout(()=>overlay.classList.remove('show'),2500);
+}
+
+// ════════ TIMER STOP ════════
+function timerStop(){
+  if(!timerRunning)return;
+  timerRunning=false;
+  clearInterval(timerInterval);
+  db.ref('timer').update({running:false,remaining:localTimerSec});
 }
 
 // ════════ TOAST ════════

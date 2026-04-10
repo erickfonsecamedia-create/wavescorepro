@@ -1581,9 +1581,7 @@ function saveRound(){
     const advance=2; // por defecto
     const winners=status.slice(0,advance).map(s=>s.name);
     setTimeout(()=>{
-      if(confirm(`¿Avanzar ganadores al siguiente heat?
-${winners.join('
-')}`)){
+   if(confirm('¿Avanzar ganadores al siguiente heat?\n'+winners.join('\n'))){
         completeHeatInBracket(roundIdx,heatIdx,winners);
       }
     },500);

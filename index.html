@@ -435,8 +435,8 @@ select.sinput option{background:#0a1f3a;}
       <div id="judge-slots-info" style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px"></div>
     </div>
     <input class="gate-input" id="gate-input" type="password" placeholder="Código de acceso" maxlength="24"
-      oninput="checkEnterReady()" onkeydown="if(event.key==='Enter')checkAccess()"/>
-    <button class="btn-primary" id="enter-btn" onclick="checkAccess()" disabled>ENTRAR →</button>
+      oninput="checkEnterReady()" onkeyup="checkEnterReady()" onpaste="setTimeout(checkEnterReady,10)" onkeydown="if(event.key==='Enter')checkAccess()"/>
+    <button class="btn-primary" id="enter-btn" onclick="checkAccess()">ENTRAR →</button>
   </div>
 </div>
 
@@ -1033,8 +1033,7 @@ function pickRole(r){
 }
 function checkEnterReady(){
   const val=document.getElementById('gate-input').value.trim();
-  if(role) document.getElementById('enter-btn').disabled=false;
-  else document.getElementById('enter-btn').disabled=val.length<4;
+  document.getElementById('enter-btn').disabled=val.length<4;
 }
 function checkAccess(){
   const val=document.getElementById('gate-input').value.trim().toUpperCase();

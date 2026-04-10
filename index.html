@@ -2401,53 +2401,91 @@ function generateBracket(){
   const athletes=(document.getElementById('brk-athletes')?.value||'').split('\n').map(s=>s.trim()).filter(Boolean);
   if(athletes.length<2){showToast('⚠️ Mínimo 2 atletas');return;}
   const shuffled=[...athletes].sort(()=>Math.random()-.5);
-  const rounds=buildRounds(shuffled,perHeat,advance);
+  const rounds=format==='repechage'?buildRoundsRepechage(shuffled,perHeat):buildRoundsElimination(shuffled,perHeat,advance);
   const bracket={name,format,perHeat,advance,rounds,athletes:shuffled,createdAt:Date.now()};
-  db.ref('bracket').set(bracket);renderBracket(bracket);showToast('🏆 Bracket generado: '+athletes.length+' atletas');
+  db.ref('bracket').set(bracket);renderBracket(bracket);
+  showToast('🏆 Bracket generado: '+athletes.length+' atletas · '+(format==='repechage'?'Con Repechaje':'Eliminación Directa'));
 }
-function buildRounds(athletes,perHeat,advance){
-  const rNames=['Ronda 1','Ronda 2','Cuartos de Final','Semifinal','Gran Final'];
-  const rounds=[];
 
-  // RONDA 1 — con atletas reales sorteados
+// ── ELIMINACIÓN DIRECTA ──
+function buildRoundsElimination(athletes,perHeat,advance){
+  const rounds=[];
+  // Ronda 1 con atletas reales
   const r1heats=[];
   for(let i=0;i<athletes.length;i+=perHeat){
-    r1heats.push({
-      id:`R1H${r1heats.length+1}`,
-      athletes:athletes.slice(i,i+perHeat),
-      completed:false
-    });
+    r1heats.push({id:`R1H${r1heats.length+1}`,athletes:athletes.slice(i,i+perHeat),completed:false,type:'elimination'});
   }
   rounds.push({round:1,name:'Ronda 1',heats:r1heats,advanceCount:advance});
-
-  // RONDAS FUTURAS — calcular cuántas hacen falta, llenar con TBD
+  // Rondas futuras con TBD
   let advancing=r1heats.length*advance;
   let rNum=2;
-  const MAX_ROUNDS=8;
-  while(advancing>perHeat && rNum<=MAX_ROUNDS){
+  const rNames=['Ronda 2','Cuartos de Final','Semifinal','Gran Final'];
+  const MAX=8;
+  while(advancing>perHeat&&rNum<=MAX){
     const numHeats=Math.ceil(advancing/perHeat);
     const heats=[];
     for(let h=0;h<numHeats;h++){
-      const tbdAthletes=[];
-      for(let a=0;a<perHeat;a++) tbdAthletes.push('TBD');
-      heats.push({id:`R${rNum}H${h+1}`,athletes:tbdAthletes,completed:false});
+      heats.push({id:`R${rNum}H${h+1}`,athletes:Array(perHeat).fill('TBD'),completed:false,type:'elimination'});
     }
-    const rName=rNum<=rNames.length?rNames[rNum-1]:`Ronda ${rNum}`;
+    const rName=rNum-2<rNames.length?rNames[rNum-2]:`Ronda ${rNum}`;
     rounds.push({round:rNum,name:rName,heats,advanceCount:advance});
-    advancing=numHeats*advance;
-    rNum++;
+    advancing=numHeats*advance;rNum++;
   }
-  // FINAL
-  const finalTbd=[];
-  for(let a=0;a<perHeat;a++) finalTbd.push('TBD');
-  rounds.push({
-    round:rNum,
-    name:'Gran Final',
-    heats:[{id:`R${rNum}H1`,athletes:finalTbd,completed:false}],
-    advanceCount:1
-  });
+  rounds.push({round:rNum,name:'Gran Final',heats:[{id:`R${rNum}H1`,athletes:Array(perHeat).fill('TBD'),completed:false,type:'elimination'}],advanceCount:1});
+  return rounds;
+}
+
+// ── SISTEMA ISA CON REPECHAJE ──
+// R1: perHeat atletas → #1 avanza a R3 directo, #2+ van a R2 (repechaje)
+// R2 (Repechaje): losers R1 → #1 avanza a R3, resto eliminado
+// R3+: heats de 2 (mano a mano) → ganador avanza, perdedor eliminado
+function buildRoundsRepechage(athletes,perHeat){
+  const rounds=[];
+  const numR1Heats=Math.ceil(athletes.length/perHeat);
+
+  // RONDA 1 — con atletas reales
+  const r1heats=[];
+  for(let i=0;i<athletes.length;i+=perHeat){
+    r1heats.push({id:`R1H${r1heats.length+1}`,athletes:athletes.slice(i,i+perHeat),completed:false,type:'main',advanceDirect:1,advanceRepechage:perHeat-1});
+  }
+  rounds.push({round:1,name:'Ronda 1',heats:r1heats,advanceCount:1,repechageCount:perHeat-1,isRepechage:false});
+
+  // RONDA 2 — REPECHAJE (losers de R1)
+  const losersR1=numR1Heats*(perHeat-1);
+  const r2heats=[];
+  for(let h=0;h<Math.ceil(losersR1/2);h++){
+    r2heats.push({id:`R2H${h+1}`,athletes:['TBD','TBD'],completed:false,type:'repechage'});
+  }
+  rounds.push({round:2,name:'Ronda 2 — Repechaje',heats:r2heats,advanceCount:1,isRepechage:true});
+
+  // RONDA 3 — mano a mano (winners R1 + winners R2)
+  const r3count=numR1Heats+r2heats.length; // 1 de cada R1 + 1 de cada R2
+  const r3heats=[];
+  for(let h=0;h<Math.ceil(r3count/2);h++){
+    r3heats.push({id:`R3H${h+1}`,athletes:['TBD','TBD'],completed:false,type:'main'});
+  }
+  rounds.push({round:3,name:'Ronda 3',heats:r3heats,advanceCount:1,isRepechage:false});
+
+  // CUARTOS, SEMIFINAL, FINAL — mano a mano
+  let advancing=r3heats.length;
+  let rNum=4;
+  const rNames={4:'Cuartos de Final',5:'Semifinal',6:'Gran Final'};
+  while(advancing>1&&rNum<=8){
+    const numHeats=Math.ceil(advancing/2);
+    const heats=[];
+    for(let h=0;h<numHeats;h++){
+      heats.push({id:`R${rNum}H${h+1}`,athletes:['TBD','TBD'],completed:false,type:'main'});
+    }
+    rounds.push({round:rNum,name:rNames[rNum]||`Ronda ${rNum}`,heats,advanceCount:1,isRepechage:false});
+    advancing=numHeats;rNum++;
+  }
 
   return rounds;
+}
+
+// Mantener buildRounds como alias para compatibilidad
+function buildRounds(athletes,perHeat,advance){
+  return buildRoundsElimination(athletes,perHeat,advance);
 }
 // ════ BRACKET DRAG & DROP ════
 let _bracketEdit = null;

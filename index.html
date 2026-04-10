@@ -493,6 +493,7 @@ select.sinput option{background:#0a1f3a;}
       <div class="tab" onclick="opTab('score')" id="tab-score">📊 PUNTUACIÓN</div>
       <div class="tab" onclick="opTab('campo')" id="tab-campo">🌊 MAR / 📢 LLAMADOS</div>
       <div class="tab" onclick="opTab('rounds')" id="tab-rounds">🏆 RONDAS</div>
+      <div class="tab" onclick="opTab('bracket')" id="tab-bracket">📋 BRACKET</div>
     </div>
   </div>
 
@@ -579,6 +580,9 @@ select.sinput option{background:#0a1f3a;}
           <button class="btn-sm btn-gray" onclick="quickCall('Final')">Final</button>
         </div>
       </div>
+    </div>
+    <div id="op-bracket" style="display:none;padding:16px;max-width:1100px;margin:0 auto">
+      <div id="op-bracket-view"><div style="color:var(--muted);font-size:13px">Cargando bracket...</div></div>
     </div>
     <div id="op-rounds" style="display:none;padding:16px;max-width:900px;margin:0 auto">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -1141,12 +1145,156 @@ function initRole(){
 
 // ════════ OPERATOR TABS ════════
 function opTab(t){
-  ['heat','score','campo','rounds'].forEach(x=>{
+  ['heat','score','campo','rounds','bracket'].forEach(x=>{
     document.getElementById('op-'+x).style.display=x===t?'block':'none';
     document.getElementById('tab-'+x).classList.toggle('active',x===t);
   });
   if(t==='campo') loadSeaConditionsIntoOpForm();
+  if(t==='bracket') loadOperatorBracket();
 }
+
+function loadOperatorBracket(){
+  db.ref('bracket').once('value',snap=>{
+    const bracket=snap.val();
+    const el=document.getElementById('op-bracket-view');
+    if(!el)return;
+    if(!bracket||!bracket.rounds){
+      el.innerHTML='<div style="color:var(--muted);font-size:13px">Sin bracket generado. Pídele al Admin que genere el bracket.</div>';
+      return;
+    }
+    renderOperatorBracket(bracket);
+  });
+}
+
+function renderOperatorBracket(bracket){
+  const el=document.getElementById('op-bracket-view');
+  if(!el)return;
+  el.innerHTML=`
+    <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:3px;color:var(--ocean);margin-bottom:4px">${bracket.name}</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Haz clic en ▶ para iniciar un heat con los atletas de ese grupo</div>
+    <div class="bracket-container">
+      ${bracket.rounds.map((round,ri)=>`
+        <div class="bracket-round">
+          <div class="bracket-round-title">${round.name}</div>
+          ${round.heats.map((heat,hi)=>{
+            const hasTBD=heat.athletes.every(a=>a==='TBD'||!a);
+            const allReal=heat.athletes.every(a=>a&&a!=='TBD');
+            return`<div class="bracket-heat ${heat.completed?'completed':''}">
+              <div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:5px">${heat.id}</div>
+              ${heat.athletes.map(name=>`
+                <div class="bracket-surfer-row">
+                  <div class="bsr-name" style="color:${name==='TBD'?'rgba(255,255,255,.25)':'#fff'}">${name||'TBD'}</div>
+                </div>`).join('')}
+              ${allReal&&!heat.completed?`
+                <button onclick="startHeatFromBracket(${ri},${hi})" 
+                  style="width:100%;margin-top:8px;padding:6px;background:var(--green);color:#000;border:none;border-radius:8px;font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:2px;cursor:pointer">
+                  ▶ INICIAR ESTE HEAT
+                </button>`:''}
+              ${heat.completed?'<div style="text-align:center;font-size:10px;color:var(--green);margin-top:4px;font-family:'Bebas Neue',cursive;letter-spacing:2px">✅ COMPLETADO</div>':''}
+            </div>`;
+          }).join('')}
+        </div>
+        ${ri<bracket.rounds.length-1?'<div style="display:flex;align-items:center;font-size:14px;color:rgba(255,255,255,.2);padding:0 2px">›</div>':''}`).join('')}
+    </div>`;
+}
+
+function startHeatFromBracket(roundIdx, heatIdx){
+  db.ref('bracket').once('value',snap=>{
+    const bracket=snap.val();
+    if(!bracket)return;
+    const heat=bracket.rounds[roundIdx].heats[heatIdx];
+    const athletes=heat.athletes.filter(a=>a&&a!=='TBD');
+    if(!athletes.length){showToast('⚠️ No hay atletas en este heat');return;}
+    if(!confirm(`¿Iniciar ${heat.id} con: ${athletes.join(', ')}?`))return;
+    // Crear heat en Firebase con estos atletas
+    const surfers=athletes.map((name,i)=>({
+      name,
+      color:LYCRA_COLORS[i]||LYCRA_COLORS[0],
+      lycra:LYCRA_NAMES[i]||'ROJO',
+      waves:[],
+      interference:0,
+      priority:i+1
+    }));
+    const heatName=`${bracket.name} — ${bracket.rounds[roundIdx].name} — ${heat.id}`;
+    db.ref('heat').set({
+      name:heatName,
+      duration:20,
+      surfers,
+      active:true,
+      timestamp:Date.now(),
+      bracketRef:{roundIdx,heatIdx}
+    }).then(()=>{
+      // Marcar heat como activo en el bracket
+      db.ref(`bracket/rounds/${roundIdx}/heats/${heatIdx}/active`).set(true);
+      showToast('✅ Heat iniciado: '+heat.id);
+      opTab('heat'); // Ir a la pestaña de heat
+    });
+  });
+}
+
+function completeHeatInBracket(roundIdx, heatIdx, winners){
+  // Marcar heat como completado y colocar ganadores en siguiente ronda
+  db.ref('bracket').once('value',snap=>{
+    const bracket=snap.val();
+    if(!bracket)return;
+    bracket.rounds[roundIdx].heats[heatIdx].completed=true;
+    bracket.rounds[roundIdx].heats[heatIdx].athletes=
+      bracket.rounds[roundIdx].heats[heatIdx].athletes; // mantener lista original
+    // Colocar ganadores en siguiente ronda
+    if(roundIdx+1<bracket.rounds.length){
+      const nextRound=bracket.rounds[roundIdx+1];
+      const advance=bracket.rounds[roundIdx].advanceCount||2;
+      // Encontrar slot TBD disponible en siguiente ronda
+      let placed=0;
+      for(let h=0;h<nextRound.heats.length&&placed<winners.length;h++){
+        for(let a=0;a<nextRound.heats[h].athletes.length&&placed<winners.length;a++){
+          if(nextRound.heats[h].athletes[a]==='TBD'){
+            nextRound.heats[h].athletes[a]=winners[placed];
+            placed++;
+          }
+        }
+      }
+    }
+    db.ref('bracket').set(bracket).then(()=>{
+      showToast('✅ Ganadores avanzados a siguiente ronda');
+      loadOperatorBracket();
+    });
+  });
+}
+function showWinnerAdvanceModal(roundIdx, heatIdx, winners, status){
+  // Crear modal de selección de ganadores
+  let modal=document.getElementById('winner-modal');
+  if(modal)modal.remove();
+  modal=document.createElement('div');
+  modal.id='winner-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML=`
+    <div style="background:#0a1628;border:1px solid rgba(0,198,251,.3);border-radius:20px;padding:24px;max-width:420px;width:100%">
+      <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;color:var(--ocean);margin-bottom:4px">AVANZAR GANADORES</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Selecciona quién avanza a la siguiente ronda</div>
+      <div id="winner-list" style="margin-bottom:16px">
+        ${status.map((s,i)=>`
+          <label style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid ${i<2?'rgba(0,198,251,.3)':'rgba(255,255,255,.07)'};margin-bottom:6px;cursor:pointer">
+            <input type="checkbox" value="${s.name}" ${i<2?'checked':''} style="width:16px;height:16px;accent-color:var(--ocean)"/>
+            <span style="font-family:'Bebas Neue',cursive;font-size:13px;color:${i===0?'var(--gold)':'#fff'}">#${s.position} ${s.name}</span>
+            <span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:16px;color:var(--ocean)">${s.total.toFixed(2)}</span>
+          </label>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="confirmWinners(${roundIdx},${heatIdx})" style="flex:2;padding:12px;background:var(--green);color:#000;border:none;border-radius:10px;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;cursor:pointer">✅ CONFIRMAR Y AVANZAR</button>
+        <button onclick="document.getElementById('winner-modal').remove()" style="flex:1;padding:12px;background:rgba(255,255,255,.08);color:#fff;border:none;border-radius:10px;font-family:'Bebas Neue',cursive;font-size:14px;cursor:pointer">DESPUÉS</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function confirmWinners(roundIdx, heatIdx){
+  const checked=[...document.querySelectorAll('#winner-list input:checked')].map(i=>i.value);
+  if(!checked.length){showToast('⚠️ Selecciona al menos un ganador');return;}
+  completeHeatInBracket(roundIdx, heatIdx, checked);
+  document.getElementById('winner-modal')?.remove();
+}
+
 function loadSeaConditionsIntoOpForm(){
   db.ref('config/seaConditions').once('value',snap=>{
     const sc=snap.val();if(!sc)return;
@@ -1426,6 +1574,20 @@ function renderPendingScores(){
 // ════════ ROUNDS ════════
 function saveRound(){
   if(!heatState||!heatState.surfers)return;
+  // Verificar si este heat viene del bracket
+  if(heatState.bracketRef){
+    const {roundIdx,heatIdx}=heatState.bracketRef;
+    const status=calculate_heat_status(heatState.surfers);
+    const advance=2; // por defecto
+    const winners=status.slice(0,advance).map(s=>s.name);
+    setTimeout(()=>{
+      if(confirm(`¿Avanzar ganadores al siguiente heat?
+${winners.join('
+')}`)){
+        completeHeatInBracket(roundIdx,heatIdx,winners);
+      }
+    },500);
+  }
   const status=calculate_heat_status(heatState.surfers);
   const data={
     name:heatState.name||'Heat',
@@ -1553,7 +1715,18 @@ function renderOperatorBoard(){
   saveBtn.id='save-round-btn';saveBtn.className='btn-sm btn-go';
   saveBtn.style.cssText='width:100%;padding:12px;margin-top:14px;font-size:14px;letter-spacing:3px;border-radius:12px';
   saveBtn.innerHTML=`💾 GUARDAR RONDA "${heatState.name||'Heat'}"`;
-  saveBtn.onclick=()=>{saveRound();};
+  saveBtn.onclick=()=>{
+    saveRound();
+    // Si hay bracket activo, ofrecer avanzar ganadores
+    db.ref('heat/bracketRef').once('value',snap=>{
+      const ref=snap.val();
+      if(!ref)return;
+      const status=calculate_heat_status(heatState.surfers);
+      const advance=2; // default
+      const winners=status.slice(0,advance).map(s=>s.name);
+      showWinnerAdvanceModal(ref.roundIdx,ref.heatIdx,winners,status);
+    });
+  };
   document.getElementById('surfers-grid').after(saveBtn);
   const cerBtn=document.createElement('button');
   cerBtn.id='ceremony-btn';cerBtn.style.cssText='width:100%;padding:12px;margin-top:8px;font-size:14px;letter-spacing:3px;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#a78bfa);color:#fff;border:none;cursor:pointer;font-family:"Bebas Neue",cursive;';

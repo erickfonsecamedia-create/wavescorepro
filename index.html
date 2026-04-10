@@ -963,6 +963,12 @@ let _currentSponsors=[];
 
 // ════════ INIT ════════
 window.addEventListener('load',()=>{
+  // Habilitar botón si hay autocompletado del browser
+  setTimeout(()=>{
+    const gi=document.getElementById('gate-input');
+    const eb=document.getElementById('enter-btn');
+    if(gi&&eb&&gi.value.trim().length>=4)eb.disabled=false;
+  },500);
   if(checkPublicView()) return;
   if(checkAthleteQRLanding()) return;
   try{
@@ -1029,10 +1035,12 @@ function pickRole(r){
   document.getElementById('judge-sel').style.display=(r==='judge')?'block':'none';
   document.getElementById('enter-btn').disabled=false;
   document.getElementById('gate-input').placeholder=r==='admin'?'Código Admin':'Código del evento';
-  setTimeout(()=>document.getElementById('gate-input').focus(),100);
+  // focus removed - was stealing click state from role buttons
 }
 function checkEnterReady(){
   const val=document.getElementById('gate-input').value.trim();
+  // Si ya hay rol seleccionado, el botón siempre habilitado
+  if(role){document.getElementById('enter-btn').disabled=false;return;}
   document.getElementById('enter-btn').disabled=val.length<4;
 }
 function checkAccess(){
@@ -1091,7 +1099,6 @@ function logoutToGate(){
   role=null;judgeNum=null;heatState=null;
   document.querySelectorAll('.grole').forEach(b=>b.classList.remove('active'));
   document.getElementById('gate-input').value='';
-  document.getElementById('enter-btn').disabled=true;
 }
 
 // ════════ ROLE INIT ════════

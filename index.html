@@ -1583,9 +1583,14 @@ function renderPendingScores(){
 
 // ════════ ROUNDS ════════
 function saveRound(){
-  if(demoRunning&&demoHeatState&&demoHeatState.surfers){
-    heatState=JSON.parse(JSON.stringify(demoHeatState));
-  }
+  // Leer heat directo de Firebase para garantizar datos actuales
+  db.ref('heat').once('value', snap => {
+    const hs = snap.val();
+    if(!hs||!hs.surfers){showToast('⚠️ Sin heat activo');return;}
+    _doSaveRound(hs);
+  });
+}
+function _doSaveRound(heatState){
   if(!heatState||!heatState.surfers)return;
   // Verificar si este heat viene del bracket
   if(heatState.bracketRef){

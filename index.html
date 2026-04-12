@@ -1583,6 +1583,9 @@ function renderPendingScores(){
 
 // ════════ ROUNDS ════════
 function saveRound(){
+  if(demoRunning&&demoHeatState&&demoHeatState.surfers){
+    heatState=JSON.parse(JSON.stringify(demoHeatState));
+  }
   if(!heatState||!heatState.surfers)return;
   // Verificar si este heat viene del bracket
   if(heatState.bracketRef){

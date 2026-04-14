@@ -1151,11 +1151,12 @@ function opTab(t){
   if(t==='campo') loadSeaConditionsIntoOpForm();
   if(t==='bracket') loadOperatorBracket();
   if(t==='rounds'){
-    db.ref('rounds').once('value',snap=>{
+    db.ref('rounds').orderByChild('timestamp').once('value',snap=>{
       const r=[];
       snap.forEach(c=>r.push({id:c.key,...c.val()}));
       r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
       renderRoundsList(r,'rounds-list');
+      renderRoundsList(r,'adm-rounds-list');
     });
   }
 }
@@ -1602,13 +1603,12 @@ function _doSaveRound(heatState){
   if(heatState.bracketRef){
     const {roundIdx,heatIdx}=heatState.bracketRef;
     const status=calculate_heat_status(heatState.surfers);
-    const advance=2; // por defecto
+    const advance=2;
     const winners=status.slice(0,advance).map(s=>s.name);
+    // FIX Bug 33: auto-avanzar sin confirm() que causaba crash
     setTimeout(()=>{
-      if(confirm(`¿Avanzar ganadores al siguiente heat?
-${winners.join(', ')}`)){
-        completeHeatInBracket(roundIdx,heatIdx,winners);
-      }
+      completeHeatInBracket(roundIdx,heatIdx,winners);
+      showToast('🏆 Ganadores avanzados: '+winners.join(', '));
     },500);
   }
   const status=calculate_heat_status(heatState.surfers);
@@ -1649,8 +1649,14 @@ function listenRounds(elId){
     const r=[];
     snap.forEach(c=>r.push({id:c.key,...c.val()}));
     r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    // FIX Bug 27: render en ambos contenedores siempre
     renderRoundsList(r,'rounds-list');
     renderRoundsList(r,'adm-rounds-list');
+    // Forzar visibilidad del contenedor si tiene datos
+    if(r.length){
+      const el=document.getElementById('rounds-list');
+      if(el&&el.parentElement)el.parentElement.style.display='block';
+    }
   });
 }
 function renderRoundsList(rounds,elId){

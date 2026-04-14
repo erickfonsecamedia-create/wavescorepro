@@ -1153,7 +1153,7 @@ function opTab(t){
   if(t==='rounds'){
     db.ref('rounds').once('value',snap=>{
       const r=[];
-      snap.forEach(c=>r.push({id:c.key,...c.val()}));
+      snap.forEach(c=>{ r.push({id:c.key,...c.val()}); });
       r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
       renderRoundsList(r,'rounds-list');
     });
@@ -1632,7 +1632,7 @@ function _doSaveRound(heatState){
     // Forzar reload del historial
     db.ref('rounds').once('value',snap=>{
       const r=[];
-      snap.forEach(c=>r.push({id:c.key,...c.val()}));
+      snap.forEach(c=>{ r.push({id:c.key,...c.val()}); });
       r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
       renderRoundsList(r,'rounds-list');
       renderRoundsList(r,'adm-rounds-list');
@@ -1646,7 +1646,7 @@ function listenRounds(elId){
   db.ref('rounds').off('value');
   db.ref('rounds').on('value',snap=>{
     const r=[];
-    snap.forEach(c=>r.push({id:c.key,...c.val()}));
+    snap.forEach(c=>{ r.push({id:c.key,...c.val()}); });
     r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     renderRoundsList(r,'rounds-list');
     renderRoundsList(r,'adm-rounds-list');
@@ -2224,7 +2224,7 @@ function saveAthlete(){
 function listenAthletes(){
   db.ref('athletes').on('value',snap=>{
     const el=document.getElementById('athletes-list');if(!el)return;
-    const list=[];snap.forEach(c=>list.push({id:c.key,...c.val()}));
+    const list=[];snap.forEach(c=>{ list.push({id:c.key,...c.val()}); });
     if(!list.length){el.innerHTML='<div style="color:var(--muted);font-size:13px">Sin atletas.</div>';return;}
     el.innerHTML=list.map(a=>`<div style="background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;display:flex;align-items:center;gap:10px;margin-bottom:8px">
       ${a.photo?`<img src="${a.photo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border)" onerror="this.style.display='none'"/>`:`<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:16px">🏄</div>`}
@@ -2352,7 +2352,7 @@ function loadPublicView(container){
   db.ref('rounds').on('value',snap=>{
     const el=document.getElementById('pv-rounds');if(!el)return;
     const rounds=[];
-    snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
+    snap.forEach(c=>{ rounds.push({id:c.key,...c.val()}); });
     rounds.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     if(!rounds.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">Sin resultados guardados</div>';return;}
     el.innerHTML=rounds.filter(r=>r.results&&r.results.length).map(r=>`
@@ -2386,7 +2386,7 @@ function loadAthleteProfile(name){
   Promise.all([
     new Promise(res=>db.ref('athletes').once('value',snap=>{const all={};snap.forEach(c=>{all[c.key]={id:c.key,...c.val()};});res(all);})),
     new Promise(res=>db.ref('heat').once('value',snap=>res(snap.val()))),
-    new Promise(res=>db.ref('rounds').once('value',snap=>{const r=[];snap.forEach(c=>r.push(c.val()));res(r);}))
+    new Promise(res=>db.ref('rounds').once('value',snap=>{const r=[];snap.forEach(c=>{ r.push(c.val()); });res(r);}))
   ]).then(([athletes,heat,rounds])=>{
     const ath=Object.values(athletes).find(a=>a.name.toLowerCase()===name.toLowerCase())||{name};
     const status=heat&&heat.surfers?calculate_heat_status(heat.surfers):[];
@@ -2718,7 +2718,7 @@ function submitJudgeScore(surferIdx,val){
 // ════════ EXPORT ════════
 function exportAllToExcel(){
   db.ref('rounds').once('value',snap=>{
-    const rounds=[];snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
+    const rounds=[];snap.forEach(c=>{ rounds.push({id:c.key,...c.val()}); });
     rounds.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
     if(!rounds.length){showToast('Sin rondas para exportar');return;}
     let csv='RONDA,FECHA,DURACIÓN,POS,SURFISTA,LYCRA,TOTAL,OLA1,OLA2,OLAS,INTERFERENCIA\n';
@@ -2737,7 +2737,7 @@ function exportAllToExcel(){
 }
 function exportActaOficial(){
   db.ref('rounds').once('value',snap=>{
-    const rounds=[];snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
+    const rounds=[];snap.forEach(c=>{ rounds.push({id:c.key,...c.val()}); });
     rounds.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
     if(!rounds.length){showToast('Sin rondas');return;}
     const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><title>Acta Oficial WaveScore Pro</title>
@@ -2773,7 +2773,7 @@ function exportActaOficial(){
 function exportTournamentReport(){
   db.ref('rounds').once('value',snap=>{
     const rounds=[];
-    snap.forEach(c=>rounds.push({id:c.key,...c.val()}));
+    snap.forEach(c=>{ rounds.push({id:c.key,...c.val()}); });
     rounds.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
     const validRounds=rounds.filter(r=>r.results&&r.results.length);
     if(!validRounds.length){showToast('Sin rondas para reportar');return;}

@@ -1151,12 +1151,11 @@ function opTab(t){
   if(t==='campo') loadSeaConditionsIntoOpForm();
   if(t==='bracket') loadOperatorBracket();
   if(t==='rounds'){
-    db.ref('rounds').orderByChild('timestamp').once('value',snap=>{
+    db.ref('rounds').once('value',snap=>{
       const r=[];
       snap.forEach(c=>r.push({id:c.key,...c.val()}));
       r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
       renderRoundsList(r,'rounds-list');
-      renderRoundsList(r,'adm-rounds-list');
     });
   }
 }
@@ -1213,7 +1212,7 @@ function startHeatFromBracket(roundIdx, heatIdx){
     const heat=bracket.rounds[roundIdx].heats[heatIdx];
     const athletes=heat.athletes.filter(a=>a&&a!=='TBD');
     if(!athletes.length){showToast('⚠️ No hay atletas en este heat');return;}
-    // FIX: usar showToast en vez de confirm() para evitar crash
+    // Crear heat en Firebase con estos atletas
     const surfers=athletes.map((name,i)=>({
       name,
       color:LYCRA_COLORS[i]||LYCRA_COLORS[0],
@@ -1222,7 +1221,7 @@ function startHeatFromBracket(roundIdx, heatIdx){
       interference:0,
       priority:i+1
     }));
-    const heatName=bracket.name+' — '+bracket.rounds[roundIdx].name+' — '+heat.id;
+    const heatName=`${bracket.name} — ${bracket.rounds[roundIdx].name} — ${heat.id}`;
     db.ref('heat').set({
       name:heatName,
       duration:20,
@@ -1231,10 +1230,11 @@ function startHeatFromBracket(roundIdx, heatIdx){
       timestamp:Date.now(),
       bracketRef:{roundIdx,heatIdx}
     }).then(()=>{
-      db.ref('bracket/rounds/'+roundIdx+'/heats/'+heatIdx+'/active').set(true);
+      // Marcar heat como activo en el bracket
+      db.ref(`bracket/rounds/${roundIdx}/heats/${heatIdx}/active`).set(true);
       showToast('✅ Heat iniciado: '+heat.id);
-      opTab('heat');
-    }).catch(e=>showToast('❌ Error: '+e.message));
+      opTab('heat'); // Ir a la pestaña de heat
+    });
   });
 }
 
@@ -1605,7 +1605,6 @@ function _doSaveRound(heatState){
     const status=calculate_heat_status(heatState.surfers);
     const advance=2;
     const winners=status.slice(0,advance).map(s=>s.name);
-    // FIX Bug 33: auto-avanzar sin confirm() que causaba crash
     setTimeout(()=>{
       completeHeatInBracket(roundIdx,heatIdx,winners);
       showToast('🏆 Ganadores avanzados: '+winners.join(', '));
@@ -1649,20 +1648,14 @@ function listenRounds(elId){
     const r=[];
     snap.forEach(c=>r.push({id:c.key,...c.val()}));
     r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    // FIX Bug 27: render en ambos contenedores siempre
     renderRoundsList(r,'rounds-list');
     renderRoundsList(r,'adm-rounds-list');
-    // Forzar visibilidad del contenedor si tiene datos
-    if(r.length){
-      const el=document.getElementById('rounds-list');
-      if(el&&el.parentElement)el.parentElement.style.display='block';
-    }
   });
 }
 function renderRoundsList(rounds,elId){
   const el=document.getElementById(elId);
   if(!el)return;
-  const valid=rounds.filter(r=>r&&r.name&&r.timestamp);
+  const valid=rounds.filter(r=>r&&(r.name||r.timestamp));
   if(!valid.length){
     el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0">Sin rondas guardadas.</div>';
     return;

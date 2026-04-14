@@ -1150,6 +1150,14 @@ function opTab(t){
   });
   if(t==='campo') loadSeaConditionsIntoOpForm();
   if(t==='bracket') loadOperatorBracket();
+  if(t==='rounds'){
+    db.ref('rounds').once('value',snap=>{
+      const r=[];
+      snap.forEach(c=>r.push({id:c.key,...c.val()}));
+      r.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+      renderRoundsList(r,'rounds-list');
+    });
+  }
 }
 
 function loadOperatorBracket(){
@@ -1204,8 +1212,7 @@ function startHeatFromBracket(roundIdx, heatIdx){
     const heat=bracket.rounds[roundIdx].heats[heatIdx];
     const athletes=heat.athletes.filter(a=>a&&a!=='TBD');
     if(!athletes.length){showToast('⚠️ No hay atletas en este heat');return;}
-    if(!confirm(`¿Iniciar ${heat.id} con: ${athletes.join(', ')}?`))return;
-    // Crear heat en Firebase con estos atletas
+    // FIX: usar showToast en vez de confirm() para evitar crash
     const surfers=athletes.map((name,i)=>({
       name,
       color:LYCRA_COLORS[i]||LYCRA_COLORS[0],
@@ -1214,7 +1221,7 @@ function startHeatFromBracket(roundIdx, heatIdx){
       interference:0,
       priority:i+1
     }));
-    const heatName=`${bracket.name} — ${bracket.rounds[roundIdx].name} — ${heat.id}`;
+    const heatName=bracket.name+' — '+bracket.rounds[roundIdx].name+' — '+heat.id;
     db.ref('heat').set({
       name:heatName,
       duration:20,
@@ -1223,11 +1230,10 @@ function startHeatFromBracket(roundIdx, heatIdx){
       timestamp:Date.now(),
       bracketRef:{roundIdx,heatIdx}
     }).then(()=>{
-      // Marcar heat como activo en el bracket
-      db.ref(`bracket/rounds/${roundIdx}/heats/${heatIdx}/active`).set(true);
+      db.ref('bracket/rounds/'+roundIdx+'/heats/'+heatIdx+'/active').set(true);
       showToast('✅ Heat iniciado: '+heat.id);
-      opTab('heat'); // Ir a la pestaña de heat
-    });
+      opTab('heat');
+    }).catch(e=>showToast('❌ Error: '+e.message));
   });
 }
 

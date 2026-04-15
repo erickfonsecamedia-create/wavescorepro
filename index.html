@@ -855,6 +855,7 @@ select.sinput option{background:#0a1f3a;}
     <div class="bwa-score" id="bwa-score">—</div>
     <div class="bwa-name" id="bwa-name">—</div>
     <div class="bwa-label">MEJOR OLA DEL HEAT</div>
+    <div id="bwa-sponsor" style="display:none;text-align:center"></div>
   </div>
 </div>
 
@@ -864,6 +865,7 @@ select.sinput option{background:#0a1f3a;}
   <div class="hem-card">
     <div class="hem-title">🏆 HEAT FINALIZADO</div>
     <div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:3px;color:var(--muted);margin-bottom:14px" id="hem-heat-name">—</div>
+    <div id="hem-sponsor-banner" style="display:none"></div>
     <div class="hem-podium" id="hem-podium"></div>
     <div id="hem-full-results" style="text-align:left;margin-bottom:10px;overflow-y:auto;flex:1"></div>
     <div id="ceremony-sponsors-section" style="display:none"></div>
@@ -1935,6 +1937,21 @@ function triggerHeatEnd(hs,status){
       <div style="font-family:'Bebas Neue',cursive;font-size:14px;flex:1">${s.name}</div>
       <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:${i===0?'var(--gold)':'var(--ocean)'}">${s.total.toFixed(2)}</div>
     </div>`).join('');
+  // Sponsor principal detrás del podio
+  const mainSponsor=_currentSponsors&&_currentSponsors.find(s=>s.tier==='main');
+  const sponsorBanner=document.getElementById('hem-sponsor-banner');
+  if(sponsorBanner){
+    if(mainSponsor&&mainSponsor.logo){
+      sponsorBanner.innerHTML=`<div style="text-align:center;margin-bottom:12px;opacity:.85">
+        <div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3);margin-bottom:6px">PRESENTADO POR</div>
+        <img src="${mainSponsor.logo}" style="max-height:60px;max-width:200px;object-fit:contain;filter:brightness(1.1)" onerror="this.parentElement.style.display='none'"/>
+        ${mainSponsor.name?`<div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-top:4px">${mainSponsor.name}</div>`:''}
+      </div>`;
+      sponsorBanner.style.display='block';
+    } else {
+      sponsorBanner.style.display='none';
+    }
+  }
   document.getElementById('heat-end-modal').classList.add('show');
   spawnFireworks();
   addSponsorsToCeremony();
@@ -3141,6 +3158,17 @@ function showBigWaveAnimation(score,surferName){
   if(!overlay||!scoreEl||!nameEl)return;
   scoreEl.textContent=score.toFixed(2);
   nameEl.textContent=surferName.toUpperCase();
+  // Mostrar logo del sponsor principal
+  const bwaSponsor=document.getElementById('bwa-sponsor');
+  if(bwaSponsor){
+    const mainSponsor=_currentSponsors&&_currentSponsors.find(s=>s.tier==='main');
+    if(mainSponsor&&mainSponsor.logo){
+      bwaSponsor.innerHTML=`<img src="${mainSponsor.logo}" style="max-height:36px;max-width:130px;object-fit:contain;opacity:.8;margin-top:8px" onerror="this.style.display='none'"/>`;
+      bwaSponsor.style.display='block';
+    } else {
+      bwaSponsor.style.display='none';
+    }
+  }
   overlay.classList.add('show');
   spawnConfetti(score>=9.5?80:50,'#ffd166');
   clearTimeout(bigWaveTimeout);

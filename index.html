@@ -2325,70 +2325,255 @@ function checkPublicView(){
 }
 
 function loadPublicView(container){
-  // Header
   container.innerHTML=`
-    <div style="text-align:center;padding:16px 0 8px">
-      <div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--ocean)">🌊 WAVESCORE PRO</div>
-      <div id="pv-event-name" style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;margin-top:4px">CARGANDO...</div>
-    </div>
-    <div id="pv-heat-info" style="text-align:center;margin-bottom:12px"></div>
-    <div id="pv-scores" style="max-width:500px;margin:0 auto"></div>
-    <div style="max-width:500px;margin:16px auto 0">
-      <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:8px">RESULTADOS</div>
-      <div id="pv-rounds"></div>
-    </div>
-    <div style="text-align:center;margin-top:20px;font-size:10px;color:rgba(255,255,255,.2)">🌊 WaveScore Pro · Actualización en tiempo real</div>`;
+    <style>
+      .pv-wrap{max-width:600px;margin:0 auto;padding:16px;}
+      .pv-header{text-align:center;padding:16px 0 12px;border-bottom:1px solid rgba(0,198,251,.12);margin-bottom:16px;}
+      .pv-brand{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--ocean);}
+      .pv-event{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;margin-top:2px;}
+      .pv-timer{font-family:'Bebas Neue',cursive;font-size:48px;letter-spacing:4px;color:var(--ocean);line-height:1;margin:8px 0 2px;}
+      .pv-timer.warn{color:var(--gold);}
+      .pv-timer.danger{color:var(--red);animation:blink .8s infinite;}
+      .pv-heat-name{font-size:11px;letter-spacing:2px;color:var(--muted);}
+      .pv-sea{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:6px;}
+      .pv-sea span{color:var(--ocean);}
+      .pv-search{width:100%;padding:12px 16px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;font-size:15px;outline:none;margin-bottom:16px;transition:border-color .2s;box-sizing:border-box;}
+      .pv-search:focus{border-color:var(--ocean);}
+      .pv-section{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:4px;color:var(--muted);margin:16px 0 8px;}
+      .pv-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;}
+      .pv-card:hover{border-color:rgba(0,198,251,.3);}
+      .pv-card.leader{border-color:var(--gold);background:rgba(255,209,102,.04);}
+      .pv-pos{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);min-width:28px;}
+      .pv-pos.p1{color:var(--gold);}
+      .pv-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+      .pv-name{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;flex:1;}
+      .pv-info{font-size:10px;color:var(--muted);margin-top:1px;}
+      .pv-score{font-family:'Bebas Neue',cursive;font-size:26px;color:var(--ocean);}
+      .pv-score.leader{color:var(--gold);}
+      .pv-profile{background:rgba(0,198,251,.05);border:1px solid rgba(0,198,251,.15);border-radius:16px;padding:16px;margin-bottom:16px;display:none;}
+      .pv-profile.show{display:block;}
+      .pv-profile-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+      .pv-profile-avatar{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--ocean);flex-shrink:0;}
+      .pv-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+      .pv-stat{background:rgba(0,0,0,.2);border-radius:8px;padding:8px 4px;text-align:center;}
+      .pv-stat-val{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--ocean);}
+      .pv-stat-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;}
+      .pv-hist-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px;}
+      .pv-round-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;margin-bottom:8px;}
+      .pv-round-title{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;margin-bottom:6px;}
+      .pv-round-date{font-size:10px;color:var(--muted);margin-bottom:8px;}
+      .pv-round-row{display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
+    </style>
+    <div class="pv-wrap">
+      <div class="pv-header">
+        <div class="pv-brand">🌊 WAVESCORE PRO</div>
+        <div class="pv-event" id="pv-event-name">CARGANDO...</div>
+        <div class="pv-timer" id="pv-timer">–:––</div>
+        <div class="pv-heat-name" id="pv-heat-name">—</div>
+        <div class="pv-sea" id="pv-sea" style="display:none"></div>
+      </div>
 
-  // Cargar nombre del evento
+      <input class="pv-search" id="pv-search" placeholder="🔍 Buscar atleta..." oninput="pvSearch(this.value)"/>
+
+      <div id="pv-profile" class="pv-profile"></div>
+
+      <div class="pv-section">⚡ HEAT EN VIVO</div>
+      <div id="pv-scores"></div>
+
+      <div class="pv-section">📋 RESULTADOS</div>
+      <div id="pv-rounds"></div>
+
+      <div style="text-align:center;margin-top:24px;font-size:10px;color:rgba(255,255,255,.2)">
+        🌊 WaveScore Pro · Actualización en tiempo real
+      </div>
+    </div>`;
+
+  // Estado global de la vista pública
+  let pvHeatState=null, pvRoundsData=[], pvTimerSec=0, pvTimerInterval=null;
+
+  // Evento
   db.ref('config/event/name').once('value',snap=>{
     const el=document.getElementById('pv-event-name');
     if(el&&snap.val())el.textContent=snap.val().toUpperCase();
   });
 
-  // Escuchar heat en tiempo real
-  db.ref('heat').on('value',snap=>{
-    const heat=snap.val();
-    const hi=document.getElementById('pv-heat-info');
-    const sc=document.getElementById('pv-scores');
-    if(!hi||!sc)return;
-    if(!heat||!heat.surfers){
-      hi.innerHTML='<div style="color:var(--muted);font-size:13px">Sin heat activo</div>';
-      sc.innerHTML='';
-      return;
+  // Condiciones del mar
+  db.ref('config/seaConditions').on('value',snap=>{
+    const sc=snap.val();
+    const el=document.getElementById('pv-sea');
+    if(!el)return;
+    if(sc&&(sc.waveHeight||sc.wind)){
+      el.style.display='flex';
+      el.innerHTML=
+        (sc.waveHeight?`🌊 <span>${sc.waveHeight}m</span>`:'')+'  '+
+        (sc.wind?`💨 <span>${sc.wind}km/h ${sc.windDir||''}</span>`:'')+'  '+
+        (sc.waterTemp?`🌡️ <span>${sc.waterTemp}°C</span>`:'')+'  '+
+        (sc.label?`<span style="color:var(--muted)">${sc.label}</span>`:'');
+    } else {
+      el.style.display='none';
     }
-    hi.innerHTML=`<div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:var(--ocean)">${heat.name||'HEAT ACTIVO'}</div>`;
-    const status=calculate_heat_status(heat.surfers);
-    sc.innerHTML=status.map(s=>`
-      <div style="background:rgba(255,255,255,.04);border:1px solid ${s.position===1?'var(--gold)':'rgba(255,255,255,.08)'};border-radius:12px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px">
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:${s.position===1?'var(--gold)':'var(--muted)'};min-width:28px">#${s.position}</div>
-        <div style="width:10px;height:10px;border-radius:50%;background:${heat.surfers[s.idx]?.color||'#fff'};flex-shrink:0"></div>
-        <div style="flex:1">
-          <div style="font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px">${s.name}</div>
-          <div style="font-size:11px;color:var(--muted)">${s.waveCount} olas · ${s.isLeading?'🥇 LÍDER':s.isCombo?'🔄 COMBO':'Necesita '+((s.best*2-s.total+0.01).toFixed(2))}</div>
-        </div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${s.total.toFixed(2)}</div>
-      </div>`).join('');
   });
 
-  // Escuchar rondas
+  // Timer en tiempo real
+  db.ref('timer').on('value',snap=>{
+    const t=snap.val();if(!t)return;
+    clearInterval(pvTimerInterval);
+    if(t.running){
+      const startedAt=t.startedAt||Date.now();
+      const startSec=t.startSec||t.remaining||0;
+      pvTimerSec=Math.max(0,startSec-Math.floor((Date.now()-startedAt)/1000));
+      pvRenderTimer();
+      pvTimerInterval=setInterval(()=>{
+        pvTimerSec=Math.max(0,pvTimerSec-1);
+        pvRenderTimer();
+        if(pvTimerSec===0)clearInterval(pvTimerInterval);
+      },1000);
+    } else {
+      pvTimerSec=t.remaining||0;
+      pvRenderTimer();
+    }
+  });
+
+  function pvRenderTimer(){
+    const el=document.getElementById('pv-timer');if(!el)return;
+    const m=Math.floor(pvTimerSec/60),s=pvTimerSec%60;
+    el.textContent=m+':'+(s<10?'0':'')+s;
+    el.className='pv-timer'+(pvTimerSec<=60?' danger':pvTimerSec<=300?' warn':'');
+  }
+
+  // Heat en tiempo real
+  db.ref('heat').on('value',snap=>{
+    pvHeatState=snap.val();
+    const nameEl=document.getElementById('pv-heat-name');
+    if(nameEl)nameEl.textContent=pvHeatState&&pvHeatState.name?pvHeatState.name.toUpperCase():'SIN HEAT ACTIVO';
+    pvRenderScores();
+    // Actualizar perfil si hay uno abierto
+    const searchVal=document.getElementById('pv-search')?.value||'';
+    if(searchVal.length>=2)pvSearch(searchVal);
+  });
+
+  function pvRenderScores(){
+    const el=document.getElementById('pv-scores');if(!el)return;
+    if(!pvHeatState||!pvHeatState.surfers){
+      el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:8px 0">Sin heat activo en este momento</div>';
+      return;
+    }
+    const status=calculate_heat_status(pvHeatState.surfers);
+    el.innerHTML=status.map(s=>`
+      <div class="pv-card ${s.position===1?'leader':''}" onclick="pvShowProfile('${s.name.replace(/'/g,"\\'")}')">
+        <div class="pv-pos ${s.position===1?'p1':''}">#${s.position}</div>
+        <div class="pv-dot" style="background:${pvHeatState.surfers[s.idx]?.color||'#fff'}"></div>
+        <div>
+          <div class="pv-name">${s.name}</div>
+          <div class="pv-info">${s.waveCount} olas · ${s.isLeading?'🥇 LÍDER':s.isCombo?'🔄 COMBO':'Necesita '+s.pointsToLead.toFixed(2)}</div>
+        </div>
+        <div class="pv-score ${s.position===1?'leader':''}">${s.total.toFixed(2)}</div>
+      </div>`).join('');
+  }
+
+  // Rondas en tiempo real
   db.ref('rounds').on('value',snap=>{
+    pvRoundsData=[];
+    snap.forEach(c=>{ pvRoundsData.push({id:c.key,...c.val()}); });
+    pvRoundsData.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    pvRenderRounds();
+  });
+
+  function pvRenderRounds(){
     const el=document.getElementById('pv-rounds');if(!el)return;
-    const rounds=[];
-    snap.forEach(c=>{ rounds.push({id:c.key,...c.val()}); });
-    rounds.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    if(!rounds.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">Sin resultados guardados</div>';return;}
-    el.innerHTML=rounds.filter(r=>r.results&&r.results.length).map(r=>`
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;margin-bottom:8px">
-        <div style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;margin-bottom:8px">${r.name}</div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:8px">${new Date(r.timestamp).toLocaleString('es-CO')}</div>
+    const valid=pvRoundsData.filter(r=>r.results&&r.results.length);
+    if(!valid.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">Sin resultados guardados aún</div>';return;}
+    el.innerHTML=valid.map(r=>`
+      <div class="pv-round-card">
+        <div class="pv-round-title">${r.name||'Heat'}</div>
+        <div class="pv-round-date">${new Date(r.timestamp).toLocaleString('es-CO')} · ${r.duration||20} min</div>
         ${(r.results||[]).filter(s=>s&&s.name).map(s=>`
-          <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div class="pv-round-row">
             <span style="font-family:'Bebas Neue',cursive;font-size:13px;color:${s.position===1?'var(--gold)':'var(--muted)'};min-width:24px">#${s.position}</span>
-            <span style="flex:1;font-size:13px">${s.name}</span>
-            <span style="font-family:'Bebas Neue',cursive;font-size:16px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${(s.total||0).toFixed(2)}</span>
+            <span style="flex:1;cursor:pointer;color:${s.position===1?'var(--gold)':'#fff'}" onclick="pvShowProfile('${s.name.replace(/'/g,"\\'")}')">
+              ${s.name}
+            </span>
+            <span style="font-family:'Bebas Neue',cursive;font-size:15px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${(s.total||0).toFixed(2)}</span>
           </div>`).join('')}
       </div>`).join('');
-  });
+  }
+
+  // Búsqueda de atleta
+  window.pvSearch=function(val){
+    if(val.length<2){
+      document.getElementById('pv-profile').classList.remove('show');
+      return;
+    }
+    const q=val.toLowerCase();
+    // Buscar en heat activo
+    if(pvHeatState&&pvHeatState.surfers){
+      const found=pvHeatState.surfers.find(s=>s.name.toLowerCase().includes(q));
+      if(found){pvShowProfile(found.name);return;}
+    }
+    // Buscar en historial
+    for(const r of pvRoundsData){
+      const found=(r.results||[]).find(s=>s.name&&s.name.toLowerCase().includes(q));
+      if(found){pvShowProfile(found.name);return;}
+    }
+    document.getElementById('pv-profile').classList.remove('show');
+  };
+
+  // Perfil del atleta
+  window.pvShowProfile=function(name){
+    const el=document.getElementById('pv-profile');if(!el)return;
+    const q=name.toLowerCase();
+
+    // Stats del heat activo
+    let heatSection='';
+    if(pvHeatState&&pvHeatState.surfers){
+      const status=calculate_heat_status(pvHeatState.surfers);
+      const mySt=status.find(s=>s.name.toLowerCase()===q);
+      if(mySt){
+        heatSection=`
+          <div style="margin-bottom:10px">
+            <div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:var(--ocean);margin-bottom:8px">⚡ HEAT EN VIVO — ${pvHeatState.name||''}</div>
+            <div class="pv-stat-row">
+              <div class="pv-stat"><div class="pv-stat-val" style="color:${mySt.position===1?'var(--gold)':'var(--ocean)'}">#${mySt.position}</div><div class="pv-stat-lbl">POSICIÓN</div></div>
+              <div class="pv-stat"><div class="pv-stat-val">${mySt.total.toFixed(2)}</div><div class="pv-stat-lbl">TOTAL</div></div>
+              <div class="pv-stat"><div class="pv-stat-val">${mySt.best.toFixed(2)}</div><div class="pv-stat-lbl">MEJOR OLA</div></div>
+              <div class="pv-stat"><div class="pv-stat-val">${mySt.waveCount}/15</div><div class="pv-stat-lbl">OLAS</div></div>
+            </div>
+            <div style="text-align:center;font-size:11px;color:${mySt.isLeading?'var(--gold)':mySt.isCombo?'var(--red)':'var(--green)'}">
+              ${mySt.isLeading?'🥇 LÍDER DEL HEAT':mySt.isCombo?'⚠️ Necesita combo (2 olas nuevas)':mySt.pointsToLead>0?('Necesita '+mySt.pointsToLead.toFixed(2)+' para liderar'):''}
+            </div>
+          </div>`;
+      }
+    }
+
+    // Historial
+    const myRounds=pvRoundsData.filter(r=>(r.results||[]).some(s=>s.name&&s.name.toLowerCase()===q));
+    let bestTotal=0, bestHeat='', wins=0;
+    const histRows=myRounds.map(r=>{
+      const res=(r.results||[]).find(s=>s.name&&s.name.toLowerCase()===q);
+      if(!res)return '';
+      if(res.total>bestTotal){bestTotal=res.total;bestHeat=r.name||'Heat';}
+      if(res.position===1)wins++;
+      return `<div class="pv-hist-row">
+        <span style="font-family:'Bebas Neue',cursive;color:${res.position===1?'var(--gold)':'var(--muted)'};min-width:28px">#${res.position}</span>
+        <span style="flex:1;color:var(--muted)">${r.name||'Heat'}</span>
+        <span style="font-family:'Bebas Neue',cursive;font-size:15px;color:${res.position===1?'var(--gold)':'var(--ocean)'}">${(res.total||0).toFixed(2)}</span>
+      </div>`;
+    }).join('');
+
+    el.innerHTML=`
+      <div class="pv-profile-header">
+        <div class="pv-profile-avatar">🏄</div>
+        <div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px">${name}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">${myRounds.length} heats · ${wins} victoria(s) · Mejor: ${bestTotal.toFixed(2)}</div>
+        </div>
+        <button onclick="document.getElementById('pv-profile').classList.remove('show');document.getElementById('pv-search').value=''" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;margin-left:auto">✕</button>
+      </div>
+      ${heatSection}
+      ${histRows?`<div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:8px">HISTORIAL DEL TORNEO</div>${histRows}`
+        :'<div style="color:var(--muted);font-size:12px">Sin historial previo</div>'}`;
+    el.classList.add('show');
+  };
 }
 function checkAthleteQRLanding(){
   const params=new URLSearchParams(window.location.search);

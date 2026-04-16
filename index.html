@@ -1937,24 +1937,40 @@ function triggerHeatEnd(hs,status){
       <div style="font-family:'Bebas Neue',cursive;font-size:14px;flex:1">${s.name}</div>
       <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:${i===0?'var(--gold)':'var(--ocean)'}">${s.total.toFixed(2)}</div>
     </div>`).join('');
-  // Sponsor principal detrás del podio
-  const mainSponsor=_currentSponsors&&_currentSponsors.find(s=>s.tier==='main');
-  const sponsorBanner=document.getElementById('hem-sponsor-banner');
-  if(sponsorBanner){
-    if(mainSponsor&&mainSponsor.logo){
-      sponsorBanner.innerHTML=`<div style="text-align:center;margin-bottom:12px;opacity:.85">
-        <div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3);margin-bottom:6px">PRESENTADO POR</div>
-        <img src="${mainSponsor.logo}" style="max-height:60px;max-width:200px;object-fit:contain;filter:brightness(1.1)" onerror="this.parentElement.style.display='none'"/>
-        ${mainSponsor.name?`<div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-top:4px">${mainSponsor.name}</div>`:''}
-      </div>`;
-      sponsorBanner.style.display='block';
-    } else {
-      sponsorBanner.style.display='none';
-    }
-  }
   document.getElementById('heat-end-modal').classList.add('show');
   spawnFireworks();
-  addSponsorsToCeremony();
+  // Leer sponsors FRESCOS de Firebase para ceremonia
+  db.ref('config/event/sponsors').once('value',snap=>{
+    const sponsors=_parseSponsors(snap.val());
+    _currentSponsors=sponsors;
+    const mainSponsor=sponsors.find(s=>s.tier==='main');
+    const sponsorBanner=document.getElementById('hem-sponsor-banner');
+    if(sponsorBanner){
+      if(mainSponsor&&mainSponsor.logo){
+        const sbl=mainSponsor.name?('<div style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-top:4px">'+mainSponsor.name+'</div>'):'';
+        const sImg=document.createElement('img');
+        sImg.src=mainSponsor.logo;
+        sImg.style.cssText='max-height:60px;max-width:200px;object-fit:contain;filter:brightness(1.1)';
+        sImg.onerror=function(){this.parentElement.style.display='none';};
+        sponsorBanner.innerHTML='<div style="text-align:center;margin-bottom:12px;opacity:.85"><div style="font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3);margin-bottom:6px">PRESENTADO POR</div></div>';
+        sponsorBanner.firstChild.appendChild(sImg);
+        if(sbl)sponsorBanner.firstChild.insertAdjacentHTML('beforeend',sbl);
+        sponsorBanner.style.display='block';
+      } else {
+        sponsorBanner.style.display='none';
+      }
+    }
+    // Render todos los sponsors en la sección inferior
+    const section=document.getElementById('ceremony-sponsors-section');
+    if(section&&sponsors.length){
+      section.style.display='block';
+      section.innerHTML='<div class="ceremony-sponsors">'+sponsors.map(s=>{
+        if(!s.logo)return'<span style="font-size:13px;color:var(--muted)">'+( s.name||'')+'</span>';
+        const cls=s.tier==='main'?'sponsor-logo-main':s.tier==='secondary'?'sponsor-logo-secondary':'sponsor-logo-small';
+        return'<img src="'+s.logo+'" class="'+cls+'" alt="'+(s.name||'')+'"/>';
+      }).join('')+'</div>';
+    }
+  });
 }
 
 // ════════ SPONSORS ════════
@@ -3158,18 +3174,27 @@ function showBigWaveAnimation(score,surferName){
   if(!overlay||!scoreEl||!nameEl)return;
   scoreEl.textContent=score.toFixed(2);
   nameEl.textContent=surferName.toUpperCase();
-  // Mostrar logo del sponsor principal
-  const bwaSponsor=document.getElementById('bwa-sponsor');
-  if(bwaSponsor){
-    const mainSponsor=_currentSponsors&&_currentSponsors.find(s=>s.tier==='main');
-    if(mainSponsor&&mainSponsor.logo){
-      bwaSponsor.innerHTML=`<img src="${mainSponsor.logo}" style="max-height:36px;max-width:130px;object-fit:contain;opacity:.8;margin-top:8px" onerror="this.style.display='none'"/>`;
-      bwaSponsor.style.display='block';
-    } else {
-      bwaSponsor.style.display='none';
-    }
-  }
   overlay.classList.add('show');
+  // Leer sponsor fresco de Firebase
+  db.ref('config/event/sponsors').once('value',snap=>{
+    const sponsors=_parseSponsors(snap.val());
+    _currentSponsors=sponsors;
+    const mainSponsor=sponsors.find(s=>s.tier==='main');
+    const bwaSponsor=document.getElementById('bwa-sponsor');
+    if(bwaSponsor){
+      if(mainSponsor&&mainSponsor.logo){
+        const bwaImg=document.createElement('img');
+        bwaImg.src=mainSponsor.logo;
+        bwaImg.style.cssText='max-height:36px;max-width:130px;object-fit:contain;opacity:.8;margin-top:8px';
+        bwaImg.onerror=function(){this.style.display='none';};
+        bwaSponsor.innerHTML='';
+        bwaSponsor.appendChild(bwaImg);
+        bwaSponsor.style.display='block';
+      } else {
+        bwaSponsor.style.display='none';
+      }
+    }
+  });
   spawnConfetti(score>=9.5?80:50,'#ffd166');
   clearTimeout(bigWaveTimeout);
   bigWaveTimeout=setTimeout(()=>overlay.classList.remove('show'),2500);

@@ -3183,8 +3183,11 @@ function stopHelpAnim(){clearInterval(_helpAnimInterval);}
 
 function helpTab(tab){
   document.querySelectorAll('.htab').forEach(t=>t.classList.remove('active'));
-  const activeBtn=document.querySelector('[onclick^="helpTab"]');
-  if(activeBtn)activeBtn.classList.add('active');
+  // Resaltar tab activo correctamente
+  document.querySelectorAll('.htab').forEach(t=>{
+    const oc=t.getAttribute('onclick')||'';
+    if(oc.indexOf(tab)>-1){t.classList.add('active');}
+  });
   stopHelpAnim();
   const el=document.getElementById('help-content');
   const contents={

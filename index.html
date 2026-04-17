@@ -1045,7 +1045,7 @@ function checkAccess(){
   if(!val){showGateError('Ingresa el código');return;}
   if(role==='judge'){
     judgeNum=parseInt(document.getElementById('judge-num').value);
-    registerJudgeSlot(judgeNum);
+    // slot se registra en checkAccess después de verificar disponibilidad
   }
   if(val===ADMIN_CODE_DEFAULT){
     if(role!=='admin'){role='admin';pickRole('admin');}
@@ -1063,7 +1063,36 @@ function checkAccess(){
     const ev=cfg.event||{};
     if(ev.endsAt&&Date.now()>ev.endsAt){showGateError('Evento expirado.');return;}
     if(ev.startsAt&&Date.now()<ev.startsAt){showGateError('El evento inicia el '+new Date(ev.startsAt).toLocaleString('es-CO'));return;}
-    if(val===eventCode) enterApp();
+    if(val===eventCode){
+      if(role==='operator'){
+        // Verificar sesión única de operador con transacción
+        db.ref('activeOperator').transaction(current=>{
+          if(current&&current.since&&(Date.now()-current.since)<25000){
+            return; // Abortar — ya hay operador activo
+          }
+          return {active:true,since:Date.now()};
+        },(error,committed)=>{
+          if(!committed||error){
+            showGateError('⚠️ Ya hay un Operador activo. Solo puede haber uno.');
+            return;
+          }
+          db.ref('activeOperator').onDisconnect().remove();
+          enterApp();
+        });
+      } else if(role==='judge'){
+        // Verificar que el slot de juez no esté ocupado
+        db.ref('activeJudges/'+judgeNum).once('value',snap=>{
+          if(snap.val()&&snap.val().active){
+            showGateError('⚠️ El slot Juez '+judgeNum+' ya está ocupado. Elige otro número.');
+            return;
+          }
+          registerJudgeSlot(judgeNum);
+          enterApp();
+        });
+      } else {
+        enterApp();
+      }
+    }
     else{showGateError('Código incorrecto.');document.getElementById('gate-input').value='';}
   }).catch(()=>showGateError('Error de conexión con Firebase.'));
 }
@@ -1116,32 +1145,13 @@ function initRole(){
     document.getElementById('timer-btns-op').style.display='flex';
     document.getElementById('sea-bar').style.display='flex';
     document.getElementById('demo-btn').style.display='block';
-    // Usar transacción Firebase para garantizar sesión única de operador
-    const opRef=db.ref('activeOperator');
-    opRef.transaction(current=>{
-      if(current&&current.since&&(Date.now()-current.since)<25000){
-        return; // Abortar — ya hay operador activo
-      }
-      return {active:true,since:Date.now()};
-    },(error,committed)=>{
-      if(!committed||error){
-        // No se pudo tomar el slot — otro operador activo
-        document.getElementById('app').style.display='none';
-        document.getElementById('gate').style.display='flex';
-        role=null;
-        const err=document.getElementById('gate-error');
-        if(err){err.textContent='⚠️ Ya hay un Operador activo. Solo puede haber uno a la vez.';setTimeout(()=>err.textContent='',5000);}
-        return;
-      }
-      opRef.onDisconnect().remove();
-      // Renovar cada 15 segundos
-      const _opKA=setInterval(()=>{
-        if(role==='operator')opRef.update({since:Date.now()});
-        else{clearInterval(_opKA);opRef.remove();}
-      },15000);
-      renderJudgeInputs();
-      listenHeat();listenTimer();listenPendingScores();listenRounds('rounds-list');
-    });
+    // Keepalive del operador — renovar cada 15 segundos
+    const _opKA=setInterval(()=>{
+      if(role==='operator')db.ref('activeOperator').update({since:Date.now()});
+      else{clearInterval(_opKA);db.ref('activeOperator').remove();}
+    },15000);
+    renderJudgeInputs();
+    listenHeat();listenTimer();listenPendingScores();listenRounds('rounds-list');
   } else if(role==='judge'){
     document.getElementById('top-badge').textContent='JUEZ '+judgeNum;
     document.getElementById('top-badge').style.display='inline-block';

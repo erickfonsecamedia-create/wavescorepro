@@ -125,8 +125,8 @@ select.sinput option{background:#0a1f3a;}
 .cp-avg{font-family:'Bebas Neue',cursive;font-size:38px;color:var(--ocean);}
 
 /* JUDGE SCORECARD */
-#judge-view{min-height:calc(100vh - 110px);background:linear-gradient(160deg,#020c1b,#0a1f3a 80%);padding:12px 8px;overflow-x:auto;}
-.sc-wrap{min-width:340px;max-width:1000px;margin:0 auto;}
+#judge-view{min-height:calc(100vh - 110px);background:linear-gradient(160deg,#020c1b,#0a1f3a 80%);padding:12px 8px;}
+.sc-wrap{width:100%;max-width:1000px;margin:0 auto;}
 .sc-header-row{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;}
 .sc-table{width:100%;border-collapse:separate;border-spacing:0;}
 .sc-table th{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:var(--muted);padding:6px 4px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);}
@@ -142,7 +142,7 @@ select.sinput option{background:#0a1f3a;}
 .sc-score-chip.best2{color:rgba(0,198,251,.8);background:rgba(0,198,251,.08);}
 .sc-score-chip.empty{color:rgba(255,255,255,.15);background:rgba(255,255,255,.03);}
 .sc-input-cell{padding:4px 3px;text-align:center;}
-.sc-wave-input{width:52px;background:rgba(0,198,251,.08);border:2px solid var(--ocean);border-radius:8px;color:#fff;font-family:'Bebas Neue',cursive;font-size:18px;text-align:center;outline:none;padding:6px 2px;}
+.sc-wave-input{width:100%;min-width:52px;max-width:80px;background:rgba(0,198,251,.08);border:2px solid var(--ocean);border-radius:8px;color:#fff;font-size:18px;text-align:center;outline:none;padding:6px 2px;box-sizing:border-box;}
 .sc-total-cell{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--ocean);text-align:center;padding:8px 6px;}
 .sc-total-cell.leading{color:var(--gold);}
 .sc-needs-cell{font-size:10px;text-align:center;padding:4px 6px;white-space:nowrap;}
@@ -618,6 +618,7 @@ select.sinput option{background:#0a1f3a;}
             <div id="bc-main-sponsor-content" style="display:flex;align-items:center;justify-content:flex-start;min-height:80px"></div>
           </div>
           <div id="bc-brand-name" style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.2);margin-top:4px">🌊 WAVESCORE PRO</div>
+          <div id="bc-org-badge" style="display:none;margin-top:6px;align-items:center;gap:6px"></div>
         </div>
         <!-- CENTRO: Timer + nombre del campeonato -->
         <div class="bc-timer-wrap" style="margin-bottom:0;text-align:center">
@@ -2245,7 +2246,6 @@ function saveWhiteLabel(){
   db.ref('config/whiteLabel').set(wl);applyWhiteLabel(wl);
   if(wl.orgName){
     db.ref('config/event/brandName').set(wl.orgName);
-    document.querySelectorAll('.tlogo,.bc-brand,.gate-logo').forEach(el=>el.textContent='🌊 '+wl.orgName.toUpperCase());
   }
   showToast('✅ White Label aplicado');
 }
@@ -2253,24 +2253,28 @@ function applyWhiteLabel(wl){
   if(!wl)return;
   if(wl.primaryColor)document.documentElement.style.setProperty('--ocean',wl.primaryColor);
   if(wl.accentColor)document.documentElement.style.setProperty('--gold',wl.accentColor);
-  // Aplicar nombre en todos los elementos de branding
-  if(wl.orgName){
-    const name='🌊 '+wl.orgName.toUpperCase();
-    document.querySelectorAll('.tlogo,.bc-brand,.gate-logo').forEach(el=>{el.textContent=name;});
-    const bcBrand=document.getElementById('bc-brand-name');
-    if(bcBrand)bcBrand.textContent=name;
-  }
-  // Aplicar logo si existe
-  if(wl.logoUrl){
-    document.querySelectorAll('.tlogo').forEach(el=>{
-      const img=document.createElement('img');
-      img.src=wl.logoUrl;
-      img.style.cssText='height:28px;max-width:100px;object-fit:contain;vertical-align:middle;margin-right:6px';
-      img.onerror=function(){this.style.display='none';};
-      el.innerHTML='';
-      el.appendChild(img);
-      el.appendChild(document.createTextNode(wl.orgName?wl.orgName.toUpperCase():'WAVESCORE PRO'));
-    });
+  // Mostrar logo/nombre org en badge dedicado en broadcast (sin tocar nombre de la app)
+  const badge=document.getElementById('bc-org-badge');
+  if(badge){
+    if(wl.orgName||wl.logoUrl){
+      badge.style.display='flex';
+      badge.innerHTML='';
+      if(wl.logoUrl){
+        const img=document.createElement('img');
+        img.src=wl.logoUrl;
+        img.style.cssText='height:20px;max-width:80px;object-fit:contain;opacity:.7';
+        img.onerror=function(){this.style.display='none';};
+        badge.appendChild(img);
+      }
+      if(wl.orgName){
+        const txt=document.createElement('span');
+        txt.style.cssText='font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.3)';
+        txt.textContent=wl.orgName.toUpperCase();
+        badge.appendChild(txt);
+      }
+    } else {
+      badge.style.display='none';
+    }
   }
 }
 
@@ -2949,6 +2953,11 @@ function listenHeatForJudge(){
 }
 function renderJudgeView(){
   const view=document.getElementById('judge-view');if(!view)return;
+  // Bloquear si no hay número de juez válido
+  if(!judgeNum||isNaN(judgeNum)){
+    view.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:10px"><div style="font-size:40px">🔒</div><div style="font-size:16px;color:var(--red)">ACCESO NO AUTORIZADO</div><div style="font-size:12px;color:var(--muted);margin-top:8px">Sal y vuelve a entrar seleccionando tu número de juez</div></div>';
+    return;
+  }
   if(!heatState||!heatState.surfers){
     view.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:10px">
       <div style="font-size:40px">🌊</div>
@@ -2986,11 +2995,19 @@ function renderJudgeView(){
   </div>`;
 }
 function submitJudgeScore(surferIdx,val){
+  if(!judgeNum||isNaN(judgeNum)){showToast('⚠️ Sin número de juez asignado');return;}
+  if(localTimerSec===0){showToast('⏱️ Heat terminado — no se aceptan más notas');return;}
   const score=parseFloat(val);
   if(isNaN(score)||score<0.1||score>10){showToast('⚠️ Nota inválida (0.1 – 10)');return;}
-  db.ref(`pendingScores/surfer${surferIdx}/judge${judgeNum}`).set({value:Math.round(score*100)/100,judgeNum,timestamp:Date.now()});
-  showToast(`✅ Nota enviada: ${score.toFixed(2)} — J${judgeNum}`);
-  const inp=document.getElementById(`sc-inp-${surferIdx}`);if(inp)inp.value='';
+  db.ref('pendingScores/surfer'+surferIdx+'/judge'+judgeNum).set({value:Math.round(score*100)/100,judgeNum,timestamp:Date.now()});
+  showToast('✅ Nota enviada: '+score.toFixed(2)+' — J'+judgeNum);
+  const inp=document.getElementById('sc-inp-'+surferIdx);
+  if(inp){
+    inp.value='';
+    inp.disabled=true;
+    inp.placeholder='✅ Enviada';
+    inp.style.opacity='0.4';
+  }
 }
 
 // ════════ EXPORT ════════
@@ -2999,18 +3016,26 @@ function exportAllToExcel(){
     const rounds=[];snap.forEach(c=>{ rounds.push({id:c.key,...c.val()}); });
     rounds.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
     if(!rounds.length){showToast('Sin rondas para exportar');return;}
-    let csv='RONDA,FECHA,DURACIÓN,POS,SURFISTA,LYCRA,TOTAL,OLA1,OLA2,OLAS,INTERFERENCIA\n';
-    rounds.forEach(r=>{
-      const date=new Date(r.timestamp).toLocaleString('es-CO');
-      (r.results||[]).forEach(s=>{
-        csv+=`"${r.name}","${date}","${r.duration} min",${s.position},"${s.name}","${s.lycra}",${s.total.toFixed(2)},${s.best.toFixed(2)},${s.adjSecond.toFixed(2)},${s.waveCount},${s.interference}\n`;
+    // Cabecera clara
+    let csv='\uFEFF';
+    csv+='EVENTO,RONDA,FECHA,HORA,DURACIÓN (min),POSICIÓN,SURFISTA,LYCRA,TOTAL,OLA 1,OLA 2 (AJUSTADA),OLAS SURFADAS,INTERFERENCIA\n';
+    db.ref('config/event/name').once('value',nameSnap=>{
+      const eventName=nameSnap.val()||'Evento';
+      rounds.forEach(r=>{
+        const dt=new Date(r.timestamp);
+        const fecha=dt.toLocaleDateString('es-CO');
+        const hora=dt.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+        (r.results||[]).filter(s=>s&&s.name).forEach(s=>{
+          const interf=s.interference>=2?'Doble (0pts)':s.interference===1?'Simple (50%)':'—';
+          csv+='"'+eventName+'","'+(r.name||'Heat')+'","'+fecha+'","'+hora+'",'+(r.duration||20)+','+s.position+',"'+(s.name||'')+'","'+(s.lycra||'')+'",'+((s.total||0).toFixed(2))+','+((s.best||0).toFixed(2))+','+((s.adjSecond||0).toFixed(2))+','+(s.waveCount||0)+',"'+interf+'"\n';
+        });
       });
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='WaveScore_Resultados.csv';a.click();
+      URL.revokeObjectURL(url);
+      showToast('📊 Excel exportado');
     });
-    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download='WaveScore_Resultados.csv';a.click();
-    URL.revokeObjectURL(url);
-    showToast('📊 Excel exportado');
   });
 }
 function exportActaOficial(){

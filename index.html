@@ -1119,11 +1119,8 @@ function initRole(){
     document.getElementById('top-badge').style.display='inline-block';
     document.getElementById('judge-view').style.display='block';
     document.getElementById('timer-bar').style.display='flex';
-    // Jueces no controlan el timer
-    const tbStart=document.getElementById('tbtn-start');
-    const tbReset=document.querySelector('.tbtn-reset');
-    if(tbStart)tbStart.style.display='none';
-    if(tbReset)tbReset.style.display='none';
+    // Jueces no controlan el timer - ocultar todos los botones
+    document.getElementById('timer-btns-op').style.display='none';
     listenHeatForJudge();listenTimer();listenNotifications();
   } else if(role==='broadcast'){
     document.getElementById('top-badge').textContent='PANTALLA / ANUNCIADOR';
@@ -1132,6 +1129,16 @@ function initRole(){
     document.getElementById('sea-bar').style.display='flex';
     document.getElementById('demo-btn').style.display='block';
     listenHeat();listenTimer();listenSeaConditions();loadSponsorBar();listenNotifications();
+    // Escuchar ceremonia en tiempo real
+    db.ref('ceremony').on('value',snap=>{
+      const cer=snap.val();
+      if(!cer||!cer.results||!cer.results.length)return;
+      // Solo mostrar si es reciente (menos de 30 segundos)
+      if(Date.now()-cer.timestamp>30000)return;
+      const fakeHs={name:cer.heatName,surfers:cer.results.map(r=>({name:r.name,color:r.color,waves:[{score:r.total}]}))};
+      const fakeStatus=cer.results.map(r=>({...r,best:r.total,adjSecond:0,waveCount:0,isLeading:r.position===1,isCombo:false,statusLabel:'',pointsToLead:0,idx:r.position-1}));
+      triggerHeatEnd(fakeHs,fakeStatus);
+    });
   } else if(role==='admin'){
     document.getElementById('top-admin-badge').style.display='inline-block';
     document.getElementById('admin-view').style.display='block';
@@ -1600,8 +1607,12 @@ function saveRound(){
     _doSaveRound(hs);
   });
 }
+let _lastSavedHeatTimestamp=0;
 function _doSaveRound(heatState){
   if(!heatState||!heatState.surfers)return;
+  // Prevenir guardado duplicado del mismo heat en menos de 5 segundos
+  if(Date.now()-_lastSavedHeatTimestamp<5000){showToast('⚠️ Ronda ya guardada recientemente');return;}
+  _lastSavedHeatTimestamp=Date.now();
   // Verificar si este heat viene del bracket
   if(heatState.bracketRef){
     const {roundIdx,heatIdx}=heatState.bracketRef;
@@ -1911,6 +1922,12 @@ function spawnConfetti(count,color){
 }
 function spawnFireworks(){spawnConfetti(100,'#ffd166');}
 function triggerHeatEnd(hs,status){
+  // Notificar a Firebase para que broadcast también muestre la ceremonia
+  db.ref('ceremony').set({
+    heatName:hs.name||'Heat',
+    timestamp:Date.now(),
+    results:status.slice(0,4).map(s=>({name:s.name,total:s.total,position:s.position,color:s.color}))
+  });
   document.getElementById('hem-heat-name').textContent=(hs.name||'Heat').toUpperCase();
   const top3=status.slice(0,3);
   const podiumOrder=[
@@ -2236,6 +2253,25 @@ function applyWhiteLabel(wl){
   if(!wl)return;
   if(wl.primaryColor)document.documentElement.style.setProperty('--ocean',wl.primaryColor);
   if(wl.accentColor)document.documentElement.style.setProperty('--gold',wl.accentColor);
+  // Aplicar nombre en todos los elementos de branding
+  if(wl.orgName){
+    const name='🌊 '+wl.orgName.toUpperCase();
+    document.querySelectorAll('.tlogo,.bc-brand,.gate-logo').forEach(el=>{el.textContent=name;});
+    const bcBrand=document.getElementById('bc-brand-name');
+    if(bcBrand)bcBrand.textContent=name;
+  }
+  // Aplicar logo si existe
+  if(wl.logoUrl){
+    document.querySelectorAll('.tlogo').forEach(el=>{
+      const img=document.createElement('img');
+      img.src=wl.logoUrl;
+      img.style.cssText='height:28px;max-width:100px;object-fit:contain;vertical-align:middle;margin-right:6px';
+      img.onerror=function(){this.style.display='none';};
+      el.innerHTML='';
+      el.appendChild(img);
+      el.appendChild(document.createTextNode(wl.orgName?wl.orgName.toUpperCase():'WAVESCORE PRO'));
+    });
+  }
 }
 
 // ════════ ATHLETES ════════
@@ -2326,11 +2362,12 @@ function showAthleteQR(surferName,status){
 }
 function showEventQR(){
   const modal=document.getElementById('event-qr-modal');
-  const url=window.location.href.split('?')[0];
+  const base=window.location.href.split('?')[0];
+  const url=base+'?view=public';
   document.getElementById('eqr-url-text').textContent=url;
   const qrContainer=document.getElementById('eqr-qr-img');
-  const qrUrl=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}`;
-  qrContainer.innerHTML=`<img src="${qrUrl}" style="width:180px;height:180px;border-radius:8px"/>`;
+  const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent(url);
+  qrContainer.innerHTML='<img src="'+qrUrl+'" style="width:180px;height:180px;border-radius:8px"/>';
   modal.classList.add('open');
 }
 

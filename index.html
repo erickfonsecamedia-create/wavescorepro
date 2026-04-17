@@ -253,8 +253,8 @@ select.sinput option{background:#0a1f3a;}
 .bwb-surfer{font-size:12px;color:var(--muted);letter-spacing:2px;}
 #leader-banner{position:fixed;top:80px;right:-400px;background:rgba(2,12,27,.95);border:2px solid var(--ocean);border-left:4px solid var(--gold);border-radius:14px;padding:12px 20px;z-index:800;transition:right .4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(10px);}
 #leader-banner.show{right:16px;}
-.heat-call-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-200px);background:linear-gradient(90deg,rgba(46,213,115,.15),rgba(0,198,251,.15));border:2px solid var(--green);border-radius:20px;padding:16px 28px;text-align:center;z-index:850;transition:transform .4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px);white-space:nowrap;pointer-events:none;}
-.heat-call-toast.show{transform:translateX(-50%) translateY(0);}
+.heat-call-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.5);background:linear-gradient(135deg,rgba(46,213,115,.25),rgba(0,198,251,.25));border:3px solid var(--green);border-radius:24px;padding:24px 40px;text-align:center;z-index:850;transition:all .35s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(30px);pointer-events:none;opacity:0;box-shadow:0 0 60px rgba(46,213,115,.4);}
+.heat-call-toast.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
 .hct-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--green);}
 .hct-name{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;}
 
@@ -622,6 +622,7 @@ select.sinput option{background:#0a1f3a;}
         </div>
         <!-- CENTRO: Timer + nombre del campeonato -->
         <div class="bc-timer-wrap" style="margin-bottom:0;text-align:center">
+          <div id="bc-org-center" style="display:none;flex-direction:column;align-items:center;gap:4px;margin-bottom:10px"></div>
           <div class="bc-timer" id="bc-timer">—:——</div>
           <div class="bc-timer-lbl">TIEMPO RESTANTE</div>
           <div class="bc-event-name" id="bc-event-badge" style="margin-top:6px;display:inline-block">SIN HEAT</div>
@@ -1092,6 +1093,8 @@ function logoutToGate(){
   document.getElementById('app').style.display='none';
   document.getElementById('gate').style.display='flex';
   releaseJudgeSlot(judgeNum);
+  if(db)db.ref('activeOperator').onDisconnect().cancel();
+  if(db)db.ref('activeOperator').remove();
   role=null;judgeNum=null;heatState=null;
   document.querySelectorAll('.grole').forEach(b=>b.classList.remove('active'));
   document.getElementById('gate-input').value='';
@@ -1113,8 +1116,30 @@ function initRole(){
     document.getElementById('timer-btns-op').style.display='flex';
     document.getElementById('sea-bar').style.display='flex';
     document.getElementById('demo-btn').style.display='block';
-    renderJudgeInputs();
-    listenHeat();listenTimer();listenPendingScores();listenRounds('rounds-list');
+    // Verificar si ya hay un operador activo
+    db.ref('activeOperator').once('value',snap=>{
+      const active=snap.val();
+      if(active&&active.since&&(Date.now()-active.since)<30000){
+        // Hay un operador activo reciente — bloquear
+        document.getElementById('app').style.display='none';
+        document.getElementById('gate').style.display='flex';
+        role=null;
+        const err=document.getElementById('gate-error');
+        if(err){err.textContent='⚠️ Ya hay un Operador activo en otra sesión. Solo puede haber uno a la vez.';setTimeout(()=>err.textContent='',5000);}
+        return;
+      }
+      // Registrar como operador activo
+      const opRef=db.ref('activeOperator');
+      opRef.set({active:true,since:Date.now()});
+      opRef.onDisconnect().remove();
+      // Renovar cada 20 segundos para mantener el slot
+      const _opKeepAlive=setInterval(()=>{
+        if(role==='operator')opRef.update({since:Date.now()});
+        else clearInterval(_opKeepAlive);
+      },20000);
+      renderJudgeInputs();
+      listenHeat();listenTimer();listenPendingScores();listenRounds('rounds-list');
+    });
   } else if(role==='judge'){
     document.getElementById('top-badge').textContent='JUEZ '+judgeNum;
     document.getElementById('top-badge').style.display='inline-block';
@@ -1426,12 +1451,18 @@ function renderTimerDisplay(sec){
 function playHorn(type){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const p={start:[[880,.1,.3]],warn:[[660,.1,.25],[660,.4,.25]],end:[[440,.1,.8]]};
+    // Sonidos más potentes y distintivos
+    const p={
+      start:[[880,.0,.15],[1100,.2,.15],[880,.4,.3]],           // 3 pitidos ascendentes — inicio
+      warn: [[660,.0,.3],[660,.5,.3],[660,1.0,.5]],              // 3 pitidos iguales — 5 min
+      end:  [[440,.0,.6],[330,.7,.6],[220,1.4,1.0]],             // 3 pitidos descendentes — fin
+      call: [[1200,.0,.1],[1200,.15,.1],[800,.35,.3],[1200,.7,.1],[1200,.85,.1]] // llamado atleta
+    };
     (p[type]||p.start).forEach(([freq,delay,dur])=>{
       const o=ctx.createOscillator(),g=ctx.createGain();
       o.connect(g);g.connect(ctx.destination);
-      o.frequency.value=freq;o.type='sawtooth';
-      g.gain.setValueAtTime(.3,ctx.currentTime+delay);
+      o.frequency.value=freq;o.type='square';
+      g.gain.setValueAtTime(.6,ctx.currentTime+delay);
       g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+dur);
       o.start(ctx.currentTime+delay);o.stop(ctx.currentTime+delay+dur+.1);
     });
@@ -2215,7 +2246,7 @@ function listenNotifications(){
       document.getElementById('hct-name').textContent=n.name.toUpperCase();
       document.getElementById('hct-msg').textContent=n.msg;
       const el=document.getElementById('heat-call-toast');
-      el.classList.add('show');playHorn('warn');
+      el.classList.add('show');playHorn('call');
       clearTimeout(callTimeout);callTimeout=setTimeout(()=>el.classList.remove('show'),6000);
     }
   });
@@ -2253,27 +2284,27 @@ function applyWhiteLabel(wl){
   if(!wl)return;
   if(wl.primaryColor)document.documentElement.style.setProperty('--ocean',wl.primaryColor);
   if(wl.accentColor)document.documentElement.style.setProperty('--gold',wl.accentColor);
-  // Mostrar logo/nombre org en badge dedicado en broadcast (sin tocar nombre de la app)
-  const badge=document.getElementById('bc-org-badge');
-  if(badge){
+  // Mostrar logo/nombre org en CENTRO del broadcast — espacio dedicado encima del timer
+  const orgCenter=document.getElementById('bc-org-center');
+  if(orgCenter){
     if(wl.orgName||wl.logoUrl){
-      badge.style.display='flex';
-      badge.innerHTML='';
+      orgCenter.style.display='flex';
+      orgCenter.innerHTML='';
       if(wl.logoUrl){
         const img=document.createElement('img');
         img.src=wl.logoUrl;
-        img.style.cssText='height:20px;max-width:80px;object-fit:contain;opacity:.7';
+        img.style.cssText='height:48px;max-width:160px;object-fit:contain';
         img.onerror=function(){this.style.display='none';};
-        badge.appendChild(img);
+        orgCenter.appendChild(img);
       }
       if(wl.orgName){
-        const txt=document.createElement('span');
-        txt.style.cssText='font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.3)';
+        const txt=document.createElement('div');
+        txt.style.cssText='font-size:13px;letter-spacing:3px;color:rgba(255,255,255,.7)';
         txt.textContent=wl.orgName.toUpperCase();
-        badge.appendChild(txt);
+        orgCenter.appendChild(txt);
       }
     } else {
-      badge.style.display='none';
+      orgCenter.style.display='none';
     }
   }
 }
@@ -2996,6 +3027,7 @@ function renderJudgeView(){
 }
 function submitJudgeScore(surferIdx,val){
   if(!judgeNum||isNaN(judgeNum)){showToast('⚠️ Sin número de juez asignado');return;}
+  if(!timerRunning&&localTimerSec>0){showToast('⏱️ El heat aún no ha iniciado — espera que el Operador arranque el timer');return;}
   if(localTimerSec===0){showToast('⏱️ Heat terminado — no se aceptan más notas');return;}
   const score=parseFloat(val);
   if(isNaN(score)||score<0.1||score>10){showToast('⚠️ Nota inválida (0.1 – 10)');return;}
@@ -3227,7 +3259,49 @@ function stopAllDemo(){
 }
 function startTour(){
   document.getElementById('demo-menu').style.display='none';
-  showToast('Tour guiado — próximamente');
+  _tourStep=0;
+  _runTourStep();
+}
+let _tourStep=0;
+const _tourSteps=[
+  {title:'🌊 Bienvenido a WaveScore Pro',desc:'Este tour te guiará por las funciones principales del sistema. Estás en el panel del OPERADOR — el rol que controla todo el heat.',target:null},
+  {title:'⚙️ Configura el Heat',desc:'En la pestaña HEAT puedes ingresar el nombre del heat, la duración (15-30 min) y los nombres de los surfistas. Luego presiona ▶ ACTIVAR.',target:'tab-heat'},
+  {title:'▶ Inicia el Timer',desc:'Presiona INICIAR para arrancar el cronómetro. Suena una bocina de inicio. A los 5 min suena aviso. Al llegar a 0:00 la ceremonia aparece automáticamente.',target:'tbtn-start'},
+  {title:'📊 Registra Olas',desc:'En la pestaña PUNTUACIÓN selecciona el surfista e ingresa las 5 notas de los jueces (J1 a J5). El sistema calcula el promedio ISA automáticamente.',target:'tab-score'},
+  {title:'⚖️ Prioridad',desc:'El surfista P1 tiene derecho de vía total. Al registrar su ola, rota al último lugar. Puedes ver el orden en el scoreboard.',target:'priority-list'},
+  {title:'🏆 Bracket',desc:'En la pestaña BRACKET puedes iniciar heats desde el bracket del torneo. Los ganadores avanzan automáticamente a la siguiente ronda.',target:'tab-bracket'},
+  {title:'📋 Historial',desc:'En la pestaña RONDAS aparecen todos los heats guardados. Puedes exportar a Excel o generar el Acta Oficial.',target:'tab-rounds'},
+  {title:'🎉 ¡Listo!',desc:'Ya conoces las funciones principales. Para más detalles presiona el botón ❓ AYUDA en el topbar.',target:null}
+];
+function _runTourStep(){
+  const overlay=document.getElementById('tour-overlay');
+  if(!overlay)return;
+  if(_tourStep>=_tourSteps.length){
+    overlay.innerHTML='';overlay.style.display='none';
+    showToast('✅ Tour completado');return;
+  }
+  const step=_tourSteps[_tourStep];
+  overlay.style.display='block';
+  // Spotlight
+  let spotHtml='';
+  if(step.target){
+    const el=document.getElementById(step.target);
+    if(el){
+      const r=el.getBoundingClientRect();
+      spotHtml='<div class="tour-spotlight" style="top:'+(r.top-8)+'px;left:'+(r.left-8)+'px;width:'+(r.width+16)+'px;height:'+(r.height+16)+'px"></div>';
+    }
+  }
+  overlay.innerHTML=spotHtml+'<div class="tour-card">'+
+    '<div style="font-size:18px;letter-spacing:3px;color:var(--ocean);margin-bottom:6px">'+step.title+'</div>'+
+    '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px">'+step.desc+'</div>'+
+    '<div style="display:flex;gap:8px;align-items:center">'+
+    '<span style="font-size:11px;color:var(--muted)">'+(_tourStep+1)+' / '+_tourSteps.length+'</span>'+
+    '<div style="flex:1"></div>'+
+    (_tourStep>0?'<button class="tour-btn-skip" onclick="_tourStep-=2;_runTourStep()">← Atrás</button>':'')+
+    (_tourStep<_tourSteps.length-1?
+      '<button class="tour-btn-next" onclick="_tourStep++;_runTourStep()">Siguiente →</button>':
+      '<button class="tour-btn-finish" onclick="_tourStep=999;_runTourStep()">✅ Finalizar</button>')+
+    '</div></div>';
 }
 
 

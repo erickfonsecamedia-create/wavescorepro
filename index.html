@@ -969,6 +969,7 @@ let _currentSponsors=[];
 // ════════ INIT ════════
 window.addEventListener('load',()=>{
   if(checkPublicView()) return;
+  if(checkOverlayView()) return;
   if(checkAthleteQRLanding()) return;
   try{
     let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}
@@ -2419,6 +2420,95 @@ function showEventQR(){
 }
 
 // ════════ ATHLETE PROFILE (QR landing) ════════
+function checkOverlayView(){
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('view')!=='overlay') return false;
+  // Fondo transparente para OBS
+  document.body.style.background='transparent';
+  document.body.style.margin='0';
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').style.display='none';
+  // Crear vista overlay
+  const ov=document.createElement('div');
+  ov.id='obs-overlay';
+  ov.style.cssText='position:fixed;inset:0;background:transparent;font-family:"Bebas Neue",cursive;pointer-events:none;';
+  document.body.appendChild(ov);
+  try{
+    let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}
+    db=firebase.database(fbApp);
+    loadOverlayView();
+  }catch(e){console.error(e);}
+  return true;
+}
+
+function loadOverlayView(){
+  // Timer
+  let ovTimerSec=0,ovTimerInterval=null;
+  db.ref('timer').on('value',snap=>{
+    const t=snap.val();if(!t)return;
+    clearInterval(ovTimerInterval);
+    if(t.running){
+      const sAt=t.startedAt||Date.now(),sSec=t.startSec||t.remaining||0;
+      ovTimerSec=Math.max(0,sSec-Math.floor((Date.now()-sAt)/1000));
+      ovTimerInterval=setInterval(()=>{
+        ovTimerSec=Math.max(0,ovTimerSec-1);
+        renderOverlayTimer(ovTimerSec);
+      },1000);
+    } else {
+      ovTimerSec=t.remaining||0;
+    }
+    renderOverlayTimer(ovTimerSec);
+  });
+
+  // Heat
+  db.ref('heat').on('value',snap=>{
+    const heat=snap.val();
+    renderOverlayScores(heat);
+  });
+}
+
+function renderOverlayTimer(sec){
+  const el=document.getElementById('obs-timer');
+  if(!el)return;
+  const m=Math.floor(sec/60),s=sec%60;
+  el.textContent=m+':'+(s<10?'0':'')+s;
+  el.style.color=sec<=60?'#ff4757':sec<=300?'#ffd166':'#00c6fb';
+}
+
+function renderOverlayScores(heat){
+  const ov=document.getElementById('obs-overlay');
+  if(!ov)return;
+  if(!heat||!heat.surfers){
+    ov.innerHTML='';
+    return;
+  }
+  const status=calculate_heat_status(heat.surfers);
+  const lycraColors={'Rojo':'#ff4757','Blanco':'#f0f0f0','Amarillo':'#ffd166','Azul':'#54a0ff'};
+
+  ov.innerHTML=
+    // TIMER — esquina superior derecha
+    '<div style="position:absolute;top:20px;right:20px;background:rgba(2,12,27,.85);border:2px solid rgba(0,198,251,.4);border-radius:12px;padding:8px 20px;text-align:center;backdrop-filter:blur(10px)">'+
+      '<div id="obs-timer" style="font-size:42px;color:#00c6fb;letter-spacing:4px;line-height:1">—:——</div>'+
+      '<div style="font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.4)">TIEMPO RESTANTE</div>'+
+    '</div>'+
+    // SCORES — banda inferior
+    '<div style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:4px;padding:0 8px 8px">'+
+      status.map(s=>{
+        const lc=lycraColors[s.lycra]||'#fff';
+        const isLead=s.position===1&&s.total>0;
+        return '<div style="flex:1;background:'+(isLead?'rgba(255,209,102,.15)':'rgba(2,12,27,.85)')+';border:2px solid '+(isLead?'#ffd166':'rgba(0,198,251,.3)')+';border-radius:10px 10px 0 0;padding:8px 10px;backdrop-filter:blur(10px);text-align:center">'+
+          '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">'+
+            '<div style="width:10px;height:10px;border-radius:50%;background:'+lc+';flex-shrink:0"></div>'+
+            '<div style="font-size:13px;letter-spacing:1px;color:'+(isLead?'#ffd166':'#fff')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.name+'</div>'+
+          '</div>'+
+          '<div style="font-size:28px;color:'+(isLead?'#ffd166':'#00c6fb')+';line-height:1">'+s.total.toFixed(2)+'</div>'+
+          '<div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:1px">#'+s.position+' · '+s.waveCount+' OLAS</div>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+  renderOverlayTimer(0);
+}
+
 function checkPublicView(){
   const params=new URLSearchParams(window.location.search);
   if(params.get('view')!=='public') return false;

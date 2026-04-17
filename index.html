@@ -1116,27 +1116,29 @@ function initRole(){
     document.getElementById('timer-btns-op').style.display='flex';
     document.getElementById('sea-bar').style.display='flex';
     document.getElementById('demo-btn').style.display='block';
-    // Verificar si ya hay un operador activo
-    db.ref('activeOperator').once('value',snap=>{
-      const active=snap.val();
-      if(active&&active.since&&(Date.now()-active.since)<30000){
-        // Hay un operador activo reciente — bloquear
+    // Usar transacción Firebase para garantizar sesión única de operador
+    const opRef=db.ref('activeOperator');
+    opRef.transaction(current=>{
+      if(current&&current.since&&(Date.now()-current.since)<25000){
+        return; // Abortar — ya hay operador activo
+      }
+      return {active:true,since:Date.now()};
+    },(error,committed)=>{
+      if(!committed||error){
+        // No se pudo tomar el slot — otro operador activo
         document.getElementById('app').style.display='none';
         document.getElementById('gate').style.display='flex';
         role=null;
         const err=document.getElementById('gate-error');
-        if(err){err.textContent='⚠️ Ya hay un Operador activo en otra sesión. Solo puede haber uno a la vez.';setTimeout(()=>err.textContent='',5000);}
+        if(err){err.textContent='⚠️ Ya hay un Operador activo. Solo puede haber uno a la vez.';setTimeout(()=>err.textContent='',5000);}
         return;
       }
-      // Registrar como operador activo
-      const opRef=db.ref('activeOperator');
-      opRef.set({active:true,since:Date.now()});
       opRef.onDisconnect().remove();
-      // Renovar cada 20 segundos para mantener el slot
-      const _opKeepAlive=setInterval(()=>{
+      // Renovar cada 15 segundos
+      const _opKA=setInterval(()=>{
         if(role==='operator')opRef.update({since:Date.now()});
-        else clearInterval(_opKeepAlive);
-      },20000);
+        else{clearInterval(_opKA);opRef.remove();}
+      },15000);
       renderJudgeInputs();
       listenHeat();listenTimer();listenPendingScores();listenRounds('rounds-list');
     });

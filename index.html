@@ -977,6 +977,12 @@ window.addEventListener('load',()=>{
   try{
     let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}
     db=firebase.database(fbApp);
+    // OFFLINE NIVEL 1: indicador de conexión en tiempo real
+    try{db.ref('.info/connected').on('value',snap=>{
+      const online=snap.val();
+      const dot=document.querySelector('.ldot');
+      if(dot){dot.style.background=online?'#22c55e':'#ffd166';dot.title=online?'Conectado':'Sin conexión - mostrando datos en caché';}
+    });}catch(e){}
     loadGateEventName();
     renderSurferInputs();
   }catch(e){console.error(e);}
@@ -1659,11 +1665,12 @@ let _lastSavedHeatTimestamp=0;
 let _lastSavedHeatId='';
 function _doSaveRound(heatState){
   if(!heatState||!heatState.surfers)return;
-  // Identificar heat por su timestamp de activación — evita duplicados
+  // Identificar el heat por su timestamp de activación (único por heat)
   const heatId=String(heatState.timestamp||'');
   if(heatId&&heatId===_lastSavedHeatId){
     showToast('⚠️ Este heat ya fue guardado. Usa 🎬 SOLO ANIMACIÓN para repetir la ceremonia.');return;
   }
+  // Guardia temporal de 5s como segundo respaldo
   if(Date.now()-_lastSavedHeatTimestamp<5000){showToast('⚠️ Ronda ya guardada recientemente');return;}
   _lastSavedHeatTimestamp=Date.now();
   if(heatId)_lastSavedHeatId=heatId;
@@ -1801,7 +1808,7 @@ function renderOperatorBoard(){
   }).join('');
   const existBtn=document.getElementById('save-round-btn');if(existBtn)existBtn.remove();
   const existCer=document.getElementById('ceremony-btn');if(existCer)existCer.remove();
-  const existAnimBtn=document.getElementById('anim-only-btn');if(existAnimBtn)existAnimBtn.remove();
+  const existAnim=document.getElementById('anim-only-btn');if(existAnim)existAnim.remove();
   const saveBtn=document.createElement('button');
   saveBtn.id='save-round-btn';saveBtn.className='btn-sm btn-go';
   saveBtn.style.cssText='width:100%;padding:12px;margin-top:14px;font-size:14px;letter-spacing:3px;border-radius:12px';
@@ -1822,13 +1829,18 @@ function renderOperatorBoard(){
   const cerBtn=document.createElement('button');
   cerBtn.id='ceremony-btn';cerBtn.style.cssText='width:100%;padding:12px;margin-top:8px;font-size:14px;letter-spacing:3px;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#a78bfa);color:#fff;border:none;cursor:pointer;font-family:"Bebas Neue",cursive;';
   cerBtn.innerHTML='🏆 FINALIZAR HEAT CON CEREMONIA';
-  cerBtn.onclick=()=>{saveRound();const st=calculate_heat_status(heatState.surfers);triggerHeatEnd(heatState,st);};
+  cerBtn.onclick=()=>{
+    // Guardar ronda (con detección de duplicado por heat timestamp)
+    saveRound();
+    // Mostrar ceremonia
+    const st=calculate_heat_status(heatState.surfers);
+    triggerHeatEnd(heatState,st);
+  };
   saveBtn.after(cerBtn);
-  // Botón solo animación — sin guardar ronda
-  const existAnim=document.getElementById('anim-only-btn');if(existAnim)existAnim.remove();
+  // Botón solo animación - sin guardar
   const animBtn=document.createElement('button');
   animBtn.id='anim-only-btn';
-  animBtn.style.cssText='width:100%;padding:10px;margin-top:6px;font-size:12px;letter-spacing:2px;border-radius:10px;background:rgba(124,58,237,.12);color:#a78bfa;border:1px solid rgba(124,58,237,.3);cursor:pointer;font-family:"Bebas Neue",cursive;';
+  animBtn.style.cssText='width:100%;padding:10px;margin-top:6px;font-size:12px;letter-spacing:2px;border-radius:10px;background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);cursor:pointer;font-family:"Bebas Neue",cursive;';
   animBtn.innerHTML='🎬 SOLO ANIMACIÓN (sin guardar)';
   animBtn.onclick=()=>{const st=calculate_heat_status(heatState.surfers);triggerHeatEnd(heatState,st);};
   cerBtn.after(animBtn);
@@ -2555,7 +2567,9 @@ function loadPublicView(container){
     <style>
       .pv-wrap{max-width:700px;margin:0 auto;padding:16px;}
       .pv-header{text-align:center;padding:16px 0 12px;border-bottom:1px solid rgba(0,198,251,.12);margin-bottom:16px;}
-      .pv-timer{font-family:'Bebas Neue',cursive;font-size:clamp(48px,12vw,80px);letter-spacing:4px;color:var(--ocean);line-height:1;margin:8px 0 2px;}
+      .pv-brand{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--ocean);}
+      .pv-event{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;margin-top:2px;}
+      .pv-timer{font-family:'Bebas Neue',cursive;font-size:clamp(48px,12vw,80px);letter-spacing:4px;color:var(--ocean);line-height:1;margin:8px 0 2px;transition:color .3s;}
       .pv-timer.warn{color:var(--gold);}
       .pv-timer.danger{color:var(--red);animation:blink .8s infinite;}
       .pv-heat-name{font-size:11px;letter-spacing:2px;color:var(--muted);}
@@ -2582,6 +2596,7 @@ function loadPublicView(container){
       .pv-score.leader{color:var(--gold);}
       .pv-profile{background:rgba(0,198,251,.05);border:1px solid rgba(0,198,251,.15);border-radius:16px;padding:16px;margin-bottom:16px;display:none;}
       .pv-profile.show{display:block;}
+      .pv-profile-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
       .pv-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
       .pv-stat{background:rgba(0,0,0,.2);border-radius:8px;padding:8px 4px;text-align:center;}
       .pv-stat-val{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--ocean);}
@@ -2591,167 +2606,191 @@ function loadPublicView(container){
       .pv-round-title{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;margin-bottom:4px;}
       .pv-round-date{font-size:10px;color:var(--muted);margin-bottom:8px;}
       .pv-round-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
+      /* call banner */
       .pv-call-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);background:linear-gradient(135deg,rgba(46,213,115,.25),rgba(0,198,251,.2));border:3px solid var(--green);border-radius:24px;padding:24px 32px;text-align:center;z-index:8000;transition:all .35s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px);pointer-events:none;opacity:0;box-shadow:0 0 60px rgba(46,213,115,.4);}
       .pv-call-toast.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
-      .pv-lw-popup{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-60px);opacity:0;background:rgba(2,12,27,.92);border:1px solid var(--ocean);border-radius:12px;padding:8px 20px;z-index:7000;backdrop-filter:blur(20px);transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;display:flex;align-items:center;gap:14px;}
+      .pv-call-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--green);}
+      .pv-call-name{font-family:'Bebas Neue',cursive;font-size:clamp(20px,5vw,32px);letter-spacing:3px;margin:6px 0;}
+      .pv-call-msg{font-size:12px;color:var(--muted);}
+      /* last wave popup */
+      .pv-lw-popup{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-60px);opacity:0;background:rgba(2,12,27,.92);border:1px solid var(--ocean);border-radius:12px;padding:8px 20px;text-align:center;z-index:7000;backdrop-filter:blur(20px);transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;display:flex;align-items:center;gap:14px;}
       .pv-lw-popup.show{transform:translateX(-50%) translateY(0);opacity:1;}
+      /* best wave banner */
       .pv-bw-banner{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-200px);background:linear-gradient(90deg,rgba(255,209,102,.15),rgba(0,198,251,.15));border:2px solid var(--gold);border-radius:20px;padding:12px 24px;text-align:center;z-index:7500;transition:transform .4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px);white-space:nowrap;}
       .pv-bw-banner.show{transform:translateX(-50%) translateY(0);}
+      /* leader banner */
       .pv-leader-banner{position:fixed;top:80px;right:-400px;background:rgba(2,12,27,.95);border:2px solid var(--ocean);border-left:4px solid var(--gold);border-radius:14px;padding:12px 20px;z-index:7500;transition:right .4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(10px);}
       .pv-leader-banner.show{right:16px;}
+      /* big wave overlay */
       .pv-big-wave-overlay{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,10,30,.88);backdrop-filter:blur(6px);text-align:center;padding:20px;}
       .pv-big-wave-overlay.show{display:flex;}
       .pv-bwa-wave{font-size:clamp(70px,16vw,120px);animation:waveRock 1s ease-in-out infinite alternate;}
       .pv-bwa-score{font-family:'Bebas Neue',cursive;font-size:clamp(70px,16vw,130px);color:var(--gold);line-height:1;text-shadow:0 0 60px rgba(255,209,102,.8);}
       .pv-bwa-name{font-family:'Bebas Neue',cursive;font-size:clamp(18px,4vw,30px);letter-spacing:6px;color:#fff;margin-top:8px;}
+      /* podio */
       .pv-podium-wrap{display:flex;gap:12px;align-items:flex-end;justify-content:center;margin:16px 0;}
       .pv-podium-place{text-align:center;animation:podiumRise .6s ease both;}
       .pv-podium-bar{display:flex;align-items:flex-start;justify-content:center;padding-top:8px;border-radius:6px 6px 0 0;margin-top:8px;}
     </style>
     <div class="pv-wrap">
       <div class="pv-header">
-        <div id="pv-org-name" style="min-height:24px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px">
-          <span style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--ocean)">WAVESCORE PRO</span>
-        </div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;margin-top:2px" id="pv-event-name">CARGANDO...</div>
-        <div class="pv-timer" id="pv-timer">-:--</div>
-        <div class="pv-heat-name" id="pv-heat-name">-</div>
+        <div id="pv-org-name" style="min-height:20px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:4px"><span style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--ocean)">🌊 WAVESCORE PRO</span></div>
+        <div class="pv-event" id="pv-event-name">CARGANDO...</div>
+        <div class="pv-timer" id="pv-timer">–:––</div>
+        <div class="pv-heat-name" id="pv-heat-name">—</div>
         <div class="pv-sea" id="pv-sea" style="display:none"></div>
         <div id="pv-sponsors" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);text-align:center"></div>
       </div>
-      <input class="pv-search" id="pv-search" placeholder="Buscar atleta por nombre..." oninput="pvSearch(this.value)"/>
+
+      <input class="pv-search" id="pv-search" placeholder="🔍 Buscar atleta por nombre..." oninput="pvSearch(this.value)"/>
       <div id="pv-profile" class="pv-profile"></div>
-      <div class="pv-section">HEAT EN VIVO</div>
+
+      <div class="pv-section">⚡ HEAT EN VIVO</div>
       <div id="pv-scores"></div>
-      <div class="pv-section">RESULTADOS ANTERIORES</div>
+
+      <div class="pv-section">📋 RESULTADOS ANTERIORES</div>
       <div id="pv-rounds"></div>
-      <div style="text-align:center;margin-top:24px;font-size:10px;color:rgba(255,255,255,.15)">WaveScore Pro</div>
+
+      <div style="text-align:center;margin-top:24px;font-size:10px;color:rgba(255,255,255,.15)">
+        🌊 WaveScore Pro · Actualización en tiempo real
+      </div>
     </div>
+
+    <!-- LLAMADO TOAST -->
     <div class="pv-call-toast" id="pv-call-toast">
-      <div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--green)">LLAMADO AL HEAT</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:clamp(20px,5vw,32px);letter-spacing:3px;margin:6px 0" id="pv-call-name">-</div>
-      <div style="font-size:12px;color:var(--muted)" id="pv-call-msg">Presentate con el Beach Marshal</div>
+      <div class="pv-call-title">📢 LLAMADO AL HEAT</div>
+      <div class="pv-call-name" id="pv-call-name">—</div>
+      <div class="pv-call-msg" id="pv-call-msg">Preséntate con el Beach Marshal</div>
     </div>
+
+    <!-- ÚLTIMA OLA popup -->
     <div class="pv-lw-popup" id="pv-lw-popup">
       <div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted)">ULTIMA OLA</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.6)" id="pv-lw-surfer">-</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted)">ÚLTIMA OLA</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.6)" id="pv-lw-surfer">—</div>
       </div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:30px;color:var(--ocean)" id="pv-lw-score">-</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:30px;color:var(--ocean)" id="pv-lw-score">—</div>
     </div>
+
+    <!-- MEJOR OLA banner -->
     <div class="pv-bw-banner" id="pv-bw-banner">
-      <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:4px;color:var(--gold)">MEJOR OLA DEL HEAT</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:40px;color:var(--gold);line-height:1" id="pv-bw-score">-</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.6);letter-spacing:2px" id="pv-bw-surfer">-</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:4px;color:var(--gold)">🌊 MEJOR OLA DEL HEAT</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:40px;color:var(--gold);line-height:1;text-shadow:0 0 20px rgba(255,209,102,.6)" id="pv-bw-score">—</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.6);letter-spacing:2px" id="pv-bw-surfer">—</div>
     </div>
+
+    <!-- NUEVO LÍDER banner -->
     <div class="pv-leader-banner" id="pv-leader-banner">
-      <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted)">NUEVO LIDER</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold)" id="pv-lb-name">-</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--ocean)" id="pv-lb-score">-</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted)">🥇 NUEVO LÍDER</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold)" id="pv-lb-name">—</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--ocean)" id="pv-lb-score">—</div>
     </div>
+
+    <!-- BIG WAVE overlay -->
     <div class="pv-big-wave-overlay" id="pv-big-wave-overlay" onclick="pvCloseBigWave()">
-      <div class="pv-bwa-wave">wave</div>
-      <div class="pv-bwa-score" id="pv-bwa-score">-</div>
-      <div class="pv-bwa-name" id="pv-bwa-name">-</div>
+      <div class="pv-bwa-wave">🌊</div>
+      <div class="pv-bwa-score" id="pv-bwa-score">—</div>
+      <div class="pv-bwa-name" id="pv-bwa-name">—</div>
       <div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:6px;color:var(--gold);margin-top:6px">MEJOR OLA DEL HEAT</div>
       <div style="margin-top:18px;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px">TAP PARA CERRAR</div>
     </div>
+
+    <!-- CEREMONIA / PODIO -->
     <div id="pv-ceremony-overlay" style="display:none;position:fixed;inset:0;z-index:8500;align-items:center;justify-content:center;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);overflow-y:auto;padding:20px;">
       <div style="background:linear-gradient(160deg,#020c1b,#0a1f3a);border:2px solid var(--gold);border-radius:24px;padding:24px 20px;max-width:480px;width:100%;text-align:center;box-shadow:0 0 60px rgba(255,209,102,.2);">
-        <div style="font-family:'Bebas Neue',cursive;font-size:clamp(24px,7vw,42px);letter-spacing:6px;color:var(--gold)">HEAT FINALIZADO</div>
-        <div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:3px;color:var(--muted);margin-bottom:16px" id="pv-cer-heat-name">-</div>
-        <div id="pv-cer-sponsor" style="display:none;margin-bottom:12px"></div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:clamp(24px,7vw,42px);letter-spacing:6px;color:var(--gold);text-shadow:0 0 30px rgba(255,209,102,.5)">🏆 HEAT FINALIZADO</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:3px;color:var(--muted);margin-bottom:16px" id="pv-cer-heat-name">—</div>
         <div class="pv-podium-wrap" id="pv-cer-podium"></div>
         <div id="pv-cer-results" style="text-align:left;margin-bottom:16px"></div>
-        <div id="pv-cer-all-sponsors" style="display:none;margin-bottom:12px"></div>
-        <button onclick="pvCloseCeremony()" style="padding:12px 32px;background:linear-gradient(90deg,var(--deep),var(--ocean));border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:3px;cursor:pointer;width:100%">CERRAR</button>
+        <button onclick="pvCloseCeremony()" style="padding:12px 32px;background:linear-gradient(90deg,var(--deep),var(--ocean));border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:3px;cursor:pointer;width:100%">✕ CERRAR</button>
       </div>
     </div>`;
 
-  // Estado
-  let pvHeatState=null,pvRoundsData=[],pvTimerSec=0,pvTimerInterval=null;
-  let pvPrevTotals={},pvBestWave=0,pvCurrentLeader=null;
-  let pvLwTimeout=null,pvBwTimeout=null,pvLbTimeout=null,pvCallTimeout=null;
+  // ── Estado global ──
+  let pvHeatState=null, pvRoundsData=[], pvTimerSec=0, pvTimerInterval=null;
+  let pvPrevTotals={}, pvBestWave=0, pvCurrentLeader=null;
+  let pvLwTimeout=null, pvBwTimeout=null, pvLbTimeout=null, pvCallTimeout=null;
 
-  // Evento
+  // ── Evento ──
   db.ref('config/event').once('value',snap=>{
     const ev=snap.val()||{};
     const el=document.getElementById('pv-event-name');
     if(el&&ev.name)el.textContent=ev.name.toUpperCase();
   });
 
-  // White label con logo real
+  // ── White label: logo + nombre org + colores ──
   db.ref('config/whiteLabel').once('value',snap=>{
-    const wl=snap.val();if(!wl)return;
+    const wl=snap.val();
+    if(!wl)return;
     if(wl.primaryColor)document.documentElement.style.setProperty('--ocean',wl.primaryColor);
     if(wl.accentColor)document.documentElement.style.setProperty('--gold',wl.accentColor);
-    const el=document.getElementById('pv-org-name');if(!el)return;
-    el.innerHTML='';
+    const el=document.getElementById('pv-org-name');
+    if(!el)return;
     if(wl.logoUrl){
-      const img=document.createElement('img');
-      img.src=wl.logoUrl;
-      img.style.cssText='max-height:56px;max-width:200px;object-fit:contain;margin-bottom:4px';
-      img.onerror=function(){this.style.display='none';};
-      el.appendChild(img);
-    }
-    if(wl.orgName){
-      const txt=document.createElement('div');
-      txt.style.cssText="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.6)";
-      txt.textContent=wl.orgName.toUpperCase();
-      el.appendChild(txt);
-    }
-    if(!wl.logoUrl&&!wl.orgName){
-      el.innerHTML='<span style="font-family:Bebas Neue,cursive;font-size:11px;letter-spacing:4px;color:var(--ocean)">WAVESCORE PRO</span>';
+      el.innerHTML='<img src="'+wl.logoUrl+'" style="height:44px;max-width:160px;object-fit:contain;margin-bottom:4px" onerror="this.style.display='none'"/>'
+        +(wl.orgName?'<div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:var(--ocean)">'+wl.orgName.toUpperCase()+'</div>':'');
+    } else if(wl.orgName){
+      el.textContent='🌊 '+wl.orgName.toUpperCase();
     }
   });
 
-  // Sponsors en tiempo real
+  // ── Sponsors en vista pública ──
   db.ref('config/event/sponsors').on('value',snap=>{
-    const raw=snap.val();
-    let sponsors=[];
-    if(Array.isArray(raw))sponsors=raw.filter(Boolean);
-    else if(raw&&typeof raw==='object')sponsors=Object.values(raw).filter(Boolean);
-    const el=document.getElementById('pv-sponsors');if(!el)return;
-    if(!sponsors.length){el.style.display='none';return;}
+    const sponsors=_parseSponsors(snap.val());
+    const el=document.getElementById('pv-sponsors');
+    if(!el||!sponsors.length){if(el)el.style.display='none';return;}
     const main=sponsors.find(s=>s.tier==='main');
     const others=sponsors.filter(s=>s.tier!=='main');
     let html='';
     if(main&&main.logo){
-      html+='<div style="margin-bottom:8px"><div style="font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3);margin-bottom:4px">PRESENTADO POR</div>'
-        +'<img src="'+main.logo+'" style="max-height:44px;max-width:160px;object-fit:contain" onerror="this.style.display='none'" />'
-        +(main.name?'<div style="font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1px;margin-top:2px">'+main.name+'</div>':'')+'</div>';
+      html+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px">'
+        +'<div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3)">PRESENTADO POR</div>'
+        +'<img src="'+main.logo+'" style="max-height:48px;max-width:160px;object-fit:contain" onerror="this.style.display='none'"/>'
+        +(main.name?'<div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1px">'+main.name+'</div>':'')
+        +'</div>';
     }
     if(others.length){
       html+='<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;opacity:.8">';
-      others.forEach(s=>{if(!s.logo)return;html+='<img src="'+s.logo+'" style="max-height:'+(s.tier==='secondary'?'28px':'18px')+';max-width:90px;object-fit:contain" onerror="this.parentElement.removeChild(this)" title="'+(s.name||'')+'" />';});
+      others.forEach(s=>{
+        if(s.logo)html+='<img src="'+s.logo+'" style="max-height:'+(s.tier==='secondary'?'30px':'20px')+';max-width:'+(s.tier==='secondary'?'90px':'60px')+';object-fit:contain" onerror="this.parentElement.removeChild(this)" title="'+(s.name||'')+'"\/>';
+      });
       html+='</div>';
     }
-    el.innerHTML=html;el.style.display='block';
+    el.innerHTML=html;
+    el.style.display='block';
   });
 
-  // Condiciones del mar
+  // ── Condiciones del mar ──
   db.ref('config/seaConditions').on('value',snap=>{
     const sc=snap.val();
     const el=document.getElementById('pv-sea');if(!el)return;
     if(sc&&(sc.waveHeight||sc.wind)){
       el.style.display='flex';
-      el.innerHTML=(sc.waveHeight?'<span>'+sc.waveHeight+'m</span> ':'')+
-        (sc.wind?'<span>'+sc.wind+'km/h '+(sc.windDir||'')+'</span> ':'')+
-        (sc.waterTemp?'<span>'+sc.waterTemp+'C</span> ':'')+
-        (sc.label?'<span style="color:rgba(255,255,255,.35)">'+sc.label+'</span>':'');
+      el.innerHTML=
+        (sc.waveHeight?`🌊 <span>${sc.waveHeight}m</span> `:'') +
+        (sc.wind?`💨 <span>${sc.wind}km/h ${sc.windDir||''}</span> `:'') +
+        (sc.waterTemp?`🌡️ <span>${sc.waterTemp}°C</span> `:'') +
+        (sc.label?`<span style="color:rgba(255,255,255,.35)">${sc.label}</span>`:'');
     } else {el.style.display='none';}
   });
 
-  // Timer
+  // ── Timer ──
   db.ref('timer').on('value',snap=>{
     const t=snap.val();if(!t)return;
     clearInterval(pvTimerInterval);
     if(t.running){
-      const sAt=t.startedAt||Date.now(),sSec=t.startSec||t.remaining||0;
+      const sAt=t.startedAt||Date.now(), sSec=t.startSec||t.remaining||0;
       pvTimerSec=Math.max(0,sSec-Math.floor((Date.now()-sAt)/1000));
       pvRenderTimer();
-      pvTimerInterval=setInterval(()=>{pvTimerSec=Math.max(0,pvTimerSec-1);pvRenderTimer();if(pvTimerSec===0)clearInterval(pvTimerInterval);},1000);
-    } else {pvTimerSec=t.remaining||0;pvRenderTimer();}
+      pvTimerInterval=setInterval(()=>{
+        pvTimerSec=Math.max(0,pvTimerSec-1);
+        pvRenderTimer();
+        if(pvTimerSec===0)clearInterval(pvTimerInterval);
+      },1000);
+    } else {
+      pvTimerSec=t.remaining||0;
+      pvRenderTimer();
+    }
   });
 
   function pvRenderTimer(){
@@ -2761,73 +2800,97 @@ function loadPublicView(container){
     el.className='pv-timer'+(pvTimerSec<=60?' danger':pvTimerSec<=300?' warn':'');
   }
 
-  // Heat
+  // ── Heat en tiempo real ──
   db.ref('heat').on('value',snap=>{
+    const prev=pvHeatState;
     pvHeatState=snap.val();
     const nameEl=document.getElementById('pv-heat-name');
     if(nameEl)nameEl.textContent=pvHeatState&&pvHeatState.name?pvHeatState.name.toUpperCase():'SIN HEAT ACTIVO';
-    pvRenderScores();pvCheckAnimations();
-    const sv=document.getElementById('pv-search');
-    if(sv&&sv.value.length>=2)pvSearch(sv.value);
+    pvRenderScores();
+    pvCheckAnimations();
+    const searchVal=document.getElementById('pv-search')?.value||'';
+    if(searchVal.length>=2)pvSearch(searchVal);
   });
 
   function pvRenderScores(){
     const el=document.getElementById('pv-scores');if(!el)return;
-    if(!pvHeatState||!pvHeatState.surfers){el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:8px 0">Sin heat activo</div>';return;}
+    if(!pvHeatState||!pvHeatState.surfers){
+      el.innerHTML='<div style="color:var(--muted);font-size:12px;padding:8px 0">Sin heat activo en este momento</div>';
+      return;
+    }
     const status=calculate_heat_status(pvHeatState.surfers);
     el.innerHTML=status.map(s=>{
       const surfer=pvHeatState.surfers[s.idx];
       const waves=(surfer.waves||[]).slice().sort((a,b)=>b.score-a.score);
       const w1=waves[0],w2=waves[1];
       const hasFlash=pvPrevTotals[s.idx]!==undefined&&pvPrevTotals[s.idx]!==s.total;
-      const nm=s.name.replace(/'/g,"\'");
-      return '<div class="pv-card '+(s.position===1?'leader':'')+' '+(hasFlash?'flash':'')+'" onclick="pvShowProfile(''+nm+'')">'
-        +'<div class="pv-pos '+(s.position===1?'p1':'')+'">#'+s.position+'</div>'
-        +'<div class="pv-dot" style="background:'+(surfer.color||'#fff')+'"></div>'
-        +'<div class="pv-name-wrap"><div class="pv-name">'+s.name+'</div>'
-        +'<div class="pv-info">'+s.waveCount+'/15 olas - '+(s.isLeading?'LIDER':s.isCombo?'COMBO':'Necesita '+s.pointsToLead.toFixed(2))+'</div></div>'
-        +'<div class="pv-waves">'+(w1?'<div class="pv-wave-chip w1">OLA1 '+w1.score.toFixed(2)+'</div>':'')+(w2?'<div class="pv-wave-chip w2">OLA2 '+s.adjSecond.toFixed(2)+'</div>':'')+'</div>'
-        +'<div class="pv-score '+(s.position===1?'leader':'')+'">'+s.total.toFixed(2)+'</div></div>';
+      return`<div class="pv-card ${s.position===1?'leader':''} ${hasFlash?'flash':''}" onclick="pvShowProfile('${s.name.replace(/'/g,"\\'")}')">
+        <div class="pv-pos ${s.position===1?'p1':''}">#${s.position}</div>
+        <div class="pv-dot" style="background:${surfer.color||'#fff'}"></div>
+        <div class="pv-name-wrap">
+          <div class="pv-name">${s.name}</div>
+          <div class="pv-info">${s.waveCount}/15 olas · ${s.isLeading?'🥇 LÍDER':s.isCombo?'🔄 COMBO':'Necesita '+s.pointsToLead.toFixed(2)}</div>
+        </div>
+        <div class="pv-waves">
+          ${w1?`<div class="pv-wave-chip w1">OLA1 ${w1.score.toFixed(2)}</div>`:''}
+          ${w2?`<div class="pv-wave-chip w2">OLA2 ${s.adjSecond.toFixed(2)}</div>`:''}
+        </div>
+        <div class="pv-score ${s.position===1?'leader':''}">${s.total.toFixed(2)}</div>
+      </div>`;
     }).join('');
     status.forEach(s=>{pvPrevTotals[s.idx]=s.total;});
   }
 
+  // ── Animaciones ──
   function pvCheckAnimations(){
     if(!pvHeatState||!pvHeatState.surfers)return;
     const status=calculate_heat_status(pvHeatState.surfers);
-    const newLeader=status[0]&&status[0].name;
-    if(pvCurrentLeader&&pvCurrentLeader!==newLeader&&status[0]&&status[0].total>0){
+
+    // Nuevo líder
+    const newLeader=status[0]?.name;
+    if(pvCurrentLeader&&pvCurrentLeader!==newLeader&&status[0]?.total>0){
       document.getElementById('pv-lb-name').textContent=newLeader.toUpperCase();
       document.getElementById('pv-lb-score').textContent=status[0].total.toFixed(2);
       const lb=document.getElementById('pv-leader-banner');
       lb.classList.add('show');clearTimeout(pvLbTimeout);
-      pvLbTimeout=setTimeout(function(){lb.classList.remove('show');},4000);
+      pvLbTimeout=setTimeout(()=>lb.classList.remove('show'),4000);
       pvSpawnConfetti(30,'#ffd166');
     }
     pvCurrentLeader=newLeader;
-    pvHeatState.surfers.forEach(function(s,i){
-      const waves=s.waves||[];if(!waves.length)return;
+
+    // Última ola + mejor ola + big wave
+    pvHeatState.surfers.forEach((s,i)=>{
+      const waves=s.waves||[];
+      if(!waves.length)return;
       const lastWave=waves[waves.length-1];
+      // Detectar ola nueva comparando con previo
       if(pvPrevTotals[i]!==undefined){
-        const st=status.find(function(x){return x.idx===i;})||{};
-        if(pvPrevTotals[i]!==st.total){
+        const st=status.find(x=>x.idx===i)||{};
+        const oldTotal=pvPrevTotals[i];
+        if(oldTotal!==st.total){
+          // Toast última ola
           document.getElementById('pv-lw-surfer').textContent=s.name.toUpperCase();
           document.getElementById('pv-lw-score').textContent=lastWave.score.toFixed(2);
           const lw=document.getElementById('pv-lw-popup');
           lw.classList.add('show');clearTimeout(pvLwTimeout);
-          pvLwTimeout=setTimeout(function(){lw.classList.remove('show');},3500);
+          pvLwTimeout=setTimeout(()=>lw.classList.remove('show'),3500);
         }
       }
-      const allScores=waves.map(function(w){return w.score;});
-      const maxScore=Math.max.apply(null,allScores);
+      // Mejor ola
+      const allScores=waves.map(w=>w.score);
+      const maxScore=Math.max(...allScores);
       if(maxScore>pvBestWave){
         pvBestWave=maxScore;
+        // Banner mejor ola
         document.getElementById('pv-bw-score').textContent=maxScore.toFixed(2);
         document.getElementById('pv-bw-surfer').textContent=s.name.toUpperCase();
         const bw=document.getElementById('pv-bw-banner');
         bw.classList.add('show');clearTimeout(pvBwTimeout);
-        pvBwTimeout=setTimeout(function(){bw.classList.remove('show');},4500);
-        if(maxScore>=8.0)pvShowBigWave(maxScore,s.name);
+        pvBwTimeout=setTimeout(()=>bw.classList.remove('show'),4500);
+        // Big wave overlay (≥8.0)
+        if(maxScore>=8.0){
+          pvShowBigWave(maxScore,s.name);
+        }
       }
     });
   }
@@ -2839,53 +2902,55 @@ function loadPublicView(container){
     ov.classList.add('show');
     pvSpawnConfetti(score>=9?60:35,'#ffd166');
     clearTimeout(ov._t);
-    ov._t=setTimeout(function(){ov.classList.remove('show');},3000);
+    ov._t=setTimeout(()=>ov.classList.remove('show'),3000);
   }
+
   window.pvCloseBigWave=function(){
-    const ov=document.getElementById('pv-big-wave-overlay');
-    if(ov)ov.classList.remove('show');
+    document.getElementById('pv-big-wave-overlay')?.classList.remove('show');
   };
 
   function pvSpawnConfetti(count,color){
     const colors=[color,'#fff','#00c6fb',color];
     for(let i=0;i<count;i++){
       const el=document.createElement('div');
-      el.style.cssText='position:fixed;width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;'
-        +'background:'+colors[Math.floor(Math.random()*colors.length)]+';border-radius:2px;'
-        +'left:'+Math.random()*100+'%;top:-20px;z-index:9999;pointer-events:none;'
-        +'animation:confettiFall '+(2+Math.random()*2)+'s linear '+(Math.random()*.5)+'s forwards;'
-        +'transform:rotate('+Math.random()*360+'deg)';
+      el.style.cssText='position:fixed;width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;'+
+        'background:'+colors[Math.floor(Math.random()*colors.length)]+';border-radius:2px;'+
+        'left:'+Math.random()*100+'%;top:-20px;z-index:9999;pointer-events:none;'+
+        'animation:confettiFall '+(2+Math.random()*2)+'s linear '+(Math.random()*.5)+'s forwards;'+
+        'transform:rotate('+Math.random()*360+'deg)';
       document.body.appendChild(el);
-      setTimeout(function(){el.remove();},3500);
+      setTimeout(()=>el.remove(),3500);
     }
   }
 
-  // Rondas
+  // ── Rondas ──
   db.ref('rounds').on('value',snap=>{
     pvRoundsData=[];
-    snap.forEach(function(c){pvRoundsData.push(Object.assign({id:c.key},c.val()));});
-    pvRoundsData.sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0);});
+    snap.forEach(c=>{pvRoundsData.push({id:c.key,...c.val()});});
+    pvRoundsData.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     pvRenderRounds();
   });
 
   function pvRenderRounds(){
     const el=document.getElementById('pv-rounds');if(!el)return;
-    const valid=pvRoundsData.filter(function(r){return r.results&&r.results.length;});
-    if(!valid.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">Sin resultados aun</div>';return;}
-    el.innerHTML=valid.map(function(r){
-      return '<div class="pv-round-card"><div class="pv-round-title">'+(r.name||'Heat')+'</div>'
-        +'<div class="pv-round-date">'+new Date(r.timestamp).toLocaleString('es-CO')+' - '+(r.duration||20)+' min</div>'
-        +(r.results||[]).filter(function(s){return s&&s.name;}).map(function(s){
-          const nm=s.name.replace(/'/g,"\'");
-          return '<div class="pv-round-row">'
-            +'<span style="font-family:Bebas Neue,cursive;font-size:13px;color:'+(s.position===1?'var(--gold)':'var(--muted)')+';min-width:24px">#'+s.position+'</span>'
-            +'<span style="flex:1;cursor:pointer;color:'+(s.position===1?'var(--gold)':'#fff')+'" onclick="pvShowProfile(''+nm+'')">'+s.name+'</span>'
-            +'<span style="font-family:Bebas Neue,cursive;font-size:15px;color:'+(s.position===1?'var(--gold)':'var(--ocean)')+'">'+( s.total||0).toFixed(2)+'</span></div>';
-        }).join('')+'</div>';
-    }).join('');
+    const valid=pvRoundsData.filter(r=>r.results&&r.results.length);
+    if(!valid.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">Sin resultados guardados aún</div>';return;}
+    el.innerHTML=valid.map(r=>`
+      <div class="pv-round-card">
+        <div class="pv-round-title">${r.name||'Heat'}</div>
+        <div class="pv-round-date">${new Date(r.timestamp).toLocaleString('es-CO')} · ${r.duration||20} min</div>
+        ${(r.results||[]).filter(s=>s&&s.name).map(s=>`
+          <div class="pv-round-row">
+            <span style="font-family:'Bebas Neue',cursive;font-size:13px;color:${s.position===1?'var(--gold)':'var(--muted)'};min-width:24px">#${s.position}</span>
+            <span style="flex:1;cursor:pointer;color:${s.position===1?'var(--gold)':'#fff'}" onclick="pvShowProfile('${s.name.replace(/'/g,"\\'")}')">
+              ${s.name}
+            </span>
+            <span style="font-family:'Bebas Neue',cursive;font-size:15px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${(s.total||0).toFixed(2)}</span>
+          </div>`).join('')}
+      </div>`).join('');
   }
 
-  // Llamados con bocina
+  // ── Llamados al heat (con bocina) ──
   let pvLastNotifTs=Date.now()-5000;
   db.ref('notification').on('value',snap=>{
     const n=snap.val();
@@ -2894,27 +2959,27 @@ function loadPublicView(container){
     pvLastNotifTs=n.timestamp;
     if(n.type==='heatCall'){
       document.getElementById('pv-call-name').textContent=n.name.toUpperCase();
-      document.getElementById('pv-call-msg').textContent=n.msg||'Presentate con el Beach Marshal';
+      document.getElementById('pv-call-msg').textContent=n.msg||'Preséntate con el Beach Marshal';
       const toast=document.getElementById('pv-call-toast');
       toast.classList.add('show');
+      // Bocina en vista pública
       try{
         const ctx=new(window.AudioContext||window.webkitAudioContext)();
-        [[1200,0,.1],[1200,.15,.1],[800,.35,.3],[1200,.7,.1],[1200,.85,.1]].forEach(function(arr){
-          const f=arr[0],d=arr[1],dur=arr[2];
+        [[1200,0,.1],[1200,.15,.1],[800,.35,.3],[1200,.7,.1],[1200,.85,.1]].forEach(([freq,delay,dur])=>{
           const o=ctx.createOscillator(),g=ctx.createGain();
           o.connect(g);g.connect(ctx.destination);
-          o.frequency.value=f;o.type='square';
-          g.gain.setValueAtTime(.5,ctx.currentTime+d);
-          g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d+dur);
-          o.start(ctx.currentTime+d);o.stop(ctx.currentTime+d+dur+.1);
+          o.frequency.value=freq;o.type='square';
+          g.gain.setValueAtTime(.5,ctx.currentTime+delay);
+          g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+dur);
+          o.start(ctx.currentTime+delay);o.stop(ctx.currentTime+delay+dur+.1);
         });
       }catch(e){}
       clearTimeout(pvCallTimeout);
-      pvCallTimeout=setTimeout(function(){toast.classList.remove('show');},7000);
+      pvCallTimeout=setTimeout(()=>toast.classList.remove('show'),7000);
     }
   });
 
-  // Ceremonia
+  // ── Ceremonia en tiempo real ──
   let pvLastCeremonyTs=0;
   db.ref('ceremony').on('value',snap=>{
     const cer=snap.val();
@@ -2929,115 +2994,117 @@ function loadPublicView(container){
     const ov=document.getElementById('pv-ceremony-overlay');if(!ov)return;
     const nameEl=document.getElementById('pv-cer-heat-name');
     if(nameEl)nameEl.textContent=(cer.heatName||'').toUpperCase();
-    const results=cer.results||[];const top3=results.slice(0,3);
+    const results=cer.results||[];
+    const top3=results.slice(0,3);
+    // Podio: [2º, 1º, 3º]
     const podiumOrder=[top3[1],top3[0],top3[2]];
     const heights=['80px','110px','60px'];
     const golds=['var(--ocean)','var(--gold)','#cd7f32'];
-    const medals=['2','1','3'];const sizes=['60px','74px','50px'];
+    const medals=['🥈','🥇','🥉'];
+    const sizes=['60px','74px','50px'];
     const podiumEl=document.getElementById('pv-cer-podium');
-    if(podiumEl)podiumEl.innerHTML=podiumOrder.map(function(s,i){
-      if(!s)return'';
-      return '<div class="pv-podium-place" style="animation-delay:'+(i*.12)+'s">'
-        +'<div style="font-size:'+(i===1?'26px':'18px')+';text-align:center">'+(i===1?'1':i===0?'2':'3')+'</div>'
-        +'<div style="width:'+sizes[i]+';height:'+sizes[i]+';border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:'+(i===1?'28px':'20px')+';border:3px solid '+golds[i]+';margin:6px auto;">surf</div>'
-        +'<div style="font-family:Bebas Neue,cursive;font-size:'+(i===1?'14px':'11px')+';letter-spacing:2px;color:'+golds[i]+';max-width:90px;text-align:center;line-height:1.2">'+s.name+'</div>'
-        +'<div style="font-family:Bebas Neue,cursive;font-size:'+(i===1?'22px':'16px')+';color:'+golds[i]+'">'+s.total.toFixed(2)+'</div>'
-        +'<div class="pv-podium-bar" style="width:'+(i===1?'90px':'70px')+';height:'+heights[i]+';background:rgba(255,255,255,.04);border:1px solid '+golds[i]+';">'
-        +'<span style="font-family:Bebas Neue,cursive;font-size:20px;color:'+golds[i]+'">'+medals[i]+'</span></div></div>';
-    }).join('');
-    const resEl=document.getElementById('pv-cer-results');
-    if(resEl)resEl.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:8px">TODOS LOS RESULTADOS</div>'
-      +results.map(function(s){
-        return '<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)">'
-          +'<span style="font-family:Bebas Neue,cursive;font-size:13px;color:var(--muted);min-width:22px">#'+s.position+'</span>'
-          +'<div style="width:8px;height:8px;border-radius:50%;background:'+(s.color||'#fff')+'"></div>'
-          +'<span style="font-family:Bebas Neue,cursive;font-size:13px;flex:1">'+s.name+'</span>'
-          +'<span style="font-family:Bebas Neue,cursive;font-size:18px;color:'+(s.position===1?'var(--gold)':'var(--ocean)')+'">'+s.total.toFixed(2)+'</span></div>';
+    if(podiumEl){
+      podiumEl.innerHTML=podiumOrder.map((s,i)=>{
+        if(!s)return'';
+        const delay=i*.12;
+        return`<div class="pv-podium-place" style="animation-delay:${delay}s">
+          <div style="font-size:${i===1?'26px':'18px'}">${medals[i]}</div>
+          <div style="width:${sizes[i]};height:${sizes[i]};border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:${i===1?'28px':'20px'};border:3px solid ${golds[i]};box-shadow:0 0 ${i===1?'20px':'10px'} ${golds[i]}44;margin:6px auto;">🏄</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:${i===1?'14px':'11px'};letter-spacing:2px;color:${golds[i]};max-width:90px;text-align:center;line-height:1.2">${s.name}</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:${i===1?'22px':'16px'};color:${golds[i]}">${s.total.toFixed(2)}</div>
+          <div class="pv-podium-bar" style="width:${i===1?'90px':'70px'};height:${heights[i]};background:rgba(255,255,255,.04);border:1px solid ${golds[i]};">
+            <span style="font-family:'Bebas Neue',cursive;font-size:20px;color:${golds[i]}">${i===1?'1':i===0?'2':'3'}</span>
+          </div>
+        </div>`;
       }).join('');
-    // Sponsors en ceremonia
-    db.ref('config/event/sponsors').once('value',function(spSnap){
-      const raw=spSnap.val();let sponsors=[];
-      if(Array.isArray(raw))sponsors=raw.filter(Boolean);
-      else if(raw&&typeof raw==='object')sponsors=Object.values(raw).filter(Boolean);
-      const mainSp=sponsors.find(function(s){return s.tier==='main';});
-      const cerSp=document.getElementById('pv-cer-sponsor');
-      if(cerSp&&mainSp&&mainSp.logo){
-        cerSp.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3);margin-bottom:4px">PRESENTADO POR</div>'
-          +'<img src="'+mainSp.logo+'" style="max-height:44px;max-width:160px;object-fit:contain" onerror="this.style.display='none'" />';
-        cerSp.style.display='block';
-      }
-      const allSpEl=document.getElementById('pv-cer-all-sponsors');
-      if(allSpEl&&sponsors.length){
-        allSpEl.innerHTML='<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)">'
-          +sponsors.map(function(s){return s.logo?'<img src="'+s.logo+'" style="max-height:'+(s.tier==='main'?'36px':'24px')+';max-width:100px;object-fit:contain" onerror="this.style.display='none'" />':'';}).join('')+'</div>';
-        allSpEl.style.display='block';
-      }
-    });
+    }
+    const resEl=document.getElementById('pv-cer-results');
+    if(resEl){
+      resEl.innerHTML='<div style="font-family:\'Bebas Neue\',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:8px">TODOS LOS RESULTADOS</div>'+
+        results.map(s=>`<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+          <span style="font-family:'Bebas Neue',cursive;font-size:13px;color:var(--muted);min-width:22px">#${s.position}</span>
+          <div style="width:8px;height:8px;border-radius:50%;background:${s.color||'#fff'}"></div>
+          <span style="font-family:'Bebas Neue',cursive;font-size:13px;flex:1">${s.name}</span>
+          <span style="font-family:'Bebas Neue',cursive;font-size:18px;color:${s.position===1?'var(--gold)':'var(--ocean)'}">${s.total.toFixed(2)}</span>
+        </div>`).join('');
+    }
     ov.style.display='flex';
     pvSpawnConfetti(60,'#ffd166');
   }
 
   window.pvCloseCeremony=function(){
-    const ov=document.getElementById('pv-ceremony-overlay');if(ov)ov.style.display='none';
+    const ov=document.getElementById('pv-ceremony-overlay');
+    if(ov)ov.style.display='none';
   };
 
-  // Buscador
+  // ── Buscador ──
   window.pvSearch=function(val){
     if(!val||val.length<2){
-      const pr=document.getElementById('pv-profile');if(pr)pr.classList.remove('show');return;
+      document.getElementById('pv-profile')?.classList.remove('show');
+      return;
     }
     const q=val.toLowerCase();
     if(pvHeatState&&pvHeatState.surfers){
-      const found=pvHeatState.surfers.find(function(s){return s.name.toLowerCase().includes(q);});
+      const found=pvHeatState.surfers.find(s=>s.name.toLowerCase().includes(q));
       if(found){pvShowProfile(found.name);return;}
     }
-    for(let ri=0;ri<pvRoundsData.length;ri++){
-      const found=(pvRoundsData[ri].results||[]).find(function(s){return s.name&&s.name.toLowerCase().includes(q);});
+    for(const r of pvRoundsData){
+      const found=(r.results||[]).find(s=>s.name&&s.name.toLowerCase().includes(q));
       if(found){pvShowProfile(found.name);return;}
     }
-    const pr=document.getElementById('pv-profile');if(pr)pr.classList.remove('show');
+    document.getElementById('pv-profile')?.classList.remove('show');
   };
 
-  // Perfil atleta
+  // ── Perfil del atleta ──
   window.pvShowProfile=function(name){
     const el=document.getElementById('pv-profile');if(!el)return;
     const q=name.toLowerCase();
     let heatSection='';
     if(pvHeatState&&pvHeatState.surfers){
       const status=calculate_heat_status(pvHeatState.surfers);
-      const mySt=status.find(function(s){return s.name.toLowerCase()===q;});
-      if(mySt)heatSection='<div style="margin-bottom:12px">'
-        +'<div style="font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:3px;color:var(--ocean);margin-bottom:8px">HEAT EN VIVO - '+(pvHeatState.name||'')+'</div>'
-        +'<div class="pv-stat-row">'
-        +'<div class="pv-stat"><div class="pv-stat-val" style="color:'+(mySt.position===1?'var(--gold)':'var(--ocean)')+'">'+('#'+mySt.position)+'</div><div class="pv-stat-lbl">POSICION</div></div>'
-        +'<div class="pv-stat"><div class="pv-stat-val">'+mySt.total.toFixed(2)+'</div><div class="pv-stat-lbl">TOTAL</div></div>'
-        +'<div class="pv-stat"><div class="pv-stat-val">'+mySt.best.toFixed(2)+'</div><div class="pv-stat-lbl">MEJOR OLA</div></div>'
-        +'<div class="pv-stat"><div class="pv-stat-val">'+mySt.waveCount+'/15</div><div class="pv-stat-lbl">OLAS</div></div></div>'
-        +'<div style="text-align:center;font-size:11px;color:'+(mySt.isLeading?'var(--gold)':mySt.isCombo?'var(--red)':'var(--green)')+'">'+
-        (mySt.isLeading?'LIDER DEL HEAT':mySt.isCombo?'Necesita combo':mySt.pointsToLead>0?'Necesita '+mySt.pointsToLead.toFixed(2)+' para liderar':'')+'</div></div>';
+      const mySt=status.find(s=>s.name.toLowerCase()===q);
+      if(mySt){
+        heatSection=`<div style="margin-bottom:12px">
+          <div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:var(--ocean);margin-bottom:8px">⚡ HEAT EN VIVO — ${pvHeatState.name||''}</div>
+          <div class="pv-stat-row">
+            <div class="pv-stat"><div class="pv-stat-val" style="color:${mySt.position===1?'var(--gold)':'var(--ocean)'}">#${mySt.position}</div><div class="pv-stat-lbl">POSICIÓN</div></div>
+            <div class="pv-stat"><div class="pv-stat-val">${mySt.total.toFixed(2)}</div><div class="pv-stat-lbl">TOTAL</div></div>
+            <div class="pv-stat"><div class="pv-stat-val">${mySt.best.toFixed(2)}</div><div class="pv-stat-lbl">MEJOR OLA</div></div>
+            <div class="pv-stat"><div class="pv-stat-val">${mySt.waveCount}/15</div><div class="pv-stat-lbl">OLAS</div></div>
+          </div>
+          <div style="text-align:center;font-size:11px;color:${mySt.isLeading?'var(--gold)':mySt.isCombo?'var(--red)':'var(--green)'}">
+            ${mySt.isLeading?'🥇 LÍDER DEL HEAT':mySt.isCombo?'⚠️ Necesita combo':mySt.pointsToLead>0?('Necesita '+mySt.pointsToLead.toFixed(2)+' para liderar'):''}
+          </div>
+        </div>`;
+      }
     }
-    const myRounds=pvRoundsData.filter(function(r){return (r.results||[]).some(function(s){return s.name&&s.name.toLowerCase()===q;});});
+    const myRounds=pvRoundsData.filter(r=>(r.results||[]).some(s=>s.name&&s.name.toLowerCase()===q));
     let bestTotal=0,wins=0;
-    const histRows=myRounds.map(function(r){
-      const res=(r.results||[]).find(function(s){return s.name&&s.name.toLowerCase()===q;});if(!res)return'';
-      if(res.total>bestTotal)bestTotal=res.total;if(res.position===1)wins++;
-      return '<div class="pv-hist-row">'
-        +'<span style="font-family:Bebas Neue,cursive;color:'+(res.position===1?'var(--gold)':'var(--muted)')+';min-width:28px">#'+res.position+'</span>'
-        +'<span style="flex:1;color:var(--muted)">'+(r.name||'Heat')+'</span>'
-        +'<span style="font-family:Bebas Neue,cursive;font-size:15px;color:'+(res.position===1?'var(--gold)':'var(--ocean)')+'">'+( res.total||0).toFixed(2)+'</span></div>';
+    const histRows=myRounds.map(r=>{
+      const res=(r.results||[]).find(s=>s.name&&s.name.toLowerCase()===q);
+      if(!res)return'';
+      if(res.total>bestTotal)bestTotal=res.total;
+      if(res.position===1)wins++;
+      return`<div class="pv-hist-row">
+        <span style="font-family:'Bebas Neue',cursive;color:${res.position===1?'var(--gold)':'var(--muted)'};min-width:28px">#${res.position}</span>
+        <span style="flex:1;color:var(--muted)">${r.name||'Heat'}</span>
+        <span style="font-family:'Bebas Neue',cursive;font-size:15px;color:${res.position===1?'var(--gold)':'var(--ocean)'}">${(res.total||0).toFixed(2)}</span>
+      </div>`;
     }).join('');
-    el.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'
-      +'<div style="width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--ocean);flex-shrink:0">surf</div>'
-      +'<div><div style="font-family:Bebas Neue,cursive;font-size:18px;letter-spacing:2px">'+name+'</div>'
-      +'<div style="font-size:10px;color:var(--muted);margin-top:2px">'+myRounds.length+' heat(s) - '+wins+' victoria(s) - Mejor: '+bestTotal.toFixed(2)+'</div></div>'
-      +'<button onclick="document.getElementById('pv-profile').classList.remove('show');document.getElementById('pv-search').value=''" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;margin-left:auto;padding:4px">X</button></div>'
-      +heatSection
-      +(histRows?'<div style="font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:8px">HISTORIAL DEL TORNEO</div>'+histRows
-        :'<div style="color:var(--muted);font-size:12px">Sin historial previo</div>');
+    el.innerHTML=`<div class="pv-profile-header">
+      <div style="width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--ocean);flex-shrink:0">🏄</div>
+      <div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px">${name}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${myRounds.length} heat(s) · ${wins} victoria(s) · Mejor: ${bestTotal.toFixed(2)}</div>
+      </div>
+      <button onclick="document.getElementById('pv-profile').classList.remove('show');document.getElementById('pv-search').value=''" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;margin-left:auto;padding:4px">✕</button>
+    </div>
+    ${heatSection}
+    ${histRows?`<div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:8px">HISTORIAL DEL TORNEO</div>${histRows}`
+      :'<div style="color:var(--muted);font-size:12px">Sin historial previo en este torneo</div>'}`;
     el.classList.add('show');
   };
 }
-
 function checkAthleteQRLanding(){
   const params=new URLSearchParams(window.location.search);
   const name=params.get('athlete');

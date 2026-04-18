@@ -977,6 +977,12 @@ window.addEventListener('load',()=>{
   try{
     let fbApp;try{fbApp=firebase.app();}catch(e){fbApp=firebase.initializeApp(FB_CONFIG);}
     db=firebase.database(fbApp);
+    // OFFLINE NIVEL 1: indicador de conexión en tiempo real
+    try{db.ref('.info/connected').on('value',snap=>{
+      const online=snap.val();
+      const dot=document.querySelector('.ldot');
+      if(dot){dot.style.background=online?'#22c55e':'#ffd166';dot.title=online?'Conectado':'Sin conexión - mostrando datos en caché';}
+    });}catch(e){}
     loadGateEventName();
     renderSurferInputs();
   }catch(e){console.error(e);}
@@ -1656,11 +1662,18 @@ function saveRound(){
   });
 }
 let _lastSavedHeatTimestamp=0;
+let _lastSavedHeatId='';
 function _doSaveRound(heatState){
   if(!heatState||!heatState.surfers)return;
-  // Prevenir guardado duplicado del mismo heat en menos de 5 segundos
+  // Identificar el heat por su timestamp de activación (único por heat)
+  const heatId=String(heatState.timestamp||'');
+  if(heatId&&heatId===_lastSavedHeatId){
+    showToast('⚠️ Este heat ya fue guardado. Usa 🎬 SOLO ANIMACIÓN para repetir la ceremonia.');return;
+  }
+  // Guardia temporal de 5s como segundo respaldo
   if(Date.now()-_lastSavedHeatTimestamp<5000){showToast('⚠️ Ronda ya guardada recientemente');return;}
   _lastSavedHeatTimestamp=Date.now();
+  if(heatId)_lastSavedHeatId=heatId;
   // Verificar si este heat viene del bracket
   if(heatState.bracketRef){
     const {roundIdx,heatIdx}=heatState.bracketRef;
@@ -1795,6 +1808,7 @@ function renderOperatorBoard(){
   }).join('');
   const existBtn=document.getElementById('save-round-btn');if(existBtn)existBtn.remove();
   const existCer=document.getElementById('ceremony-btn');if(existCer)existCer.remove();
+  const existAnim=document.getElementById('anim-only-btn');if(existAnim)existAnim.remove();
   const saveBtn=document.createElement('button');
   saveBtn.id='save-round-btn';saveBtn.className='btn-sm btn-go';
   saveBtn.style.cssText='width:100%;padding:12px;margin-top:14px;font-size:14px;letter-spacing:3px;border-radius:12px';
@@ -1815,8 +1829,21 @@ function renderOperatorBoard(){
   const cerBtn=document.createElement('button');
   cerBtn.id='ceremony-btn';cerBtn.style.cssText='width:100%;padding:12px;margin-top:8px;font-size:14px;letter-spacing:3px;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#a78bfa);color:#fff;border:none;cursor:pointer;font-family:"Bebas Neue",cursive;';
   cerBtn.innerHTML='🏆 FINALIZAR HEAT CON CEREMONIA';
-  cerBtn.onclick=()=>{saveRound();const st=calculate_heat_status(heatState.surfers);triggerHeatEnd(heatState,st);};
+  cerBtn.onclick=()=>{
+    // Guardar ronda (con detección de duplicado por heat timestamp)
+    saveRound();
+    // Mostrar ceremonia
+    const st=calculate_heat_status(heatState.surfers);
+    triggerHeatEnd(heatState,st);
+  };
   saveBtn.after(cerBtn);
+  // Botón solo animación - sin guardar
+  const animBtn=document.createElement('button');
+  animBtn.id='anim-only-btn';
+  animBtn.style.cssText='width:100%;padding:10px;margin-top:6px;font-size:12px;letter-spacing:2px;border-radius:10px;background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);cursor:pointer;font-family:"Bebas Neue",cursive;';
+  animBtn.innerHTML='🎬 SOLO ANIMACIÓN (sin guardar)';
+  animBtn.onclick=()=>{const st=calculate_heat_status(heatState.surfers);triggerHeatEnd(heatState,st);};
+  cerBtn.after(animBtn);
 }
 
 // ════════ BROADCAST ════════
@@ -2607,11 +2634,12 @@ function loadPublicView(container){
     </style>
     <div class="pv-wrap">
       <div class="pv-header">
-        <div class="pv-brand" id="pv-org-name">🌊 WAVESCORE PRO</div>
+        <div id="pv-org-name" style="min-height:20px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:4px"><span style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--ocean)">🌊 WAVESCORE PRO</span></div>
         <div class="pv-event" id="pv-event-name">CARGANDO...</div>
         <div class="pv-timer" id="pv-timer">–:––</div>
         <div class="pv-heat-name" id="pv-heat-name">—</div>
         <div class="pv-sea" id="pv-sea" style="display:none"></div>
+        <div id="pv-sponsors" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);text-align:center"></div>
       </div>
 
       <input class="pv-search" id="pv-search" placeholder="🔍 Buscar atleta por nombre..." oninput="pvSearch(this.value)"/>
@@ -2690,15 +2718,46 @@ function loadPublicView(container){
     if(el&&ev.name)el.textContent=ev.name.toUpperCase();
   });
 
-  // ── White label org name ──
+  // ── White label: logo + nombre org + colores ──
   db.ref('config/whiteLabel').once('value',snap=>{
     const wl=snap.val();
-    if(wl&&wl.orgName){
-      const el=document.getElementById('pv-org-name');
-      if(el)el.textContent='🌊 '+wl.orgName.toUpperCase();
+    if(!wl)return;
+    if(wl.primaryColor)document.documentElement.style.setProperty('--ocean',wl.primaryColor);
+    if(wl.accentColor)document.documentElement.style.setProperty('--gold',wl.accentColor);
+    const el=document.getElementById('pv-org-name');
+    if(!el)return;
+    if(wl.logoUrl){
+      el.innerHTML='<img src="'+wl.logoUrl+'" style="height:44px;max-width:160px;object-fit:contain;margin-bottom:4px" onerror="this.style.display='none'"/>'
+        +(wl.orgName?'<div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:var(--ocean)">'+wl.orgName.toUpperCase()+'</div>':'');
+    } else if(wl.orgName){
+      el.textContent='🌊 '+wl.orgName.toUpperCase();
     }
-    if(wl&&wl.primaryColor)document.documentElement.style.setProperty('--ocean',wl.primaryColor);
-    if(wl&&wl.accentColor)document.documentElement.style.setProperty('--gold',wl.accentColor);
+  });
+
+  // ── Sponsors en vista pública ──
+  db.ref('config/event/sponsors').on('value',snap=>{
+    const sponsors=_parseSponsors(snap.val());
+    const el=document.getElementById('pv-sponsors');
+    if(!el||!sponsors.length){if(el)el.style.display='none';return;}
+    const main=sponsors.find(s=>s.tier==='main');
+    const others=sponsors.filter(s=>s.tier!=='main');
+    let html='';
+    if(main&&main.logo){
+      html+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px">'
+        +'<div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3)">PRESENTADO POR</div>'
+        +'<img src="'+main.logo+'" style="max-height:48px;max-width:160px;object-fit:contain" onerror="this.style.display='none'"/>'
+        +(main.name?'<div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1px">'+main.name+'</div>':'')
+        +'</div>';
+    }
+    if(others.length){
+      html+='<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;opacity:.8">';
+      others.forEach(s=>{
+        if(s.logo)html+='<img src="'+s.logo+'" style="max-height:'+(s.tier==='secondary'?'30px':'20px')+';max-width:'+(s.tier==='secondary'?'90px':'60px')+';object-fit:contain" onerror="this.parentElement.removeChild(this)" title="'+(s.name||'')+'"\/>';
+      });
+      html+='</div>';
+    }
+    el.innerHTML=html;
+    el.style.display='block';
   });
 
   // ── Condiciones del mar ──

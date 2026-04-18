@@ -358,7 +358,7 @@ select.sinput option{background:#0a1f3a;}
 .apv-timer-num.danger{color:var(--red);animation:blink .8s infinite;}
 .apv-timer-lbl{font-family:'Bebas Neue',cursive;font-size:10px;letter-spacing:3px;color:var(--muted);}
 .apv-call-banner{background:linear-gradient(90deg,rgba(46,213,115,.12),rgba(0,198,251,.08));border:2px solid var(--green);border-radius:14px;padding:14px 16px;margin-bottom:12px;display:none;animation:fadeInUp .4s ease;}
-.apv-call-banner.show{display:block;}
+.apv-call-banner.show{display:block !important;}
 .apv-call-title{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:4px;color:var(--green);margin-bottom:4px;}
 .apv-call-name{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;}
 .apv-call-msg{font-size:12px;color:var(--muted);margin-top:4px;}
@@ -398,10 +398,12 @@ select.sinput option{background:#0a1f3a;}
 
 /* BIG WAVE ANIMATION */
 #big-wave-overlay{position:fixed;inset:0;z-index:950;pointer-events:none;display:none;align-items:center;justify-content:center;background:rgba(0,10,30,.6);backdrop-filter:blur(4px);}
-#big-wave-overlay.show{display:flex;}
+#big-wave-overlay.show{display:flex;pointer-events:auto;}
 .bwa-inner{text-align:center;animation:bigWaveIn .5s cubic-bezier(.34,1.56,.64,1);}
 @keyframes bigWaveIn{0%{transform:scale(0) rotate(-10deg);opacity:0;}100%{transform:scale(1) rotate(0deg);opacity:1;}}
 .bwa-wave{font-size:clamp(80px,15vw,140px);line-height:1;animation:waveRock 1s ease-in-out infinite alternate;}
+#big-wave-overlay:not(.show) .bwa-inner{animation:none;}
+#big-wave-overlay:not(.show) .bwa-wave{animation:none;}
 @keyframes waveRock{0%{transform:rotate(-8deg) scale(1);}100%{transform:rotate(8deg) scale(1.1);}}
 .bwa-score{font-family:'Bebas Neue',cursive;font-size:clamp(80px,18vw,160px);color:var(--gold);line-height:1;text-shadow:0 0 60px rgba(255,209,102,.8);}
 .bwa-name{font-family:'Bebas Neue',cursive;font-size:clamp(20px,4vw,36px);letter-spacing:6px;color:#fff;margin-top:8px;}
@@ -852,13 +854,14 @@ select.sinput option{background:#0a1f3a;}
 </div>
 
 <!-- BIG WAVE OVERLAY -->
-<div id="big-wave-overlay">
+<div id="big-wave-overlay" onclick="closeBigWaveAnimation()">
   <div class="bwa-inner">
     <div class="bwa-wave">🌊</div>
     <div class="bwa-score" id="bwa-score">—</div>
     <div class="bwa-name" id="bwa-name">—</div>
     <div class="bwa-label">MEJOR OLA DEL HEAT</div>
     <div id="bwa-sponsor" style="display:none;text-align:center"></div>
+    <div style="margin-top:16px;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px">TAP PARA CERRAR</div>
   </div>
 </div>
 
@@ -2581,9 +2584,16 @@ function loadPublicView(container){
         <div class="pv-sea" id="pv-sea" style="display:none"></div>
       </div>
 
+      <div id="pv-call-banner" class="apv-call-banner" style="display:none">
+        <div class="apv-call-title">📢 LLAMADO AL HEAT</div>
+        <div class="apv-call-name" id="pv-call-name">—</div>
+        <div class="apv-call-msg">Preséntate con el Beach Marshal</div>
+      </div>
+
       <input class="pv-search" id="pv-search" placeholder="🔍 Buscar atleta..." oninput="pvSearch(this.value)"/>
 
       <div id="pv-profile" class="pv-profile"></div>
+      <div id="pv-ceremony-modal"></div>
 
       <div class="pv-section">⚡ HEAT EN VIVO</div>
       <div id="pv-scores"></div>
@@ -2686,6 +2696,54 @@ function loadPublicView(container){
     pvRoundsData.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     pvRenderRounds();
   });
+
+  // Llamados al heat — notificaciones en vista pública
+  db.ref('notification').on('value',snap=>{
+    const n=snap.val();
+    if(!n||!n.message||!n.timestamp)return;
+    if(Date.now()-n.timestamp>10000)return; // ignorar si es vieja
+    const banner=document.getElementById('pv-call-banner');
+    const nameEl=document.getElementById('pv-call-name');
+    if(banner&&nameEl){
+      nameEl.textContent=n.message;
+      banner.classList.add('show');
+      setTimeout(()=>banner.classList.remove('show'),8000);
+    }
+  });
+
+  // Ceremonia en vista pública
+  db.ref('ceremony').on('value',snap=>{
+    const cer=snap.val();
+    if(!cer||!cer.results||!cer.timestamp)return;
+    if(Date.now()-cer.timestamp>30000)return;
+    pvShowCeremony(cer);
+  });
+
+  function pvShowCeremony(cer){
+    const modal=document.getElementById('pv-ceremony-modal');
+    if(!modal)return;
+    const top3=cer.results.slice(0,3);
+    const medals=['🥇','🥈','🥉'];
+    modal.innerHTML=
+      '<div style="position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px">'+
+      '<div style="font-size:11px;letter-spacing:4px;color:var(--ocean);margin-bottom:8px">🏆 HEAT FINALIZADO</div>'+
+      '<div style="font-size:14px;letter-spacing:3px;color:var(--muted);margin-bottom:20px">'+(cer.heatName||'').toUpperCase()+'</div>'+
+      '<div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:24px">'+
+      [top3[1],top3[0],top3[2]].map((s,i)=>{
+        if(!s)return'';
+        const medal=i===1?medals[0]:i===0?medals[1]:medals[2];
+        const h=i===1?'110px':i===0?'80px':'60px';
+        return '<div style="text-align:center">'+
+          '<div style="font-size:24px">'+medal+'</div>'+
+          '<div style="font-size:12px;letter-spacing:1px;margin:4px 0">'+s.name+'</div>'+
+          '<div style="font-size:24px;color:var(--gold)">'+s.total.toFixed(2)+'</div>'+
+          '<div style="width:60px;height:'+h+';background:rgba(255,255,255,.06);border-radius:6px 6px 0 0;margin-top:8px"></div>'+
+        '</div>';
+      }).join('')+
+      '</div>'+
+      '<button onclick="pvCloseCeremony()" style="padding:10px 32px;background:var(--ocean);border:none;border-radius:10px;color:#000;font-size:14px;letter-spacing:3px;cursor:pointer">✕ CERRAR</button>'+
+      '</div>';
+  }
 
   function pvRenderRounds(){
     const el=document.getElementById('pv-rounds');if(!el)return;
@@ -3440,6 +3498,15 @@ function helpTab(tab){
 
 // ════════ BIG WAVE ANIMATION ════════
 let bigWaveTimeout=null;
+function pvCloseCeremony(){
+  const m=document.getElementById('pv-ceremony-modal');
+  if(m)m.innerHTML='';
+}
+function closeBigWaveAnimation(){
+  const overlay=document.getElementById('big-wave-overlay');
+  if(overlay){overlay.classList.remove('show');}
+  clearTimeout(bigWaveTimeout);
+}
 function showBigWaveAnimation(score,surferName){
   const overlay=document.getElementById('big-wave-overlay');
   const scoreEl=document.getElementById('bwa-score');

@@ -3280,29 +3280,33 @@ function buildRoundsElimination(athletes,perHeat,advance){
 function buildRoundsRepechage(athletes,perHeat){
   const rounds=[];
   const numR1Heats=Math.ceil(athletes.length/perHeat);
+  // ISA: #1 y #2 avanzan directo, #3 y #4 van a repechaje
+  const directAdvance=2;
+  const repechageCount=perHeat-directAdvance;
 
   // RONDA 1 — con atletas reales
   const r1heats=[];
   for(let i=0;i<athletes.length;i+=perHeat){
-    r1heats.push({id:`R1H${r1heats.length+1}`,athletes:athletes.slice(i,i+perHeat),completed:false,type:'main',advanceDirect:1,advanceRepechage:perHeat-1});
+    r1heats.push({id:`R1H${r1heats.length+1}`,athletes:athletes.slice(i,i+perHeat),completed:false,type:'main',advanceDirect:directAdvance,advanceRepechage:repechageCount});
   }
-  rounds.push({round:1,name:'Ronda 1',heats:r1heats,advanceCount:1,repechageCount:perHeat-1,isRepechage:false});
+  rounds.push({round:1,name:'Ronda 1',heats:r1heats,advanceCount:directAdvance,repechageCount:repechageCount,isRepechage:false});
 
-  // RONDA 2 — REPECHAJE (losers de R1)
-  const losersR1=numR1Heats*(perHeat-1);
+  // RONDA 2 — REPECHAJE (#3 y #4 de R1)
+  // Cada heat de R1 manda 2 atletas al repechaje → heats de 4 en repechaje
+  const losersR1=numR1Heats*repechageCount;
   const r2heats=[];
-  for(let h=0;h<Math.ceil(losersR1/2);h++){
-    r2heats.push({id:`R2H${h+1}`,athletes:['TBD','TBD'],completed:false,type:'repechage'});
+  for(let h=0;h<Math.ceil(losersR1/4);h++){
+    r2heats.push({id:`R2H${h+1}`,athletes:['TBD','TBD','TBD','TBD'],completed:false,type:'repechage'});
   }
-  rounds.push({round:2,name:'Ronda 2 — Repechaje',heats:r2heats,advanceCount:1,isRepechage:true});
+  rounds.push({round:2,name:'Ronda 2 — Repechaje',heats:r2heats,advanceCount:2,isRepechage:true});
 
-  // RONDA 3 — mano a mano (winners R1 + winners R2)
-  const r3count=numR1Heats+r2heats.length; // 1 de cada R1 + 1 de cada R2
+  // RONDA 3 — (2 directos de R1 + 2 de repechaje por heat)
+  const r3count=numR1Heats*directAdvance+r2heats.length*2;
   const r3heats=[];
-  for(let h=0;h<Math.ceil(r3count/2);h++){
-    r3heats.push({id:`R3H${h+1}`,athletes:['TBD','TBD'],completed:false,type:'main'});
+  for(let h=0;h<Math.ceil(r3count/4);h++){
+    r3heats.push({id:`R3H${h+1}`,athletes:['TBD','TBD','TBD','TBD'],completed:false,type:'main'});
   }
-  rounds.push({round:3,name:'Ronda 3',heats:r3heats,advanceCount:1,isRepechage:false});
+  rounds.push({round:3,name:'Ronda 3',heats:r3heats,advanceCount:2,isRepechage:false});
 
   // CUARTOS, SEMIFINAL, FINAL — mano a mano
   let advancing=r3heats.length;

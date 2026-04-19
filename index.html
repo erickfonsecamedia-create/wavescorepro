@@ -2718,6 +2718,85 @@ function loadPublicView(container){
     if(el&&ev.name)el.textContent=ev.name.toUpperCase();
   });
 
+  // ── White label: logo + nombre usando createElement (sin comillas problemáticas) ──
+  db.ref('config/whiteLabel').once('value',snap=>{
+    const wl=snap.val();
+    if(!wl)return;
+    if(wl.primaryColor)document.documentElement.style.setProperty('--ocean',wl.primaryColor);
+    if(wl.accentColor)document.documentElement.style.setProperty('--gold',wl.accentColor);
+    const el=document.getElementById('pv-org-name');
+    if(!el)return;
+    el.innerHTML='';
+    if(wl.logoUrl){
+      const img=document.createElement('img');
+      img.src=wl.logoUrl;
+      img.style.cssText='height:52px;max-width:180px;object-fit:contain;margin-bottom:4px';
+      img.onerror=function(){this.style.display='none';};
+      el.appendChild(img);
+    }
+    if(wl.orgName){
+      const txt=document.createElement('div');
+      txt.style.cssText='font-family:Bebas Neue,cursive;font-size:11px;letter-spacing:3px;color:var(--ocean);margin-top:2px';
+      txt.textContent=wl.orgName.toUpperCase();
+      el.appendChild(txt);
+    }
+    if(!wl.logoUrl&&!wl.orgName){
+      const span=document.createElement('span');
+      span.style.cssText='font-family:Bebas Neue,cursive;font-size:11px;letter-spacing:4px;color:var(--ocean)';
+      span.textContent='WAVESCORE PRO';
+      el.appendChild(span);
+    }
+  });
+
+  // ── Sponsors en vista pública (tiempo real, sin comillas problemáticas) ──
+  db.ref('config/event/sponsors').on('value',snap=>{
+    const raw=snap.val();
+    let sponsors=[];
+    if(Array.isArray(raw))sponsors=raw.filter(Boolean);
+    else if(raw&&typeof raw==='object')sponsors=Object.values(raw).filter(Boolean);
+    const el=document.getElementById('pv-sponsors');
+    if(!el)return;
+    el.innerHTML='';
+    if(!sponsors.length){el.style.display='none';return;}
+    const main=sponsors.find(function(s){return s.tier==='main';});
+    const others=sponsors.filter(function(s){return s.tier!=='main';});
+    if(main&&main.logo){
+      const wrap=document.createElement('div');
+      wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px';
+      const lbl=document.createElement('div');
+      lbl.style.cssText='font-family:Bebas Neue,cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3)';
+      lbl.textContent='PRESENTADO POR';
+      wrap.appendChild(lbl);
+      const img=document.createElement('img');
+      img.src=main.logo;
+      img.style.cssText='max-height:44px;max-width:160px;object-fit:contain';
+      img.onerror=function(){this.style.display='none';};
+      wrap.appendChild(img);
+      if(main.name){
+        const nm=document.createElement('div');
+        nm.style.cssText='font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1px;margin-top:2px';
+        nm.textContent=main.name;
+        wrap.appendChild(nm);
+      }
+      el.appendChild(wrap);
+    }
+    if(others.length){
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;opacity:.8';
+      others.forEach(function(s){
+        if(!s.logo)return;
+        const img=document.createElement('img');
+        img.src=s.logo;
+        img.style.cssText='max-height:'+(s.tier==='secondary'?'28px':'18px')+';max-width:90px;object-fit:contain';
+        if(s.name)img.title=s.name;
+        img.onerror=function(){this.parentElement&&this.parentElement.removeChild(this);};
+        row.appendChild(img);
+      });
+      el.appendChild(row);
+    }
+    el.style.display='block';
+  });
+
   // ── White label: logo + nombre org + colores ──
   db.ref('config/whiteLabel').once('value',snap=>{
     const wl=snap.val();
@@ -2727,9 +2806,8 @@ function loadPublicView(container){
     const el=document.getElementById('pv-org-name');
     if(!el)return;
     if(wl.logoUrl){
-      el.innerHTML='';
-      const _img=document.createElement('img');_img.src=wl.logoUrl;_img.style.cssText='height:44px;max-width:160px;object-fit:contain;margin-bottom:4px';_img.onerror=function(){this.style.display='none';};el.appendChild(_img);
-      if(wl.orgName){const _txt=document.createElement('div');_txt.style.cssText='font-family:Bebas Neue,cursive;font-size:11px;letter-spacing:3px;color:var(--ocean)';_txt.textContent=wl.orgName.toUpperCase();el.appendChild(_txt);}
+      el.innerHTML='<img src="'+wl.logoUrl+'" style="height:44px;max-width:160px;object-fit:contain;margin-bottom:4px" onerror="this.style.display='none'"/>'
+        +(wl.orgName?'<div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:var(--ocean)">'+wl.orgName.toUpperCase()+'</div>':'');
     } else if(wl.orgName){
       el.textContent='🌊 '+wl.orgName.toUpperCase();
     }

@@ -2727,8 +2727,9 @@ function loadPublicView(container){
     const el=document.getElementById('pv-org-name');
     if(!el)return;
     if(wl.logoUrl){
-      el.innerHTML='<img src="'+wl.logoUrl+'" style="height:44px;max-width:160px;object-fit:contain;margin-bottom:4px" onerror="this.style.display='none'"/>'
-        +(wl.orgName?'<div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:var(--ocean)">'+wl.orgName.toUpperCase()+'</div>':'');
+      el.innerHTML='';
+      const _img=document.createElement('img');_img.src=wl.logoUrl;_img.style.cssText='height:44px;max-width:160px;object-fit:contain;margin-bottom:4px';_img.onerror=function(){this.style.display='none';};el.appendChild(_img);
+      if(wl.orgName){const _txt=document.createElement('div');_txt.style.cssText='font-family:Bebas Neue,cursive;font-size:11px;letter-spacing:3px;color:var(--ocean)';_txt.textContent=wl.orgName.toUpperCase();el.appendChild(_txt);}
     } else if(wl.orgName){
       el.textContent='🌊 '+wl.orgName.toUpperCase();
     }

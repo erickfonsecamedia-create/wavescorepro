@@ -2797,21 +2797,21 @@ function loadPublicView(container){
     el.style.display='block';
   });
 
-  // ── White label: logo + nombre org + colores ──
-  db.ref('config/whiteLabel').once('value',snap=>{
-    const wl=snap.val();
-    if(!wl)return;
-    if(wl.primaryColor)document.documentElement.style.setProperty('--ocean',wl.primaryColor);
-    if(wl.accentColor)document.documentElement.style.setProperty('--gold',wl.accentColor);
-    const el=document.getElementById('pv-org-name');
-    if(!el)return;
-    if(wl.logoUrl){
-      el.innerHTML='<img src="'+wl.logoUrl+'" style="height:44px;max-width:160px;object-fit:contain;margin-bottom:4px" onerror="this.style.display='none'"/>'
-        +(wl.orgName?'<div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:var(--ocean)">'+wl.orgName.toUpperCase()+'</div>':'');
-    } else if(wl.orgName){
-      el.textContent='🌊 '+wl.orgName.toUpperCase();
-    }
-  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // ── Sponsors en vista pública ──
   db.ref('config/event/sponsors').on('value',snap=>{

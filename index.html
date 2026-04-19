@@ -2823,8 +2823,8 @@ function loadPublicView(container){
     let html='';
     if(main&&main.logo){
       html+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px">'
-        +'<div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3)">PRESENTADO POR</div>'
-        +'<img src="'+main.logo+'" style="max-height:48px;max-width:160px;object-fit:contain" onerror="this.style.display='none'"/>'
+        +`<div style="font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.3)">PRESENTADO POR</div>`
+        +`<img src="${main.logo}" style="max-height:48px;max-width:160px;object-fit:contain" onerror="this.style.display='none'"/>`
         +(main.name?'<div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1px">'+main.name+'</div>':'')
         +'</div>';
     }

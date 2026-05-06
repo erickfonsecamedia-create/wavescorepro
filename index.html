@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
 <title>WaveScore Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
@@ -661,6 +662,10 @@ select.sinput option{background:#0a1f3a;}
       <div class="section-title">CONFIGURACIÓN DEL EVENTO</div>
       <div class="card">
         <label class="slabel">NOMBRE DEL EVENTO</label><input class="sinput" id="adm-event-name" placeholder="Campeonato Nacional Nazca 2025"/>
+        <label class="slabel">EMAIL DEL CLIENTE</label>
+        <input class="sinput" id="adm-client-email" type="email" placeholder="federacion@ejemplo.com"/>
+        <label class="slabel">NOMBRE DEL CONTACTO</label>
+        <input class="sinput" id="adm-client-name" placeholder="Juan Pérez — Director Técnico"/>
         <label class="slabel">CÓDIGO DE ACCESO</label>
         <input class="sinput" id="adm-event-code" placeholder="ej: NAZCA2025" style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:4px;text-transform:uppercase"/>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
@@ -705,6 +710,7 @@ select.sinput option{background:#0a1f3a;}
           <button class="btn-sm btn-gold" onclick="saveEventConfig()" style="flex:3;padding:13px;font-size:14px;letter-spacing:3px">💾 GUARDAR EVENTO</button>
           <button class="btn-sm btn-danger" onclick="clearEventDates()" style="flex:1;padding:13px;font-size:11px" title="Quitar fechas de inicio/fin">✕ FECHAS</button>
         </div>
+        <button class="btn-sm btn-go" onclick="sendEventEmail()" style="width:100%;padding:12px;margin-top:8px;font-size:13px;letter-spacing:2px">📧 ENVIAR EMAIL DE ACCESO AL CLIENTE</button>
       </div>
       <div class="section-title">EVENTO ACTIVO</div>
       <div id="adm-current-event"><div style="color:var(--muted);font-size:13px">Cargando...</div></div>
@@ -837,6 +843,19 @@ select.sinput option{background:#0a1f3a;}
         <label class="slabel">CONFIRMAR CÓDIGO</label><input class="sinput" id="confirm-admin-code" type="password" placeholder="Repite el código" style="margin-bottom:8px"/>
         <button class="btn-sm btn-gold" onclick="changeAdminCode()" style="width:100%;padding:12px">🔑 CAMBIAR CÓDIGO ADMIN</button>
       </div>
+      <div class="section-title">📋 PLAN DEL CLIENTE</div>
+      <div class="card">
+        <div class="note-box" style="margin-bottom:12px">Asigna el plan al cliente actual. Esto controla cuántos eventos simultáneos puede tener activos.</div>
+        <label class="slabel">PLAN ACTIVO</label>
+        <select class="sinput" id="plan-select" style="margin-bottom:8px">
+          <option value="club">🏄 Club — 1 evento activo simultáneo ($500-800/año)</option>
+          <option value="regional">🌊 Federación Regional — 3 eventos simultáneos ($1,200-2,000/año)</option>
+          <option value="nacional">🏆 Federación Nacional — Ilimitado ($3,000-5,000/año)</option>
+        </select>
+        <div id="plan-current" style="font-size:12px;color:var(--muted);margin-bottom:10px">Cargando plan actual...</div>
+        <button class="btn-sm btn-gold" onclick="savePlan()" style="width:100%;padding:12px">💾 GUARDAR PLAN</button>
+        <button class="btn-sm btn-gray" onclick="resetEventCount()" style="width:100%;padding:10px;margin-top:8px;font-size:11px">↺ RESETEAR CONTADOR (inicio de período)</button>
+      </div>
     </div>
     <div id="adm-rounds" class="admin-tab-content" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -950,6 +969,10 @@ select.sinput option{background:#0a1f3a;}
 <script>
 // ════════ CONSTANTS ════════
 const ADMIN_CODE_DEFAULT = 'SURFJUDGEADMIN2025';
+// ════════ EMAILJS CONFIG ════════
+const EJS_SERVICE = 'service_crtmi99';
+const EJS_TEMPLATE = 'r4zun08';
+const EJS_PUBLIC_KEY = 'BXYfjR_JHnhBYUUKb';
 const FB_CONFIG = {apiKey:'AIzaSyD8gYpdNlMgBFc07e64w93lXttgcZ28fD0',authDomain:'sistema-de-computo-surf.firebaseapp.com',databaseURL:'https://sistema-de-computo-surf-default-rtdb.firebaseio.com',projectId:'sistema-de-computo-surf'};
 const LYCRA_COLORS=['#ff4757','#f0f0f0','#ffd166','#54a0ff'];
 const LYCRA_NAMES=['Rojo','Blanco','Amarillo','Azul'];
@@ -3425,10 +3448,30 @@ function saveBracketEdits(){
 function clearBracket(){if(confirm('¿Eliminar bracket?')){db.ref('bracket').remove();document.getElementById('bracket-view').innerHTML='<div style="color:var(--muted);font-size:13px">Sin bracket generado.</div>';_bracketEdit=null;}}
 
 // ════════ ADMIN ════════
+function sendEventEmail(){
+  const toEmail=document.getElementById('adm-client-email')?.value.trim();
+  const toName=document.getElementById('adm-client-name')?.value.trim();
+  if(!toEmail){showToast('⚠️ Ingresa el email del cliente primero');return;}
+  db.ref('config').once('value',snap=>{
+    const cfg=snap.val()||{};
+    const ev=cfg.event||{};
+    const plan=cfg.plan||'club';
+    const planNames={club:'🏄 Club',regional:'🌊 Federación Regional',nacional:'🏆 Federación Nacional'};
+    const validUntil=ev.endsAt?new Date(ev.endsAt).toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}):'Sin fecha de expiración';
+    sendAccessEmail(toEmail,toName,ev.name,ev.code,validUntil,planNames[plan]||plan);
+    // Guardar email del cliente en Firebase para referencia futura
+    db.ref('config/clientEmail').set(toEmail);
+    db.ref('config/clientName').set(toName);
+  });
+}
+
 function loadAdminData(){
+  loadPlanInfo();
   db.ref('config').once('value',snap=>{
     const cfg=snap.val()||{};const ev=cfg.event||{};
     if(document.getElementById('adm-event-name'))document.getElementById('adm-event-name').value=ev.name||'';
+    if(cfg.clientEmail&&document.getElementById('adm-client-email'))document.getElementById('adm-client-email').value=cfg.clientEmail;
+    if(cfg.clientName&&document.getElementById('adm-client-name'))document.getElementById('adm-client-name').value=cfg.clientName;
     if(document.getElementById('adm-event-code'))document.getElementById('adm-event-code').value=ev.code||'SURF2025';
     if(ev.startsAt&&document.getElementById('adm-start-date'))document.getElementById('adm-start-date').value=new Date(ev.startsAt).toISOString().slice(0,16);
     if(ev.endsAt&&document.getElementById('adm-end-date'))document.getElementById('adm-end-date').value=new Date(ev.endsAt).toISOString().slice(0,16);
@@ -3440,6 +3483,22 @@ function saveEventConfig(){
   const code=document.getElementById('adm-event-code')?.value.trim().toUpperCase();
   if(!name){showToast('⚠️ Ingresa el nombre del evento');return;}
   if(!code||code.length<4){showToast('⚠️ Código mínimo 4 caracteres');return;}
+  // Verificar si es un evento NUEVO (código diferente al actual)
+  db.ref('config/event/code').once('value',snap=>{
+    const currentCode=snap.val()||'';
+    const isNewEvent=code!==currentCode;
+    if(isNewEvent){
+      checkPlanLimit(allowed=>{
+        if(!allowed)return;
+        incrementEventCount();
+        _doSaveEventConfig(name,code);
+      });
+    } else {
+      _doSaveEventConfig(name,code);
+    }
+  });
+}
+function _doSaveEventConfig(name,code){
   const startStr=document.getElementById('adm-start-date')?.value;
   const endStr=document.getElementById('adm-end-date')?.value;
   const ev={name,code,updatedAt:Date.now()};
@@ -3472,6 +3531,97 @@ function renderCurrentEvent(cfg){
     <div style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:2px;color:${statusColor};margin-top:6px">${statusLabel}</div>
   </div>`;
 }
+// ════════ EMAILJS INIT ════════
+window.addEventListener('load',()=>{
+  try{emailjs.init(EJS_PUBLIC_KEY);}catch(e){console.warn('EmailJS no disponible');}
+});
+
+// ════════ SEND ACCESS EMAIL ════════
+function sendAccessEmail(toEmail, toName, eventName, eventCode, validUntil, planName){
+  if(!toEmail||!toEmail.includes('@')){showToast('⚠️ Email del cliente no válido');return;}
+  const templateParams={
+    to_email: toEmail,
+    to_name: toName||'Equipo',
+    event_name: eventName||'Evento',
+    event_code: eventCode||'—',
+    valid_until: validUntil||'Sin fecha de expiración',
+    plan_name: planName||'Básico',
+  };
+  showToast('📧 Enviando email...');
+  emailjs.send(EJS_SERVICE, EJS_TEMPLATE, templateParams)
+    .then(()=>{showToast('✅ Email enviado a '+toEmail);})
+    .catch(e=>{showToast('❌ Error al enviar email: '+e.text);console.error(e);});
+}
+
+// ════════ SISTEMA DE PLANES ════════
+const PLAN_LIMITS={club:1,regional:3,nacional:999};
+const PLAN_NAMES={club:'🏄 Club',regional:'🌊 Federación Regional',nacional:'🏆 Federación Nacional'};
+
+function loadPlanInfo(){
+  db.ref('config/plan').once('value',snap=>{
+    const plan=snap.val()||'club';
+    const sel=document.getElementById('plan-select');
+    const cur=document.getElementById('plan-current');
+    if(sel)sel.value=plan;
+    if(cur){
+      const limit=PLAN_LIMITS[plan];
+      cur.innerHTML='<strong style="color:var(--gold)">Plan actual: '+PLAN_NAMES[plan]+'</strong> · Máximo '+(limit===999?'ilimitado':limit)+' evento'+(limit===1?'':'s')+' simultáneo'+(limit===1?'':'s');
+    }
+  });
+}
+
+function savePlan(){
+  const plan=document.getElementById('plan-select')?.value||'club';
+  db.ref('config/plan').set(plan).then(()=>{
+    showToast('✅ Plan guardado: '+PLAN_NAMES[plan]);
+    loadPlanInfo();
+  });
+}
+
+function checkPlanLimit(callback){
+  // Verificar si el cliente puede crear un nuevo evento activo
+  db.ref('config/plan').once('value',planSnap=>{
+    const plan=planSnap.val()||'club';
+    const limit=PLAN_LIMITS[plan];
+    if(limit===999){callback(true);return;} // Nacional = ilimitado
+    // Contar cuántos eventos activos hay en Firebase
+    db.ref('rounds').once('value',roundsSnap=>{
+      // Para simplificar, contamos el número de heats guardados en las últimas 24h
+      const now=Date.now();
+      const dayMs=24*60*60*1000;
+      let activeToday=0;
+      roundsSnap.forEach(c=>{
+        const r=c.val();
+        if(r&&r.timestamp&&(now-r.timestamp)<dayMs)activeToday++;
+      });
+      // Si tiene menos de 5 rondas del día, permitir (umbral conservador)
+      // La verificación real es a nivel de evento, no de rondas
+      db.ref('config/eventCount').once('value',ecSnap=>{
+        const count=ecSnap.val()||0;
+        if(count<limit){callback(true);}
+        else{
+          const planName=PLAN_NAMES[plan];
+          showToast('⛔ Tu plan '+planName+' permite '+limit+' evento'+(limit===1?'':'s')+' activo'+(limit===1?'':'s')+'. Contacta a WaveScore Pro para actualizar.');
+          callback(false);
+        }
+      });
+    });
+  });
+}
+
+function incrementEventCount(){
+  db.ref('config/eventCount').once('value',snap=>{
+    const count=(snap.val()||0)+1;
+    db.ref('config/eventCount').set(count);
+  });
+}
+
+function resetEventCount(){
+  // El Admin puede resetear el contador al inicio de un nuevo período
+  if(confirm('¿Resetear el contador de eventos? Usa esto al inicio de cada período de suscripción.'))
+    db.ref('config/eventCount').set(0).then(()=>showToast('✅ Contador reseteado'));
+}
+
 function changeAdminCode(){
   const nc=document.getElementById('new-admin-code')?.value.trim();
   const cc=document.getElementById('confirm-admin-code')?.value.trim();

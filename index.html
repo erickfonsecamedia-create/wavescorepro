@@ -3828,7 +3828,7 @@ function exportAllToExcel(){
     if(!rounds.length){showToast('Sin rondas para exportar');return;}
     // Cabecera clara
     let csv='\uFEFF';
-    csv+='EVENTO,RONDA,FECHA,HORA,DURACIÓN (min),POSICIÓN,SURFISTA,LYCRA,TOTAL,OLA 1,OLA 2 (AJUSTADA),OLAS SURFADAS,INTERFERENCIA\n';
+    csv+='EVENTO;RONDA;FECHA;HORA;DURACIÓN (min);POSICIÓN;SURFISTA;LYCRA;TOTAL;OLA 1;OLA 2 (AJUSTADA);OLAS SURFADAS;INTERFERENCIA\n';
     db.ref('config/event/name').once('value',nameSnap=>{
       const eventName=nameSnap.val()||'Evento';
       rounds.forEach(r=>{
@@ -3837,7 +3837,7 @@ function exportAllToExcel(){
         const hora=dt.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
         (r.results||[]).filter(s=>s&&s.name).forEach(s=>{
           const interf=s.interference>=2?'Doble (0pts)':s.interference===1?'Simple (50%)':'—';
-          csv+='"'+eventName+'","'+(r.name||'Heat')+'","'+fecha+'","'+hora+'",'+(r.duration||20)+','+s.position+',"'+(s.name||'')+'","'+(s.lycra||'')+'",'+((s.total||0).toFixed(2))+','+((s.best||0).toFixed(2))+','+((s.adjSecond||0).toFixed(2))+','+(s.waveCount||0)+',"'+interf+'"\n';
+          csv+='"'+eventName+'";"'+(r.name||'Heat')+'";"'+fecha+'";"'+hora+'";"'+(r.duration||20)+'";'+s.position+';"'+(s.name||'')+'"; "'+(s.lycra||'')+'";'+((s.total||0).toFixed(2))+';'+((s.best||0).toFixed(2))+';'+((s.adjSecond||0).toFixed(2))+';'+(s.waveCount||0)+';"'+interf+'"+(r.name||'Heat')+'","'+fecha+'","'+hora+'",'+(r.duration||20)+','+s.position+',"'+(s.name||'')+'","'+(s.lycra||'')+'",'+((s.total||0).toFixed(2))+','+((s.best||0).toFixed(2))+','+((s.adjSecond||0).toFixed(2))+','+(s.waveCount||0)+',"'+interf+'"\n';
         });
       });
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
@@ -3852,35 +3852,124 @@ function exportActaOficial(){
   db.ref('rounds').once('value',snap=>{
     const rounds=[];snap.forEach(c=>{ rounds.push({id:c.key,...c.val()}); });
     rounds.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
-    if(!rounds.length){showToast('Sin rondas');return;}
-    const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><title>Acta Oficial WaveScore Pro</title>
-    <style>body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:20px;color:#1a1a1a;}
-    h1{text-align:center;font-size:24px;border-bottom:3px solid #005bea;padding-bottom:10px;}
-    h2{font-size:16px;color:#005bea;margin-top:24px;margin-bottom:8px;}
-    table{width:100%;border-collapse:collapse;margin-bottom:16px;}
-    th{background:#005bea;color:#fff;padding:8px 10px;text-align:left;font-size:12px;}
-    td{padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:12px;}
-    tr:first-child td{font-weight:bold;background:#fffbeb;}
-    .footer{text-align:center;margin-top:32px;color:#6b7280;font-size:11px;border-top:1px solid #e5e7eb;padding-top:12px;}
-    @media print{body{padding:10px;}}
-    </style></head><body>
-    <h1>🌊 ACTA OFICIAL DE RESULTADOS</h1>
-    <p style="text-align:center;color:#6b7280;font-size:12px">Generado: ${new Date().toLocaleString('es-CO')} · WaveScore Pro</p>
-    ${rounds.map(r=>`<h2>${r.name} <span style="font-weight:normal;color:#6b7280;font-size:13px">· ${new Date(r.timestamp).toLocaleString('es-CO')} · ${r.duration} min</span></h2>
-    <table><thead><tr><th>#</th><th>Surfista</th><th>Lycra</th><th>Total</th><th>Ola 1</th><th>Ola 2</th><th>Olas</th></tr></thead>
-    <tbody>${(r.results||[]).map(s=>`<tr>
-      <td>${s.position}</td><td>${s.name}</td><td>${s.lycra}</td>
-      <td>${s.total.toFixed(2)}</td><td>${s.best.toFixed(2)}</td><td>${s.adjSecond.toFixed(2)}</td><td>${s.waveCount}</td>
-    </tr>`).join('')}</tbody></table>`).join('')}
-    <div class="footer">WaveScore Pro · Sistema Oficial de Puntuación · ${new Date().getFullYear()}</div>
-    
-
-    </body></html>`;
-    const blob=new Blob([html],{type:'text/html'});
-    const url=URL.createObjectURL(blob);
-    const w=window.open(url,'_blank');
-    if(w)setTimeout(()=>w.print(),800);
-    showToast('📋 Acta generada');
+    const validRounds=rounds.filter(r=>r.results&&r.results.length);
+    if(!validRounds.length){showToast('Sin rondas');return;}
+    const ranking={};
+    validRounds.forEach(r=>{
+      (r.results||[]).forEach(s=>{
+        if(!s.name)return;
+        if(!ranking[s.name])ranking[s.name]={name:s.name,rounds:0,totalPoints:0,best:0,positions:[]};
+        ranking[s.name].rounds++;
+        ranking[s.name].totalPoints+=s.total||0;
+        ranking[s.name].best=Math.max(ranking[s.name].best,s.best||0);
+        ranking[s.name].positions.push(s.position);
+      });
+    });
+    const overall=Object.values(ranking).sort((a,b)=>(b.totalPoints/b.rounds)-(a.totalPoints/a.rounds));
+    db.ref('config/event/name').once('value',snap2=>{
+      const eventName=snap2.val()||'Evento de Surf';
+      const now=new Date();
+      const fechaGen=now.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
+      const horaGen=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+      const lycraColors={'Rojo':'background:#fee2e2;color:#991b1b','Blanco':'background:#f3f4f6;color:#374151;border:1px solid #d1d5db','Amarillo':'background:#fef9c3;color:#92400e','Azul':'background:#dbeafe;color:#1e40af'};
+      const html='<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>'
+        +'<title>Acta Oficial — '+eventName+'</title>'
+        +'<style>'
+        +'*{box-sizing:border-box;margin:0;padding:0;}'
+        +'body{font-family:Arial,sans-serif;max-width:820px;margin:0 auto;padding:28px 24px;color:#111;background:#fff;font-size:12px;}'
+        +'.no-print{text-align:center;margin-bottom:16px;}'
+        +'.header{text-align:center;padding-bottom:16px;border-bottom:3px solid #005bea;margin-bottom:20px;}'
+        +'.header-title{font-size:22px;font-weight:700;color:#005bea;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}'
+        +'.header-event{font-size:16px;font-weight:700;color:#111;margin:4px 0 2px;}'
+        +'.header-meta{font-size:11px;color:#6b7280;}'
+        +'.sec{font-size:13px;font-weight:700;color:#005bea;text-transform:uppercase;letter-spacing:2px;margin:20px 0 8px;padding-bottom:5px;border-bottom:2px solid #e5e7eb;}'
+        +'table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11.5px;}'
+        +'thead tr{background:#005bea;}'
+        +'th{color:#fff;padding:7px 10px;text-align:left;font-size:11px;font-weight:700;}'
+        +'td{padding:6px 10px;border-bottom:1px solid #f0f0f0;vertical-align:middle;}'
+        +'.gold td{background:#fffbeb;font-weight:700;}'
+        +'tr:nth-child(even) td{background:#f9fafb;}'
+        +'.gold:nth-child(even) td{background:#fffbeb;}'
+        +'.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;}'
+        +'.sig-section{margin-top:36px;border-top:2px solid #e5e7eb;padding-top:20px;}'
+        +'.sig-title{font-size:12px;font-weight:700;color:#374151;text-align:center;margin-bottom:24px;letter-spacing:1px;text-transform:uppercase;}'
+        +'.sig-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-bottom:20px;}'
+        +'.sig-box{text-align:center;}'
+        +'.sig-line{border-top:1px solid #374151;margin-bottom:6px;margin-top:48px;}'
+        +'.sig-label{font-size:10px;color:#6b7280;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}'
+        +'.sig-field{font-size:11px;color:#111;margin-top:3px;}'
+        +'.seal-row{display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:16px;}'
+        +'.seal-circle{width:80px;height:80px;border:2px dashed #d1d5db;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;}'
+        +'.seal-txt{font-size:9px;color:#d1d5db;line-height:1.4;}'
+        +'.legal{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;font-size:10px;color:#6b7280;margin-top:16px;line-height:1.6;}'
+        +'.footer{text-align:center;margin-top:20px;color:#9ca3af;font-size:10px;border-top:1px solid #f0f0f0;padding-top:12px;}'
+        +'@media print{.no-print{display:none!important;}@page{margin:1.5cm;}}'
+        +'</style></head><body>'
+        +'<div class="no-print"><button onclick="window.print()" style="padding:10px 28px;background:#005bea;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">🖨️ IMPRIMIR / GUARDAR PDF</button></div>'
+        +'<div class="header">'
+        +'<div style="font-size:28px;margin-bottom:6px">🌊</div>'
+        +'<div class="header-title">Acta Oficial de Resultados</div>'
+        +'<div class="header-event">'+eventName+'</div>'
+        +'<div class="header-meta">Generado: '+fechaGen+' · '+horaGen+' &nbsp;|&nbsp; '+validRounds.length+' heat(s) &nbsp;|&nbsp; WaveScore Pro</div>'
+        +'</div>'
+        +'<div class="sec">🏆 Ranking General del Torneo</div>'
+        +'<table><thead><tr><th>#</th><th>Surfista</th><th>Heats</th><th>Promedio</th><th>Mejor Ola</th><th>Posiciones</th></tr></thead><tbody>'
+        +overall.map((s,i)=>'<tr class="'+(i===0?'gold':'')+'">'
+          +'<td style="font-size:14px;font-weight:700;color:'+(i===0?'#d97706':i===1?'#6b7280':i===2?'#92400e':'#374151')+'">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1))+'</td>'
+          +'<td><strong>'+s.name+'</strong></td>'
+          +'<td>'+s.rounds+'</td>'
+          +'<td><strong>'+(s.totalPoints/s.rounds).toFixed(2)+'</strong></td>'
+          +'<td>'+s.best.toFixed(2)+'</td>'
+          +'<td style="color:#6b7280">'+s.positions.map(p=>'#'+p).join(', ')+'</td>'
+          +'</tr>').join('')
+        +'</tbody></table>'
+        +'<div class="sec">📋 Resultados por Heat</div>'
+        +validRounds.map(r=>{
+          return '<div style="font-size:12px;font-weight:700;color:#374151;margin:14px 0 5px">'+r.name
+            +'<span style="font-weight:400;color:#9ca3af;font-size:11px"> · '
+            +new Date(r.timestamp).toLocaleDateString('es-CO',{day:'numeric',month:'short',year:'numeric'})
+            +' · '+new Date(r.timestamp).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})
+            +' · '+(r.duration||20)+' min</span></div>'
+            +'<table><thead><tr><th>Pos.</th><th>Surfista</th><th>Lycra</th><th>Total</th><th>Ola 1</th><th>Ola 2 (Aj.)</th><th>Olas</th><th>Interferencia</th></tr></thead><tbody>'
+            +(r.results||[]).filter(s=>s&&s.name).map(s=>{
+              const interf=s.interference>=2?'Doble (0 pts)':s.interference===1?'Simple (50%)':'—';
+              const lc=lycraColors[s.lycra]||'';
+              return '<tr class="'+(s.position===1?'gold':'')+'">'
+                +'<td style="font-weight:700;font-size:13px;color:'+(s.position===1?'#d97706':'#374151')+'">'+s.position+'</td>'
+                +'<td>'+s.name+'</td>'
+                +'<td><span class="badge" style="'+lc+'">'+(s.lycra||'—')+'</span></td>'
+                +'<td><strong>'+(s.total||0).toFixed(2)+'</strong></td>'
+                +'<td>'+(s.best||0).toFixed(2)+'</td>'
+                +'<td>'+(s.adjSecond||0).toFixed(2)+'</td>'
+                +'<td>'+(s.waveCount||0)+'</td>'
+                +'<td style="color:'+(s.interference>0?'#dc2626':'#9ca3af')+'">'+interf+'</td>'
+                +'</tr>';
+            }).join('')
+            +'</tbody></table>';
+        }).join('')
+        +'<div class="sig-section">'
+        +'<div class="sig-title">Firmas de Validación Oficial</div>'
+        +'<div class="sig-grid">'
+        +'<div class="sig-box"><div class="sig-line"></div><div class="sig-label">Head Judge / Juez Principal</div><div class="sig-field">Nombre: ____________________</div><div class="sig-field">Cédula: ____________________</div></div>'
+        +'<div class="sig-box"><div class="sig-line"></div><div class="sig-label">Director de Competencia</div><div class="sig-field">Nombre: ____________________</div><div class="sig-field">Cédula: ____________________</div></div>'
+        +'<div class="sig-box"><div class="sig-line"></div><div class="sig-label">Representante de Atletas</div><div class="sig-field">Nombre: ____________________</div><div class="sig-field">Cédula: ____________________</div></div>'
+        +'</div>'
+        +'<div class="seal-row">'
+        +'<div><div style="font-size:11px;color:#6b7280;margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Lugar y Fecha</div>'
+        +'<div style="border-top:1px solid #374151;width:260px;padding-top:5px;font-size:10px;color:#9ca3af;">Ciudad, País — '+fechaGen+'</div></div>'
+        +'<div class="seal-circle"><span class="seal-txt">SELLO<br>OFICIAL</span></div>'
+        +'</div>'
+        +'</div>'
+        +'<div class="legal"><strong>Validez del documento:</strong> Este acta es el registro oficial de los resultados del evento. Las notas fueron calculadas automáticamente por el sistema WaveScore Pro siguiendo la metodología estándar de juzgamiento (5 jueces, se descarta la nota más alta y la más baja, se promedian las 3 restantes). La mejor ola y la segunda mejor ola de cada surfista conforman el puntaje final del heat (máximo 20.00 puntos). Las firmas de los funcionarios acreditan la validez de estos resultados ante la federación correspondiente.</div>'
+        +'<div class="footer"><p>WaveScore Pro · Sistema de Juzgamiento Automatizado de Surf · '+now.getFullYear()+'</p>'
+        +'<p style="margin-top:3px">Documento generado el '+fechaGen+' a las '+horaGen+'</p></div>'
+        +'</body></html>';
+      const blob=new Blob([html],{type:'text/html'});
+      const url=URL.createObjectURL(blob);
+      const w=window.open(url,'_blank');
+      if(w)setTimeout(()=>w.print(),900);
+      showToast('📋 Acta oficial generada');
+    });
   });
 }
 
